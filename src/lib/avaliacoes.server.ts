@@ -496,7 +496,7 @@ async function emailCupom(
   if (!resendConfigurado()) return;
   const pt = idioma === "pt";
   const ate = fim.toLocaleDateString(pt ? "pt-BR" : "es-UY");
-  const site = pt ? "https://printeuy.com/pt" : "https://printeuy.com";
+  const site = pt ? "https://printecuy.com/pt" : "https://printecuy.com";
   const titulo = pt ? `Obrigado pela avaliação, ${nome}!` : `¡Gracias por tu reseña, ${nome}!`;
   const corpo = pt
     ? `Seu cupom de ${DESCONTO_AVALIACAO}% para a próxima compra é <b>${cupom}</b> (válido até ${ate}, uso único). Informe o código no WhatsApp ou no pagamento.`

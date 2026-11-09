@@ -110,14 +110,14 @@ const PASSOS_META = [
   "Gerenciador de Eventos → “Conectar fontes de dados” → Web → dê o nome “PRINTE UY” e crie. O número que aparece é o ID do Pixel: cole acima.",
   "No mesmo conjunto de dados: Configurações → “API de Conversões” → “Gerar token de acesso”. Copie e cole no campo do token.",
   "Para conferir: aba “Testar eventos” → copie o código TEST… para o campo “Código de teste”, salve e clique em “Enviar evento de teste”.",
-  "Configurações do negócio → Segurança da marca → Domínios → adicione printeuy.com → “Meta tag” → copie só o código e cole em “Verificação do domínio”. Salve e clique em Verificar lá.",
+  "Configurações do negócio → Segurança da marca → Domínios → adicione printecuy.com → “Meta tag” → copie só o código e cole em “Verificação do domínio”. Salve e clique em Verificar lá.",
   "Para anunciar: Configurações do negócio → Contas de anúncios → Adicionar → Criar conta (moeda UYU ou USD, fuso America/Montevideo). Ligue a conta ao Pixel. (O painel de Ads usa isso na Fase 3.)",
 ];
 const PASSOS_GOOGLE = [
   "GA4 já está ligado (G-M8WS1HTBES). Para as vendas do WhatsApp: Analytics → Administrador → Fluxos de dados → o site → “Chaves secretas da API do Measurement Protocol” → Criar → cole o valor acima.",
   "Google Ads → Metas → Conversões → Nova ação de conversão → Site → “Lead” (ex.: “WhatsApp”) → “Usar a tag do Google” → copie o AW-… e o rótulo (send_to: AW-…/rótulo). Repita para “Cadastro”.",
   "Ligue o GA4 ao Google Ads (Analytics → Administrador → Vinculações de produtos) para usar os públicos de remarketing do site nas campanhas.",
-  "Search Console (search.google.com/search-console) → Adicionar propriedade → Prefixo do URL → https://printeuy.com → Tag HTML → cole só o código acima.",
+  "Search Console (search.google.com/search-console) → Adicionar propriedade → Prefixo do URL → https://printecuy.com → Tag HTML → cole só o código acima.",
 ];
 
 function IntegracoesPage() {
@@ -462,7 +462,7 @@ function Buscadores() {
           passos={[
             "Entre em bing.com/webmasters com a mesma conta Google do Search Console.",
             "Clique em “Importar” (Import from Google Search Console): o site e o sitemap vêm prontos, sem verificar de novo.",
-            "Em Sitemaps, confira se aparece https://printeuy.com/sitemap.xml.",
+            "Em Sitemaps, confira se aparece https://printecuy.com/sitemap.xml.",
             "Em alguns dias, veja Desempenho de pesquisa e Páginas indexadas.",
           ]}
           link="https://www.bing.com/webmasters"
@@ -509,7 +509,7 @@ function Buscadores() {
           titulo="Passo a passo: Merchant Center"
           passos={[
             "Entre em merchants.google.com com a conta do Search Console e crie a conta da loja (país: Uruguai, moeda UYU).",
-            "Confirme o site printeuy.com (ele já está verificado no Search Console).",
+            "Confirme o site printecuy.com (ele já está verificado no Search Console).",
             "Em Produtos → Adicionar produtos → Arquivo de URL (feed programado), cole o link acima e escolha atualização diária.",
             "Configure frete (DAC, por conta do cliente) e devolução (7 dias).",
             "Ative “Listagens gratuitas”. Cole o ID do Merchant no campo do Google acima.",

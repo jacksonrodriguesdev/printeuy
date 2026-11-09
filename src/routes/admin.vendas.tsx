@@ -112,7 +112,7 @@ const dinheiro = (v: number, moeda: string) =>
     ? `R$ ${v.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
     : `$U ${Math.round(v).toLocaleString("es-UY")}`;
 const linkDe = (v: { codigo: string; pais: string }) =>
-  `${typeof window !== "undefined" ? window.location.origin : "https://printeuy.com"}${v.pais === "BR" ? "/pt" : ""}/avaliar/${v.codigo}`;
+  `${typeof window !== "undefined" ? window.location.origin : "https://printecuy.com"}${v.pais === "BR" ? "/pt" : ""}/avaliar/${v.codigo}`;
 function textoWhats(v: { cliente_nome: string; codigo: string; pais: string }) {
   const n = v.cliente_nome.split(/\s+/)[0];
   return v.pais === "BR"

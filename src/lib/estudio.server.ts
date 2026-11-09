@@ -427,12 +427,12 @@ export function legendas(p: {
   const d = p.preco?.desconto ? ` con -${p.preco.desconto}%` : "";
   const dPt = p.preco?.desconto ? ` com -${p.preco.desconto}%` : "";
   const es = [
-    `🔧 ${p.nome}${m}${d}\n\nCódigo: ${p.codigo}${p.preco ? `\n💰 ${p.preco.uyu}` : ""}\n👉 printeuy.com/produto/${encodeURIComponent(p.sku)}\n\n💬 Cotizá por WhatsApp`,
+    `🔧 ${p.nome}${m}${d}\n\nCódigo: ${p.codigo}${p.preco ? `\n💰 ${p.preco.uyu}` : ""}\n👉 printecuy.com/produto/${encodeURIComponent(p.sku)}\n\n💬 Cotizá por WhatsApp`,
     `¿Buscás ${p.nome.toLowerCase()}${m}? 🚗\n\nLa tenemos${d}. Pedila con el código ${p.codigo} y te pasamos precio y disponibilidad.\n\n💬 Link en la bio`,
     `Que tu auto no te deje a pie 🚗\n\n${p.nome}${m} · Cód. ${p.codigo}${p.preco ? ` · ${p.preco.uyu}` : ""}\nCotizá por WhatsApp, respondemos rápido.`,
   ];
   const pt = [
-    `🔧 ${p.nomePt}${m}${dPt}\n\nCódigo: ${p.codigo}${p.preco?.brl ? `\n💰 ${p.preco.brl}` : ""}\n👉 printeuy.com/pt/produto/${encodeURIComponent(p.sku)}\n\n🚚 Envio para todo o RS · 💬 Peça pelo WhatsApp`,
+    `🔧 ${p.nomePt}${m}${dPt}\n\nCódigo: ${p.codigo}${p.preco?.brl ? `\n💰 ${p.preco.brl}` : ""}\n👉 printecuy.com/pt/produto/${encodeURIComponent(p.sku)}\n\n🚚 Envio para todo o RS · 💬 Peça pelo WhatsApp`,
     `Procurando ${p.nomePt.toLowerCase()}${m}? 🚗\n\nTemos${dPt}. Peça pelo código ${p.codigo} e enviamos para todo o RS.\n\n💬 Link na bio`,
   ];
   return { es, pt };

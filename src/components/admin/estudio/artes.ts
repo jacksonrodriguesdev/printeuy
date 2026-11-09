@@ -34,7 +34,7 @@ const T = {
   es: {
     cod: "Cód.",
     para: "Para",
-    veja: "Mirá el precio en printeuy.com",
+    veja: "Mirá el precio en printecuy.com",
     oferta: "¡Ofertas válidas hasta agotar stock!",
     desc: "DE DESCUENTO",
     envio: "Cotizá por WhatsApp",
@@ -43,7 +43,7 @@ const T = {
   pt: {
     cod: "Cód.",
     para: "Para",
-    veja: "Veja o preço em printeuy.com/pt",
+    veja: "Veja o preço em printecuy.com/pt",
     oferta: "Ofertas válidas enquanto durarem os estoques!",
     desc: "DE DESCONTO",
     envio: "Envio para todo o RS",
@@ -967,8 +967,8 @@ export async function gerarTexto(o: OpcoesTexto): Promise<HTMLCanvasElement> {
   const rod =
     o.rodape ??
     (o.idioma === "pt"
-      ? "printeuy.com/pt · WhatsApp +55 47 99191-9365"
-      : "printeuy.com · WhatsApp +55 47 99191-9365");
+      ? "printecuy.com/pt · WhatsApp +55 47 99191-9365"
+      : "printecuy.com · WhatsApp +55 47 99191-9365");
   g.font = "800 26px Archivo";
   g.fillStyle = cor.sub;
   g.textAlign = "center";

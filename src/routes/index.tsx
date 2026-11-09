@@ -41,7 +41,7 @@ const lojaLd = {
   logo: `${SITE_URL}/logo.png`,
   image: `${SITE_URL}/icon-512.png`,
   telephone: `+${PHONE}`,
-  email: "contacto@printeuy.com",
+  email: "contacto@printecuy.com",
   description:
     "Imprenta online en Uruguay: tarjetas de presentación, adhesivos, packaging, volantes y regalos empresariales personalizados, con precio al instante y envío a todo el país.",
   areaServed: { "@type": "Country", name: "Uruguay" },

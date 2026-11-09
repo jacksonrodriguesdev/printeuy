@@ -33,8 +33,8 @@ const LEGENDA: Record<Carrossel, Record<Idioma, string>> = {
     es: "Precio regalado, apuro para pagar, «sirve para cualquier auto»… ¿Conocés estas trampas? 🪤\n\nEn PRINTE UY comprás por código original, pagás con tarjeta, Abitab, Redpagos o link seguro.\n\n📲 Cotizá por WhatsApp (link en la bio)\n\n#PrinteUY #RepuestosParaAutos #Autopartes #Mecanica #CompraSegura",
   },
   lupa: {
-    pt: "Passamos a lupa no nosso site 🔍\n\nPeças para o seu carro com código original, foto e preço, pagamento com cartão, PIX ou link seguro e envio para RS, SC e PR com nota fiscal.\n\n🌐 printeuy.com/pt\n📲 Peça pelo WhatsApp (link na bio)\n\n#PrinteUY #RepuestosParaAutos #Autopartes",
-    es: "Le pasamos la lupa a nuestro sitio 🔍\n\nRepuestos para tu auto con código original, foto y precio, y pago con tarjeta, Abitab, Redpagos o link seguro.\n\n🌐 printeuy.com\n📲 Cotizá por WhatsApp (link en la bio)\n\n#PrinteUY #RepuestosParaAutos #Autopartes #Mecanica",
+    pt: "Passamos a lupa no nosso site 🔍\n\nPeças para o seu carro com código original, foto e preço, pagamento com cartão, PIX ou link seguro e envio para RS, SC e PR com nota fiscal.\n\n🌐 printecuy.com/pt\n📲 Peça pelo WhatsApp (link na bio)\n\n#PrinteUY #RepuestosParaAutos #Autopartes",
+    es: "Le pasamos la lupa a nuestro sitio 🔍\n\nRepuestos para tu auto con código original, foto y precio, y pago con tarjeta, Abitab, Redpagos o link seguro.\n\n🌐 printecuy.com\n📲 Cotizá por WhatsApp (link en la bio)\n\n#PrinteUY #RepuestosParaAutos #Autopartes #Mecanica",
   },
 };
 

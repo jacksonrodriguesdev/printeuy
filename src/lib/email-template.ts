@@ -136,7 +136,7 @@ export const CONTEUDO_PADRAO: ConteudoEmail = {
 };
 
 export type DadosRender = {
-  origem: string; // https://printeuy.com (links e imagens precisam de endereço completo)
+  origem: string; // https://printecuy.com (links e imagens precisam de endereço completo)
   nome?: string | null;
   preheader?: string | null;
   urlBaixa?: string | null; // link "darse de baja" (obrigatório em campanhas)

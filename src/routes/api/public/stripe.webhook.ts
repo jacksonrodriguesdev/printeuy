@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 // Aviso do Stripe (webhook) quando a página de pagamento é concluída, expira ou o pagamento
 // assíncrono muda. A assinatura (Stripe-Signature) é conferida sobre o corpo bruto; o status
 // aplicado é o que o Stripe confirma na consulta da sessão.
-// Cadastrar no painel do Stripe: https://printeuy.com/api/public/stripe/webhook
+// Cadastrar no painel do Stripe: https://printecuy.com/api/public/stripe/webhook
 export const Route = createFileRoute("/api/public/stripe/webhook")({
   server: {
     handlers: {

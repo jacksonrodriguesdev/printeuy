@@ -984,7 +984,7 @@ function DialogoAnuncio({
     idadeMax: 65,
     texto: texto.replace(/\n*#[\s\S]*$/, ""),
     titulo: (idioma === "pt" ? peca.nomePt || peca.nome : peca.nome).slice(0, 40),
-    link: `https://printeuy.com/produto/${encodeURIComponent(peca.sku)}`,
+    link: `https://printecuy.com/produto/${encodeURIComponent(peca.sku)}`,
     botao: "SHOP_NOW",
     ativar: false,
   });

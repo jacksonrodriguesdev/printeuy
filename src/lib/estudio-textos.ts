@@ -24,7 +24,7 @@ export type PecaTexto = {
 };
 
 export const WHATSAPP = "5547991919365";
-export const SITE = "https://printeuy.com";
+export const SITE = "https://printecuy.com";
 export const linkPeca = (sku: string, idioma: Idioma) =>
   `${SITE}${idioma === "pt" ? "/pt" : ""}/produto/${encodeURIComponent(sku)}`;
 export const linkWhatsApp = (texto: string) =>
@@ -368,8 +368,8 @@ export const RESPOSTAS: Array<{ k: string; es: string; pt: string }> = [
   },
   {
     k: "Black Friday",
-    es: "¡La Black Friday arranca el 27/11! Ya hay precios de Pre Black en printeuy.com 🖤💛",
-    pt: "A Black Friday começa dia 27/11! Já tem preço de Pré-Black em printeuy.com/pt 🖤💛",
+    es: "¡La Black Friday arranca el 27/11! Ya hay precios de Pre Black en printecuy.com 🖤💛",
+    pt: "A Black Friday começa dia 27/11! Já tem preço de Pré-Black em printecuy.com/pt 🖤💛",
   },
 ];
 export const BIOS = {

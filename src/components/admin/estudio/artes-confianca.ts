@@ -933,7 +933,7 @@ async function rodapeFinal(g: Ctx, o: OpcoesConfianca, y: number) {
   g.textAlign = "right";
   g.textBaseline = "middle";
   g.fillText(PHONE_DISPLAY, W - 104, y + 66);
-  g.fillText(o.idioma === "pt" ? "printeuy.com/pt" : "printeuy.com", W - 104, y + 106);
+  g.fillText(o.idioma === "pt" ? "printecuy.com/pt" : "printecuy.com", W - 104, y + 106);
   g.fillText("@rsautopiezas", W - 104, y + 146);
 }
 async function slideLupa(

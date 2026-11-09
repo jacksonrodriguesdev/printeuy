@@ -1,5 +1,5 @@
 // Indique um amigo: cada cliente com conta tem um código (ex.: AMIGO7KQ2M) que é ao mesmo tempo
-// o link de indicação (printeuy.com/?amigo=AMIGO7KQ2M) e um cupom de primeira compra para o
+// o link de indicação (printecuy.com/?amigo=AMIGO7KQ2M) e um cupom de primeira compra para o
 // amigo. Quando um link de pagamento é pago com esse cupom, quem indicou ganha um cupom de prêmio
 // (uso único, com validade) e recebe o código por e-mail. Indicar a si mesmo não vale.
 // Percentuais e validade: configuração «indicacao_config» (Admin → Campanhas e cupons).

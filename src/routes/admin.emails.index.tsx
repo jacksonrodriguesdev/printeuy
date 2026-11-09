@@ -102,7 +102,7 @@ function EmailsPage() {
               Na Hostinger, defina{" "}
               {!st.chave && <code className="rounded bg-amber-100 px-1">RESEND_API_KEY</code>}{" "}
               {!st.remetente && <code className="rounded bg-amber-100 px-1">EMAIL_REMETENTE</code>}{" "}
-              (ex.: <code>PRINTE UY &lt;novedades@printeuy.com&gt;</code>) e verifique o domínio no
+              (ex.: <code>PRINTE UY &lt;novedades@printecuy.com&gt;</code>) e verifique o domínio no
               Resend.
             </p>
           </div>

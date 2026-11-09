@@ -44,7 +44,7 @@ function PaginaPedido() {
               )}
             </p>
             <Link to="/" className="mt-4 inline-block font-semibold text-primary underline">
-              printeuy.com
+              printecuy.com
             </Link>
           </div>
         ) : (

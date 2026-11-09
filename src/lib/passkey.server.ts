@@ -44,7 +44,7 @@ export const garantirTabelaPasskeys = () =>
   }));
 
 // ---------- Domínio (RP) e origem ----------
-// A passkey fica presa ao domínio: printeuy.com em produção, localhost nos testes.
+// A passkey fica presa ao domínio: printecuy.com em produção, localhost nos testes.
 // Outros domínios (www, antigos) são redirecionados antes de chegar aqui.
 export function rpDe(request: Request): { rpID: string; origem: string } | null {
   const u = new URL(request.url);

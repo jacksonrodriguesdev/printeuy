@@ -3,8 +3,8 @@
 // Para trocar de domínio, defina VITE_SITE_URL na Hostinger e faça o deploy de novo.
 // É o endereço do canonical, sitemap e robots: precisa ser o domínio que está no ar.
 const configurado = (import.meta.env?.VITE_SITE_URL as string | undefined)?.trim();
-export const SITE_URL = (configurado || "https://printeuy.com").replace(/\/+$/, "");
+export const SITE_URL = (configurado || "https://printecuy.com").replace(/\/+$/, "");
 
 // Endereços que levam ao mesmo site e devem redirecionar (301) para o SITE_URL,
 // para o Google não ver conteúdo duplicado.
-export const DOMINIOS_ALIAS = ["www.printeuy.com"];
+export const DOMINIOS_ALIAS = ["www.printecuy.com"];

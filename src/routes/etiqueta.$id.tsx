@@ -158,7 +158,7 @@ function Etiqueta() {
               <div style={{ fontSize: px(6.5), fontWeight: 700, letterSpacing: 1.5 }}>
                 REPUESTOS · AUTOPEÇAS
               </div>
-              <div style={{ fontSize: px(6.5) }}>printeuy.com</div>
+              <div style={{ fontSize: px(6.5) }}>printecuy.com</div>
             </div>
           </div>
         </div>

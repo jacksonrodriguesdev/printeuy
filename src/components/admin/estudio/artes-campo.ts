@@ -416,7 +416,7 @@ async function rodape(g: Ctx, o: OpcoesCampo, p: Paleta, W: number, H: number) {
   await logo(g, x + 26, y + 30, 90, "#0d2b17", p.marca, o.idioma);
   const linhas: Array<[Icone, string]> = [
     ["chat", PHONE_DISPLAY],
-    ["globo", o.idioma === "pt" ? "printeuy.com/pt" : "printeuy.com"],
+    ["globo", o.idioma === "pt" ? "printecuy.com/pt" : "printecuy.com"],
     ["insta", "@rsautopiezas"],
   ];
   g.font = "700 25px Archivo";

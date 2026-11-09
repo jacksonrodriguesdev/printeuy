@@ -34,8 +34,8 @@ const ERROS: Record<string, [string, string]> = {
   ],
   expirou: ["Pasó mucho tiempo. Probá de nuevo.", "Demorou demais. Tente de novo."],
   dominio: [
-    "Abrí el sitio en printeuy.com para usar esta opción.",
-    "Abra o site em printeuy.com para usar esta opção.",
+    "Abrí el sitio en printecuy.com para usar esta opción.",
+    "Abra o site em printecuy.com para usar esta opção.",
   ],
   limite: ["Muchos intentos. Esperá unos minutos.", "Muitas tentativas. Espere alguns minutos."],
   login: ["Ingresá a tu cuenta primero.", "Entre na sua conta primeiro."],

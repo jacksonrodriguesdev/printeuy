@@ -1393,7 +1393,7 @@ function Criar({
     texto: "",
     titulo: "",
     descricao: "",
-    link: "https://printeuy.com/black-friday",
+    link: "https://printecuy.com/black-friday",
     botao: "SHOP_NOW",
     ativar: false,
   });

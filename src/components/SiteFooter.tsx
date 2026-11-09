@@ -163,10 +163,10 @@ export function SiteFooter() {
             </li>
             <li>
               <a
-                href="mailto:contacto@printeuy.com"
+                href="mailto:contacto@printecuy.com"
                 className="flex items-center gap-2 break-all text-slate-300 hover:text-white"
               >
-                <Mail className="h-4 w-4 shrink-0 text-amber-400" /> contacto@printeuy.com
+                <Mail className="h-4 w-4 shrink-0 text-amber-400" /> contacto@printecuy.com
               </a>
             </li>
             <li className="flex items-center gap-2 text-slate-300">

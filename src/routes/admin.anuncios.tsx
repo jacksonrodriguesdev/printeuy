@@ -1177,7 +1177,7 @@ function Calendario({ d }: { d: CriadorAnuncios }) {
 }
 
 // ---------------------------------------------------------------- 9. Palavras-chave
-const SITE = "https://printeuy.com";
+const SITE = "https://printecuy.com";
 const GRUPOS: Grupo[] = [
   "Autoridade",
   "Local",

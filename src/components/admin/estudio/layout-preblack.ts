@@ -55,7 +55,7 @@ const TXT: Record<"es" | "pt", Textos> = {
     pre: "PRE",
     desc: (f: string) =>
       f === "black" ? "DE DESCUENTO EN LA BLACK" : "DE DESCUENTO EN LA PRE BLACK",
-    veja: "Mirá el precio en printeuy.com",
+    veja: "Mirá el precio en printecuy.com",
     oferta: "¡OFERTAS VÁLIDAS HASTA AGOTAR STOCK!",
     moeda: "$U",
     para: "Para",
@@ -68,7 +68,7 @@ const TXT: Record<"es" | "pt", Textos> = {
   pt: {
     pre: "PRÉ",
     desc: (f: string) => (f === "black" ? "DE DESCONTO NA BLACK" : "DE DESCONTO NA PRÉ-BLACK"),
-    veja: "Veja o preço em printeuy.com/pt",
+    veja: "Veja o preço em printecuy.com/pt",
     oferta: "OFERTAS VÁLIDAS ENQUANTO DURAREM OS ESTOQUES!",
     moeda: "R$",
     para: "Para",

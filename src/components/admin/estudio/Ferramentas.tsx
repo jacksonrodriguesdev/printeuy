@@ -772,7 +772,7 @@ export function LinkWhats() {
 }
 export function LinkUtm() {
   const [o, setO] = useState({
-    url: "https://printeuy.com/black-friday",
+    url: "https://printecuy.com/black-friday",
     fonte: "instagram",
     meio: "bio",
     campanha: "pre-black",

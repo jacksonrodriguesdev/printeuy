@@ -1,4 +1,4 @@
-# PRINTE UY (printeuy.com)
+# PRINTE UY (printecuy.com)
 
 Imprenta online para o Uruguai: TanStack Start (React 19, SSR) + Prisma + MySQL.
 Nasceu como cópia do AUTO PIEZAS UY (`C:\Users\USER\Desktop\AUTOPIEZASUY`); o admin é o mesmo.

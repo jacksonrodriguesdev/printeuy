@@ -85,7 +85,7 @@ Os zips são feitos a partir de `deploy_midia/` (ver o fim deste arquivo).
 | --------------- | -------------------------------------------------------- |
 | `DATABASE_URL`  | `mysql://USUARIO:SENHA@localhost:3306/NOME_DO_BANCO`     |
 | `JWT_SECRET`    | texto aleatório de 64+ caracteres (comando abaixo)       |
-| `VITE_SITE_URL` | `https://printeuy.com` (o domínio final; entra no build) |
+| `VITE_SITE_URL` | `https://printecuy.com` (o domínio final; entra no build) |
 | `UPLOADS_DIR`   | `/home/SEU_USUARIO/printeuy-midia` (a pasta do passo 2)  |
 | `NODE_ENV`      | `production`                                             |
 

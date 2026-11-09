@@ -12,7 +12,7 @@ import { PHONE } from "./whatsapp";
 // Envio de e-mails pelo Resend (https://resend.com).
 // .env / Hostinger:
 //   RESEND_API_KEY          chave da API (re_...)
-//   EMAIL_REMETENTE         ex.: PRINTE UY <novedades@printeuy.com>  (domínio verificado no Resend)
+//   EMAIL_REMETENTE         ex.: PRINTE UY <novedades@printecuy.com>  (domínio verificado no Resend)
 //   EMAIL_RESPONDER_PARA    opcional: e-mail que recebe as respostas dos clientes
 //   EMAIL_ENDERECO          opcional: endereço físico mostrado no rodapé
 //   RESEND_WEBHOOK_SECRET   opcional: whsec_... do webhook (aberturas, cliques, rebotes)

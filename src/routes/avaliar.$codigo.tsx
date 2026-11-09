@@ -85,7 +85,7 @@ function PaginaAvaliar() {
             )}
           </p>
           <Link to="/" className="mt-6 inline-block font-semibold text-primary underline">
-            printeuy.com
+            printecuy.com
           </Link>
         </main>
       </div>
