@@ -70,4 +70,4 @@ servidor.log
 # A migração do Prisma precisa ir para o git (o "*.sql" acima a deixaria de fora)
 !prisma/migrations/**/*.sql
 # Logs e pacotes de deploy (banco, fotos) gerados na pasta dados/
-dados/
+/dados/
