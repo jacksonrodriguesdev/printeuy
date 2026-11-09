@@ -1,0 +1,256 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+/* Fonte servida pelo próprio site (public/fonts, licença OFL), pré-carregada no <head>.
+   font-display: optional = se não chegar logo, a página fica com a fonte do sistema e não "pula"
+   quando ela chega (o Google mede isso: CLS); na próxima página ela já está em cache. */
+@font-face {
+  font-family: "Plus Jakarta Sans";
+  font-style: normal;
+  font-display: optional;
+  font-weight: 200 800;
+  src: url("/fonts/plus-jakarta-sans-latin.woff2") format("woff2-variations");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Plus Jakarta Sans";
+  font-style: normal;
+  font-display: optional;
+  font-weight: 200 800;
+  src: url("/fonts/plus-jakarta-sans-latin-ext.woff2") format("woff2-variations");
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329,
+    U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F,
+    U+A720-A7FF;
+}
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ring-offset-background: var(--background);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+:root {
+  --radius: 0.625rem;
+  /* PRINTE UY: azul-marinho (marca) + laranja (destaque, botões de compra) */
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.21 0.03 260);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.21 0.03 260);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.21 0.03 260);
+  --primary: oklch(0.33 0.1 260); /* #13305f azul-marinho */
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.965 0.008 260);
+  --secondary-foreground: oklch(0.25 0.05 260);
+  --muted: oklch(0.97 0.005 260);
+  --muted-foreground: oklch(0.5 0.025 260);
+  --accent: oklch(0.69 0.19 45); /* #f26b1d laranja */
+  --accent-foreground: oklch(0.99 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.99 0 0);
+  --border: oklch(0.92 0.01 260);
+  --input: oklch(0.92 0.01 260);
+  --ring: oklch(0.33 0.1 260);
+  --sidebar: oklch(0.99 0.003 260);
+  --sidebar-foreground: oklch(0.21 0.03 260);
+  --sidebar-primary: oklch(0.33 0.1 260);
+  --sidebar-primary-foreground: oklch(0.99 0 0);
+  --sidebar-accent: oklch(0.95 0.012 260);
+  --sidebar-accent-foreground: oklch(0.21 0.03 260);
+  --sidebar-border: oklch(0.92 0.01 260);
+  --sidebar-ring: oklch(0.33 0.1 260);
+}
+
+.dark {
+  --background: oklch(0.16 0.02 260);
+  --foreground: oklch(0.98 0 0);
+  --card: oklch(0.22 0.02 260);
+  --card-foreground: oklch(0.98 0 0);
+  --popover: oklch(0.22 0.02 260);
+  --popover-foreground: oklch(0.98 0 0);
+  --primary: oklch(0.65 0.16 260);
+  --primary-foreground: oklch(0.16 0.02 260);
+  --secondary: oklch(0.28 0.02 260);
+  --secondary-foreground: oklch(0.98 0 0);
+  --muted: oklch(0.28 0.02 260);
+  --muted-foreground: oklch(0.7 0.02 260);
+  --accent: oklch(0.72 0.18 48);
+  --accent-foreground: oklch(0.16 0.02 260);
+  --destructive: oklch(0.7 0.19 22);
+  --destructive-foreground: oklch(0.98 0 0);
+  --border: oklch(1 0 0 / 12%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.65 0.16 260);
+  --sidebar: oklch(0.2 0.02 260);
+  --sidebar-foreground: oklch(0.98 0 0);
+  --sidebar-primary: oklch(0.65 0.16 260);
+  --sidebar-primary-foreground: oklch(0.16 0.02 260);
+  --sidebar-accent: oklch(0.28 0.02 260);
+  --sidebar-accent-foreground: oklch(0.98 0 0);
+  --sidebar-border: oklch(1 0 0 / 12%);
+  --sidebar-ring: oklch(0.65 0.16 260);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    /* toque sem o "flash" azul do Android/iOS: sensação de aplicativo */
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+@layer utilities {
+  .scrollbar-none {
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+  /* Áreas seguras do iPhone (notch / barra de gestos) */
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .pt-safe {
+    padding-top: env(safe-area-inset-top);
+  }
+}
+
+/* Entrada suave dos blocos ao rolar (ver components/home/Reveal.tsx) */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 0.6s ease-out,
+    transform 0.6s ease-out;
+}
+[data-reveal].is-visible {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* Faixa de marcas com rolagem contínua (o conteúdo é duplicado, por isso -50%) */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.animate-marquee {
+  animation: marquee 40s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee {
+    animation: none;
+  }
+}
+
+/* Linha de luz na base do header */
+@keyframes brilho {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+.animate-brilho {
+  animation: brilho 6s linear infinite;
+  will-change: transform;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-brilho {
+    animation: none;
+  }
+}
+
+/* Altura real da barra inferior do celular (MobileTabBar: 4rem + 0,5rem de margem + área segura do iPhone).
+   Todo elemento flutuante no rodapé usa esta variável para ficar ACIMA dela.
+   No desktop a barra não existe (0). */
+:root {
+  --barra-inferior: calc(4.5rem + env(safe-area-inset-bottom));
+}
+@media (min-width: 768px) {
+  :root {
+    --barra-inferior: 0px;
+  }
+}
+
+/* Construtor da Home: fita rolante (Ticker) e marcas em rolagem infinita. O conteúdo vai duas
+   vezes, por isso anda -50%. Pausa com o mouse em cima; parada para quem pediu menos movimento. */
+.ap-ticker-trilho {
+  animation: marquee var(--ap-dur, 35s) linear infinite;
+  will-change: transform;
+}
+.ap-ticker:hover .ap-ticker-trilho,
+.ap-ticker:focus-within .ap-ticker-trilho {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ap-ticker {
+    overflow-x: auto;
+  }
+  .ap-ticker-trilho {
+    animation: none;
+  }
+}
+
+/* Campanha com tema black (Black Friday): o site troca o verde por preto e o amarelo por dourado.
+   O <html> recebe data-tema="black" pelo layout raiz quando a campanha está na pré ou no ar. */
+html[data-tema="black"] {
+  --primary: oklch(0.2 0 0);
+  --primary-foreground: oklch(0.98 0 0);
+  --accent: oklch(0.84 0.13 90); /* dourado #f2c94c */
+  --accent-foreground: oklch(0.15 0 0);
+  --ring: oklch(0.84 0.13 90);
+}

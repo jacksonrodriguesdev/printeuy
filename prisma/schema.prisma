@@ -1,0 +1,1146 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model categories {
+  id         Int          @id @default(autoincrement())
+  nome       String
+  parent_id  Int?
+  image_path String?
+  linha      String       @default("AUTOMOTIVA")
+  created_at DateTime     @default(now())
+  updated_at DateTime     @updatedAt
+
+  parent     categories?  @relation("CategoryToCategory", fields: [parent_id], references: [id], onDelete: SetNull)
+  children   categories[] @relation("CategoryToCategory")
+  pecas  pecas[]  @relation("PecaCategory")
+}
+
+model site_banners {
+  id         Int      @id @default(autoincrement())
+  active     Boolean  @default(true)
+  created_at DateTime @default(now())
+  image_path String
+  // Arte opcional para celular (o banner largo é cortado nas laterais em telas estreitas)
+  image_path_mobile String?
+  // Nome interno, usado também como texto alternativo da imagem
+  titulo     String?
+  kind       String
+  link_url   String?
+  position   Int      @default(0)
+  linha      String   @default("AUTOMOTIVA")
+}
+
+model site_visits {
+  id           Int      @id @default(autoincrement())
+  city         String?
+  country      String?
+  country_code String?
+  created_at   DateTime @default(now())
+  path         String
+  referrer     String?
+  region       String?
+  user_agent   String?
+  // Rastreio de visitantes (src/lib/rastreio.server.ts). O IP nunca é gravado: só um hash.
+  visitor_id   String?  @db.VarChar(64)
+  session_id   String?  @db.VarChar(64)
+  ip_hash      String?  @db.VarChar(64)
+  latitude     Float?
+  longitude    Float?
+  fonte        String?  @db.VarChar(40)  // google, instagram, facebook, whatsapp, direto...
+  meio         String?  @db.VarChar(40)  // cpc, organico, social, referencia...
+  utm_source   String?  @db.VarChar(100)
+  utm_medium   String?  @db.VarChar(100)
+  utm_campaign String?  @db.VarChar(150)
+  referrer_host String? @db.VarChar(191)
+  device       String?  @db.VarChar(20)
+  browser      String?  @db.VarChar(40)
+  os           String?  @db.VarChar(40)
+  language     String?  @db.VarChar(20)
+  entrada      Boolean  @default(false) // primeira página da sessão
+  // Cliente logado (buscas e visitas de quem tem conta: automações de e-mail)
+  user_id      Int?
+
+  @@index([created_at])
+  @@index([visitor_id])
+  @@index([user_id])
+  @@index([session_id])
+}
+
+// Eventos do site (WhatsApp, busca, carrinho, pop-up, clique, rolagem). Antes iam para site_visits
+// como "/_evento/<tipo>/<dado>"; a tabela é criada e preenchida sozinha (src/lib/eventos-db.server.ts).
+model site_eventos {
+  id            Int      @id @default(autoincrement())
+  created_at    DateTime @default(now())
+  tipo          String   @db.VarChar(20)
+  dado          String   @db.VarChar(400)
+  pagina        String?  @db.VarChar(512) // página onde aconteceu
+  visitor_id    String?  @db.VarChar(64)
+  session_id    String?  @db.VarChar(64)
+  ip_hash       String?  @db.VarChar(64)
+  user_id       Int?
+  city          String?  @db.VarChar(191)
+  region        String?  @db.VarChar(191)
+  country       String?  @db.VarChar(191)
+  country_code  String?  @db.VarChar(8)
+  latitude      Float?
+  longitude     Float?
+  fonte         String?  @db.VarChar(40)
+  meio          String?  @db.VarChar(40)
+  utm_source    String?  @db.VarChar(100)
+  utm_medium    String?  @db.VarChar(100)
+  utm_campaign  String?  @db.VarChar(150)
+  referrer_host String?  @db.VarChar(191)
+  device        String?  @db.VarChar(20)
+  browser       String?  @db.VarChar(40)
+  os            String?  @db.VarChar(40)
+  language      String?  @db.VarChar(20)
+
+  @@index([created_at])
+  @@index([tipo, created_at])
+  @@index([visitor_id])
+  @@index([session_id])
+  @@index([user_id])
+}
+
+// Resumo de cada dia fechado (horário do Uruguai) para Admin → Análises e Criador de anúncios:
+// as telas somam os resumos em vez de reler todas as visitas (src/lib/resumo-diario.server.ts).
+model analise_dia {
+  dia       String   @id @db.VarChar(10) // AAAA-MM-DD
+  versao    Int
+  dados     String   @db.LongText // JSON
+  gerado_em DateTime @default(now())
+}
+
+// Uma linha por sessão (visita) dos dias fechados, gravada junto com analise_dia: as telas
+// Jornada e Visitantes leem daqui em vez de remontar as sessões a partir de cada página vista.
+model analise_sessao {
+  dia        String   @db.VarChar(10)
+  id         String   @db.VarChar(191) // id da sessão (o mesmo da Jornada)
+  visitante  String   @db.VarChar(191)
+  inicio     DateTime
+  pais       String?  @db.VarChar(8)
+  dados      String   @db.Text // JSON com o resumo da sessão
+
+  @@id([dia, id])
+  @@index([dia, pais])
+  @@index([visitante])
+}
+
+model quotes {
+  id         Int      @id @default(autoincrement())
+  nome       String
+  endereco   String
+  whatsapp   String
+  mensagem   String?  @db.Text
+  file_path  String?
+  status     String   @default("NOVA")
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model pecas {
+  sku                  String       @id
+  categoria            String?      @db.Text
+  category_id          Int?
+  created_at           DateTime     @default(now())
+  descricao            String?      @db.Text
+  estoque              Int          @default(0)
+  imagem_principal     String?      @db.Text
+  marca                String?      @db.Text
+  nome                 String       @db.Text
+  nome_es              String?      @db.Text
+  descricao_es         String?      @db.Text
+  peso                 Float?
+  tamanho              String?      @db.Text
+  altura               Float?
+  largura              Float?
+  valor_compra         Float?
+  valor_promocional    Float?
+  preco_brl            Float?
+  veiculos_compativeis String?      @db.Text
+  updated_at           DateTime     @updatedAt
+  url                  String?      @db.Text
+  codigo_fabricante    String?      @db.Text
+  fabricante           String?      @db.Text // fabricante da peça (DANA, MWM, FERSA...)
+  // Versão de outra peça com o mesmo código: fica oculta na loja e aparece na página do principal
+  duplicado_de         String?      @db.VarChar(191)
+  // false quando a marca é só o valor padrão da importação antiga e não pôde ser confirmada
+  marca_confirmada     Boolean      @default(true)
+  // Foto obtida automaticamente pela busca de imagens: página de origem (para remover se preciso)
+  imagem_origem        String?      @db.Text
+  // Quando a busca automática de imagem foi feita (evita pesquisar e pagar duas vezes)
+  imagem_buscada_em    DateTime?
+  ean                  String?      @db.Text
+  ncm                  String?      @db.Text
+  profundidade         Float?
+  // Precificação (admin → Produtos e preços). valor_compra = custo em R$, preco_brl = venda em R$.
+  // Preço em $U: AUTO = preco_brl × cotação do dia (tabela cotacoes); FIXO = preco_uyu digitado.
+  margem               Float?
+  preco_modo           String       @default("AUTO") @db.VarChar(10)
+  preco_uyu            Float?
+  precificado_em       DateTime?
+  // Catálogo gráfico: ordem de "Más vendidos" (mais vendido na Printi + nº de avaliações) e a
+  // quantidade mínima do preço "Desde" no cartão do produto
+  popularidade         Int          @default(0)
+  qtd_minima           Int?
+
+  category             categories?  @relation("PecaCategory", fields: [category_id], references: [id], onDelete: SetNull)
+  principal            pecas?   @relation("PecaVariantes", fields: [duplicado_de], references: [sku], onDelete: SetNull)
+  variantes            pecas[]  @relation("PecaVariantes")
+  images               pecas_img[]
+  aplicacoes           pecas_aplicacao[]
+  similares            pecas_similar[]
+  fichas_tecnicas      pecas_ficha_tecnica[]
+}
+
+model pecas_img {
+  id         Int      @id @default(autoincrement())
+  image_path String
+  image_type String   @default("thumb")
+  sku        String
+  sort_order Int      @default(99)
+  created_at DateTime @default(now())
+
+  product    pecas @relation(fields: [sku], references: [sku], onDelete: Cascade)
+  @@unique([sku, image_path])
+}
+
+model pecas_aplicacao {
+  id         Int      @id @default(autoincrement())
+  sku        String
+  montadora  String
+  veiculo    String
+  ano        String?
+  motor      String?
+  
+  product    pecas @relation(fields: [sku], references: [sku], onDelete: Cascade)
+  @@index([montadora, veiculo])
+}
+
+model pecas_similar {
+  id              Int      @id @default(autoincrement())
+  sku             String
+  codigo_similar  String
+  marca_similar   String
+  
+  product         pecas @relation(fields: [sku], references: [sku], onDelete: Cascade)
+}
+
+model pecas_ficha_tecnica {
+  id         Int      @id @default(autoincrement())
+  sku        String
+  chave      String
+  valor      String   @db.Text
+  
+  product    pecas @relation(fields: [sku], references: [sku], onDelete: Cascade)
+}
+
+model homepage_blocks {
+  id         Int      @id @default(autoincrement())
+  type       String
+  active     Boolean  @default(true)
+  position   Int      @default(0)
+  title      String?
+  config     String?  @db.Text
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model users {
+  id            Int      @id @default(autoincrement())
+  nome_completo String
+  email         String   @unique
+  senha_hash    String
+  telefone      String?
+  endereco      String?  @db.Text
+  cidade        String?
+  ponto_referencia String? @db.Text
+  numero_casa   String?
+  cep           String?
+  pais          String?  @default("Uruguai")
+  role          String   @default("USER")
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+  // Login com Google e perfil do cliente
+  google_id     String?  @unique @db.VarChar(64)
+  avatar_url    String?  @db.Text
+  departamento  String?  @db.VarChar(40)
+  ultimo_login  DateTime?
+  // E-mails de marketing: o cliente pode sair pelo link "darse de baja" de cada e-mail
+  recebe_emails Boolean  @default(true)
+  // Cupom único de boas-vindas (pop-up "Entrá y ganá"): o cliente cita no WhatsApp; o admin marca como usado
+  cupom          String?   @unique @db.VarChar(20)
+  cupom_usado_em DateTime?
+
+  downloads     catalogos_downloads[]
+  carrinhos     carrinhos[]
+  links_pagamento links_pagamento[]
+}
+
+// Catálogos e manuais em PDF para mecânicos (página /catalogos). Arquivos em <uploads>/catalogos.
+model catalogos {
+  id          Int      @id @default(autoincrement())
+  titulo      String   @db.VarChar(200)
+  marca       String?  @db.VarChar(60)
+  tipo        String   @default("Catálogo de piezas") @db.VarChar(60)
+  descricao   String?  @db.Text
+  arquivo     String   @db.VarChar(255) // caminho relativo dentro de <uploads>/catalogos
+  tamanho     BigInt   @default(0)
+  idioma      String?  @db.VarChar(20)
+  ativo       Boolean  @default(false) // só aparece no site quando publicado
+  publicado_em DateTime? // quando foi publicado (automação "Catálogo novo")
+  exige_login Boolean  @default(true)
+  downloads   Int      @default(0)
+  ordem       Int      @default(0)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  registros   catalogos_downloads[]
+}
+
+model catalogos_downloads {
+  id          Int       @id @default(autoincrement())
+  catalogo_id Int
+  user_id     Int?
+  created_at  DateTime  @default(now())
+
+  catalogo    catalogos @relation(fields: [catalogo_id], references: [id], onDelete: Cascade)
+  user        users?    @relation(fields: [user_id], references: [id], onDelete: SetNull)
+
+  @@index([catalogo_id])
+  @@index([user_id])
+}
+
+// Carrinhos (lista de cotação) salvos no servidor a cada mudança, para o painel de vendas.
+// Um visitante tem no máximo um carrinho ABERTO; ao pedir preço pelo WhatsApp vira ENVIADO.
+model carrinhos {
+  id            Int       @id @default(autoincrement())
+  visitante_id  String    @db.VarChar(64)
+  user_id       Int?
+  itens         String    @db.Text // JSON: [{sku, codigo, name, nameEs, image, quantity}]
+  qtd_itens     Int       @default(0)
+  status        String    @default("ABERTO") @db.VarChar(20) // ABERTO, ENVIADO
+  etapa         String    @default("NOVO") @db.VarChar(20) // NOVO, CONTATADO, NEGOCIANDO, GANHO, PERDIDO
+  nota          String?   @db.Text
+  valor_fechado Float?
+  contatos      Int       @default(0)
+  contatado_em  DateTime?
+  enviado_em    DateTime?
+  // Cookies do Meta (_fbp/_fbc) do navegador que montou o carrinho: a venda fechada vai
+  // para a API de Conversões ligada ao clique no anúncio. capi_compra_em evita mandar duas vezes.
+  fbp           String?   @db.VarChar(255)
+  fbc           String?   @db.VarChar(255)
+  capi_compra_em DateTime?
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+
+  user          users?    @relation(fields: [user_id], references: [id], onDelete: SetNull)
+
+  @@index([visitante_id])
+  @@index([user_id])
+  @@index([updated_at])
+}
+
+// Campanhas de e-mail (Resend). O conteúdo é o JSON do editor; o HTML é gerado no envio.
+model email_campanhas {
+  id         Int       @id @default(autoincrement())
+  nome       String    @db.VarChar(150)
+  assunto    String    @db.VarChar(200)
+  preheader  String?   @db.VarChar(200)
+  conteudo   String    @db.LongText
+  publico    String    @db.Text
+  status     String    @default("RASCUNHO") @db.VarChar(20) // RASCUNHO, AGENDADA, ENVIANDO, ENVIADA, ERRO
+  total      Int       @default(0)
+  enviados   Int       @default(0)
+  falhas     Int       @default(0)
+  erro       String?   @db.Text
+  enviado_em DateTime?
+  // Envio agendado (status AGENDADA): o agendador dispara sozinho nessa hora
+  agendado_para DateTime?
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+
+  envios     email_envios[]
+}
+
+// Cada e-mail enviado. O status é atualizado pelo webhook do Resend (entregue, aberto, clicado...).
+model email_envios {
+  id          Int       @id @default(autoincrement())
+  campanha_id Int?
+  automacao_id Int?
+  // Automações: evita mandar o mesmo e-mail duas vezes (ex.: "carrinho_baixou:SKU:850")
+  chave       String?   @db.VarChar(150)
+  user_id     Int?
+  email       String    @db.VarChar(191)
+  tipo        String    @default("CAMPANHA") @db.VarChar(20) // CAMPANHA, CARRINHO, AUTOMACAO, TESTE
+  status      String    @default("ENVIADO") @db.VarChar(20) // ENVIADO, ENTREGUE, ABERTO, CLICADO, REBOTADO, QUEIXA, FALHA
+  resend_id   String?   @db.VarChar(64)
+  erro        String?   @db.Text
+  aberto_em   DateTime?
+  clicado_em  DateTime?
+  produtos    String?   @db.Text // JSON: SKUs que foram no e-mail (automação de peças vistas)
+  cupom       String?   @db.VarChar(40) // cupom exclusivo criado para este envio
+  created_at  DateTime  @default(now())
+
+  campanha    email_campanhas? @relation(fields: [campanha_id], references: [id], onDelete: Cascade)
+  automacao   email_automacoes? @relation(fields: [automacao_id], references: [id], onDelete: Cascade)
+
+  @@index([campanha_id])
+  @@index([automacao_id, user_id])
+  @@index([user_id])
+  @@index([resend_id])
+}
+
+// Cotação do dia (ex.: BRL_UYU = quantos pesos uruguaios vale 1 real), buscada automaticamente.
+model cotacoes {
+  id         Int      @id @default(autoincrement())
+  par        String   @db.VarChar(10)
+  valor      Float
+  fonte      String   @db.VarChar(80)
+  created_at DateTime @default(now())
+
+  @@index([par, created_at])
+}
+
+// Configurações da loja editáveis no admin (margem padrão, arredondamento, mostrar preços...)
+model configuracoes {
+  chave      String   @id @db.VarChar(60)
+  valor      String   @db.Text
+  updated_at DateTime @updatedAt
+}
+
+// Automações de e-mail (Admin → E-mail marketing → Automações): boas-vindas, cupom, promoção,
+// preço baixou, carrinho baixou, carrinho abandonado, cliente inativo. Rodam sozinhas a cada 10 min.
+model email_automacoes {
+  id          Int       @id @default(autoincrement())
+  tipo        String    @db.VarChar(30)
+  nome        String    @db.VarChar(150)
+  ativo       Boolean   @default(false)
+  ativado_em  DateTime? // boas-vindas: só para quem se cadastrou depois de ativar
+  assunto     String    @db.VarChar(200)
+  preheader   String?   @db.VarChar(200)
+  conteudo    String    @db.LongText // JSON do editor (ConteudoEmail)
+  publico     String    @db.Text // JSON (Publico): limita quem pode receber
+  config      String    @db.Text // JSON com as opções do gatilho (dias, horas, cupom...)
+  cursor      Int       @default(0) // último produto_eventos.id já processado
+  enviados    Int       @default(0)
+  ultimo_erro String?   @db.Text
+  rodou_em    DateTime?
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+
+  envios      email_envios[]
+}
+
+// Último preço visto de cada peça precificada: comparando com o atual, o sistema descobre
+// quando uma peça entrou em promoção ou baixou de preço (seja qual for a tela que mudou o preço).
+model produto_preco_snapshot {
+  sku        String   @id @db.VarChar(191)
+  preco_brl  Float // preço efetivo de venda em R$ (promoção, quando houver)
+  promocao   Boolean  @default(false)
+  updated_at DateTime @updatedAt
+}
+
+model produto_eventos {
+  id         Int      @id @default(autoincrement())
+  sku        String   @db.VarChar(191)
+  tipo       String   @db.VarChar(20) // PROMOCAO, BAIXOU
+  de_brl     Float
+  para_brl   Float
+  created_at DateTime @default(now())
+
+  @@index([created_at])
+}
+
+// Login rápido por código de 6 dígitos enviado por e-mail (pop-up "Entrá y ganá").
+// Guarda só o hash do código; vale 10 minutos e aceita até 5 tentativas.
+model login_codigos {
+  id          Int      @id @default(autoincrement())
+  email       String   @db.VarChar(191)
+  codigo_hash String   @db.VarChar(64)
+  tentativas  Int      @default(0)
+  usado       Boolean  @default(false)
+  expira_em   DateTime
+  created_at  DateTime @default(now())
+
+  @@index([email])
+}
+
+// Eventos enviados às plataformas de anúncios pelo servidor (Meta Conversions API, GA4).
+// Serve para conferir em Marketing → Integrações se está chegando e por que falhou.
+model marketing_eventos {
+  id         Int      @id @default(autoincrement())
+  plataforma String   @db.VarChar(20) // META, GA4
+  evento     String   @db.VarChar(40) // Lead, CompleteRegistration, Purchase...
+  event_id   String?  @db.VarChar(100)
+  ok         Boolean  @default(false)
+  teste      Boolean  @default(false)
+  detalhe    String?  @db.Text
+  created_at DateTime @default(now())
+
+  @@index([created_at])
+}
+
+// Pesquisa de preços na web pelo código da peça (Admin → Produtos → Pesquisa de preços).
+// Cada oferta encontrada (loja, preço, link) fica aqui; o resumo por peça em precos_resumo.
+model precos_ofertas {
+  id         Int      @id @default(autoincrement())
+  sku        String   @db.VarChar(191)
+  fonte      String   @db.VarChar(20) // SERPAPI, MERCADOLIVRE
+  pais       String   @db.VarChar(5) // BR, UY
+  loja       String?  @db.VarChar(150)
+  titulo     String   @db.VarChar(400)
+  preco      Float
+  moeda      String   @db.VarChar(5) // BRL, UYU, USD
+  preco_brl  Float? // convertido para R$ (base dos preços da loja)
+  relevante  Boolean  @default(true) // o título tem o código da peça
+  ignorar    Boolean  @default(false) // o admin tirou da conta
+  link       String?  @db.Text
+  created_at DateTime @default(now())
+
+  @@index([sku])
+}
+
+model precos_resumo {
+  sku           String   @id @db.VarChar(191)
+  achados       Int      @default(0)
+  menor_brl     Float?
+  mediana_brl   Float?
+  maior_brl     Float?
+  erro          String?  @db.Text
+  pesquisado_em DateTime @default(now())
+  aplicado_em   DateTime?
+}
+
+// Links de pagamento (Admin → Pagamentos). A equipe fecha peças, preço e frete no WhatsApp, gera o
+// link e o cliente paga logado pela dLocal (Uruguai: tarjeta, Abitab, Redpagos; Brasil: cartão e
+// PIX). A compra fica na conta do cliente. Valores em centavos.
+model links_pagamento {
+  id            Int       @id @default(autoincrement())
+  codigo        String    @unique @db.VarChar(32)
+  pais          String    @db.VarChar(2) // UY, BR
+  moeda         String    @db.VarChar(3) // UYU, BRL
+  itens         String    @db.Text // JSON: [{sku, codigo, nome, quantidade, preco}] (preço em centavos)
+  subtotal      Int
+  frete         Int       @default(0)
+  frete_modo    String    @default("COBRADO") @db.VarChar(20) // COBRADO (no total), GRATIS, NA_CHEGADA (comprador paga ao receber)
+  cupom         String?   @db.VarChar(40) // código do cupom usado (o desconto já está em "desconto")
+  desconto      Int       @default(0)
+  total         Int
+  metodos       String    @db.VarChar(60) // CARTAO,PIX,ABITAB,REDPAGOS
+  descricao     String?   @db.VarChar(200)
+  nota_cliente  String?   @db.Text
+  nota_interna  String?   @db.Text
+  status        String    @default("ABERTO") @db.VarChar(20) // ABERTO, PAGO, CANCELADO
+  email_cliente String?   @db.VarChar(191) // preenchido: só essa conta pode pagar
+  user_id       Int? // o cliente indicado ou quem pagou
+  carrinho_id   Int?
+  expira_em     DateTime?
+  pago_em       DateTime?
+  criado_por    Int?
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+
+  user       users?       @relation(fields: [user_id], references: [id], onDelete: SetNull)
+  pagamentos pagamentos[]
+
+  @@index([status, created_at])
+  @@index([user_id])
+  @@index([carrinho_id])
+}
+
+// Cada tentativa de pagamento de um link. O documento (CI/RUT/CPF) nunca é guardado inteiro.
+model pagamentos {
+  id             Int       @id @default(autoincrement())
+  link_id        Int
+  user_id        Int?
+  metodo         String    @db.VarChar(20) // CARTAO, PIX, ABITAB, REDPAGOS (dLocal), STRIPE
+  provedor       String    @default("dlocal") @db.VarChar(10) // dlocal | stripe
+  order_id       String    @unique @db.VarChar(64)
+  dlocal_id      String?   @unique @db.VarChar(100) // id no provedor (dLocal: pagamento; Stripe: sessão cs_...)
+  status         String    @default("CRIANDO") @db.VarChar(20) // CRIANDO, PENDENTE, PAGO, AUTORIZADO, RECUSADO, CANCELADO, ERRO
+  status_code    String?   @db.VarChar(8)
+  status_detalhe String?   @db.VarChar(300)
+  valor          Int
+  moeda          String    @db.VarChar(3)
+  documento      String?   @db.VarChar(24) // mascarado
+  ticket         String?   @db.Text // JSON: código PIX / número Abitab-Redpagos, imagem, vencimento
+  redirect_url   String?   @db.Text // 3D Secure
+  bandeira       String?   @db.VarChar(30)
+  final_cartao   String?   @db.VarChar(4)
+  payload        String?   @db.LongText // respostas e avisos da dLocal, sem documento
+  duplicado      Boolean   @default(false) // pago com o link já pago: reembolsar
+  pago_em        DateTime?
+  expira_em      DateTime?
+  conferido_em   DateTime?
+  created_at     DateTime  @default(now())
+  updated_at     DateTime  @updatedAt
+
+  link links_pagamento @relation(fields: [link_id], references: [id], onDelete: Cascade)
+
+  @@index([link_id])
+  @@index([status, updated_at])
+  @@index([user_id])
+}
+
+// Linha do tempo de cada link (criado, tentativa, aviso da dLocal, pago, cancelado…)
+model pagamento_eventos {
+  id           Int      @id @default(autoincrement())
+  link_id      Int
+  pagamento_id Int?
+  tipo         String   @db.VarChar(30)
+  detalhe      String?  @db.Text
+  created_at   DateTime @default(now())
+
+  @@index([link_id])
+}
+
+// Cada aviso (webhook) recebido da dLocal, sem dados pessoais
+model dlocal_avisos {
+  id            Int      @id @default(autoincrement())
+  tipo          String   @db.VarChar(20) // pagamento, reembolso, contestacao, stripe
+  dlocal_id     String?  @db.VarChar(100) // id do pagamento (dLocal) ou da sessão (Stripe)
+  status        String?  @db.VarChar(20)
+  assinatura_ok Boolean  @default(false)
+  processado    Boolean  @default(false)
+  erro          String?  @db.Text
+  created_at    DateTime @default(now())
+
+  @@index([created_at])
+  @@index([dlocal_id])
+}
+
+// Search Console (Admin → Posições no Google): histórico diário importado pela API (só leitura).
+// pais = código do Google (ury, bra…) ou "*" para o total. Posição média = pos_soma / impressoes.
+model gsc_dia {
+  dia        String @db.VarChar(10)
+  pais       String @db.VarChar(3)
+  cliques    Int    @default(0)
+  impressoes Int    @default(0)
+  pos_soma   Float  @default(0)
+
+  @@id([dia, pais])
+}
+
+model gsc_consulta {
+  id         Int    @id @default(autoincrement())
+  dia        String @db.VarChar(10)
+  pais       String @db.VarChar(3)
+  consulta   String @db.VarChar(400)
+  cliques    Int    @default(0)
+  impressoes Int    @default(0)
+  pos_soma   Float  @default(0)
+
+  @@index([dia])
+}
+
+model gsc_pagina {
+  id         Int    @id @default(autoincrement())
+  dia        String @db.VarChar(10)
+  pais       String @db.VarChar(3)
+  pagina     String @db.VarChar(600)
+  cliques    Int    @default(0)
+  impressoes Int    @default(0)
+  pos_soma   Float  @default(0)
+
+  @@index([dia])
+}
+
+// Central de Anúncios (Admin → Central de Anúncios): campanhas do Google Ads e do Meta, números
+// por dia (importados pela API) e o registro de cada alteração feita pelo painel.
+model ads_campanha {
+  plataforma       String   @db.VarChar(10) // GOOGLE, META
+  id_externo       String   @db.VarChar(40)
+  nome             String   @db.VarChar(300)
+  status           String   @db.VarChar(20) // ATIVA, PAUSADA, REMOVIDA, OUTRO
+  status_origem    String?  @db.VarChar(40)
+  orcamento_diario Float? // na moeda da conta; null = orçamento nos conjuntos (Meta) ou vitalício
+  orcamento_ref    String?  @db.VarChar(200) // Google: resource do orçamento
+  orcamento_compartilhado Boolean @default(false)
+  objetivo         String?  @db.VarChar(60)
+  moeda            String   @db.VarChar(3)
+  atualizado_em    DateTime @updatedAt
+
+  @@id([plataforma, id_externo])
+}
+
+model ads_dia {
+  plataforma String @db.VarChar(10)
+  id_externo String @db.VarChar(40)
+  dia        String @db.VarChar(10)
+  gasto      Float  @default(0) // moeda da conta
+  impressoes Int    @default(0)
+  cliques    Int    @default(0)
+  conversoes Float  @default(0) // compras contadas pela plataforma
+  valor_conv Float  @default(0)
+  leads      Float  @default(0) // leads / conversas iniciadas contados pela plataforma
+
+  @@id([plataforma, id_externo, dia])
+  @@index([dia])
+}
+
+model ads_acao {
+  id         Int      @id @default(autoincrement())
+  plataforma String   @db.VarChar(10)
+  id_externo String   @db.VarChar(40)
+  nome       String   @db.VarChar(300)
+  acao       String   @db.VarChar(20) // PAUSAR, ATIVAR, ORCAMENTO
+  de         String?  @db.VarChar(60)
+  para       String?  @db.VarChar(60)
+  admin_id   Int?
+  ok         Boolean  @default(false)
+  erro       String?  @db.Text
+  created_at DateTime @default(now())
+
+  @@index([created_at])
+}
+
+// Campanhas do e-commerce (Admin → Campanhas): Black Friday e outras. Fases: antes de pre_inicio
+// nada aparece; de pre_inicio a inicio é a PRÉ (contagem regressiva, descontos da pré); de inicio a
+// fim é a campanha (BLACK). Uma campanha ativa por vez.
+model campanhas {
+  id         Int      @id @default(autoincrement())
+  nome       String   @db.VarChar(120)
+  tipo       String   @default("BLACK_FRIDAY") @db.VarChar(20)
+  ativa      Boolean  @default(false)
+  pre_inicio DateTime
+  inicio     DateTime
+  fim        DateTime
+  tema       String   @default("black") @db.VarChar(20) // black (site em preto e dourado) | padrao
+  config     String?  @db.Text // JSON: textos es/pt, selo, frases da barra, opções
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  regras campanha_regras[]
+  cupons cupons[]
+}
+
+// Desconto da campanha: em tudo, numa categoria, numa marca ou numa peça (a peça vale mais)
+model campanha_regras {
+  id          Int     @id @default(autoincrement())
+  campanha_id Int
+  tipo        String  @db.VarChar(12) // TUDO, CATEGORIA, MARCA, ITEM
+  alvo        String  @default("") @db.VarChar(191)
+  pct         Float
+  fase        String  @default("BLACK") @db.VarChar(10) // PRE, BLACK, AMBAS
+  destaque    Boolean @default(false) // vai para a vitrine de ofertas da home e da página da campanha
+
+  campanha campanhas @relation(fields: [campanha_id], references: [id], onDelete: Cascade)
+
+  @@index([campanha_id])
+}
+
+// Cupons (página /cupones e links de pagamento). "revelar_em": antes disso aparece como mistério.
+model cupons {
+  id                 Int       @id @default(autoincrement())
+  codigo             String    @unique @db.VarChar(40)
+  campanha_id        Int?
+  tipo               String    @db.VarChar(12) // PERCENT, FIXO, FRETE
+  valor              Float     @default(0) // % ou valor na moeda
+  moeda              String    @default("UYU") @db.VarChar(3)
+  minimo             Float     @default(0) // compra mínima na moeda
+  descricao          String?   @db.VarChar(300)
+  descricao_pt       String?   @db.VarChar(300)
+  inicio             DateTime?
+  fim                DateTime?
+  revelar_em         DateTime?
+  max_usos           Int       @default(0) // 0 = sem limite
+  usos               Int       @default(0)
+  por_cliente        Int       @default(1) // 0 = sem limite
+  so_primeira_compra Boolean   @default(false)
+  publico            Boolean   @default(true) // aparece na página de cupons
+  ativo              Boolean   @default(true)
+  created_at         DateTime  @default(now())
+  updated_at         DateTime  @updatedAt
+
+  campanha campanhas? @relation(fields: [campanha_id], references: [id], onDelete: SetNull)
+
+  @@index([campanha_id])
+}
+
+// Cada clique num link de e-mail (webhook do Resend): qual link, de qual envio/campanha/automação
+// e, quando o link é de um anúncio, qual anúncio. Base da análise de cliques e do funil.
+model email_cliques {
+  id           Int      @id @default(autoincrement())
+  envio_id     Int
+  campanha_id  Int?
+  automacao_id Int?
+  anuncio_id   Int?
+  url          String   @db.VarChar(1000)
+  dispositivo  String?  @db.VarChar(20)
+  created_at   DateTime @default(now())
+
+  @@index([created_at])
+  @@index([campanha_id])
+  @@index([automacao_id])
+  @@index([anuncio_id])
+  @@index([envio_id])
+}
+
+// Anúncios por e-mail (Admin → E-mail marketing → Anúncios): banner/oferta que entra sozinho no fim
+// das campanhas e/ou automações enquanto estiver ativo e dentro do período. Rodízio por peso.
+model email_anuncios {
+  id         Int       @id @default(autoincrement())
+  nome       String    @db.VarChar(150)
+  titulo     String    @db.VarChar(200)
+  texto      String?   @db.Text
+  imagem     String?   @db.VarChar(500)
+  link       String    @db.VarChar(500)
+  botao      String?   @db.VarChar(80)
+  onde       String    @default("TODOS") @db.VarChar(20) // TODOS, CAMPANHAS, AUTOMACOES
+  peso       Int       @default(1)
+  ativo      Boolean   @default(false)
+  inicio     DateTime?
+  fim        DateTime?
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+}
+
+// Cada e-mail que levou um anúncio (exibição). Aberturas do anúncio = e-mails abertos daqui.
+model email_anuncio_exibicoes {
+  id         Int      @id @default(autoincrement())
+  anuncio_id Int
+  resend_id  String?  @db.VarChar(64)
+  user_id    Int?
+  origem     String   @db.VarChar(20) // CAMPANHA, AUTOMACAO
+  created_at DateTime @default(now())
+
+  @@index([anuncio_id, created_at])
+  @@index([resend_id])
+}
+
+// Publicações no Instagram feitas pelo painel (Admin → Instagram): post, carrossel, story ou Reels,
+// publicadas na hora ou agendadas (o agendador publica sozinho). Métricas atualizadas a cada 6 h.
+model instagram_posts {
+  id            Int       @id @default(autoincrement())
+  tipo          String    @db.VarChar(20) // FEED, CARROSSEL, STORY, REELS
+  legenda       String?   @db.Text
+  comentario    String?   @db.Text // primeiro comentário (ex.: hashtags)
+  midias        String    @db.Text // JSON: [{ path, tipo: "IMAGE" | "VIDEO" }]
+  status        String    @default("RASCUNHO") @db.VarChar(20) // RASCUNHO, AGENDADO, PUBLICANDO, PUBLICADO, ERRO
+  agendado_para DateTime?
+  publicado_em  DateTime?
+  ig_media_id   String?   @db.VarChar(64)
+  permalink     String?   @db.VarChar(300)
+  erro          String?   @db.Text
+  metricas      String?   @db.Text // JSON: curtidas, comentarios, alcance, salvos, compartilhamentos, views
+  metricas_em   DateTime?
+  // Também publicar na página do Facebook (Conectar Facebook): id do post lá
+  facebook      Boolean   @default(false)
+  fb_post_id    String?   @db.VarChar(80)
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+
+  @@index([status, agendado_para])
+}
+
+// Leads dos anúncios do Meta (Admin → Meta Ads → Leads): formulários de anúncio (Lead Ads) e
+// contatos que chegaram ao site por anúncio (WhatsApp, cotação, cadastro). O admin organiza por
+// etapa (NOVO, CONTATADO, NEGOCIANDO, GANHO, PERDIDO), com anotação e valor.
+model leads {
+  id         Int      @id @default(autoincrement())
+  origem     String   @db.VarChar(20) // FORMULARIO, WHATSAPP, COTACAO, CADASTRO
+  ref        String   @db.VarChar(120)
+  nome       String?  @db.VarChar(191)
+  email      String?  @db.VarChar(191)
+  telefone   String?  @db.VarChar(60)
+  cidade     String?  @db.VarChar(191)
+  detalhe    String?  @db.Text // campos do formulário / peças / página
+  campanha   String?  @db.VarChar(300)
+  anuncio    String?  @db.VarChar(300)
+  user_id    Int?
+  status     String   @default("NOVO") @db.VarChar(20)
+  nota       String?  @db.Text
+  valor      Float?
+  quando     DateTime
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@unique([origem, ref])
+  @@index([status, quando])
+  @@index([quando])
+}
+
+// Vendas lançadas pelo admin (balcão/WhatsApp): etiqueta da transportadora com QR para avaliar.
+// O QR leva a /avaliar/<codigo>; avaliou → cupom único (cupom) de 15% para a próxima compra.
+model vendas {
+  id               Int       @id @default(autoincrement())
+  codigo           String    @unique @db.VarChar(24)
+  cliente_nome     String    @db.VarChar(160)
+  cliente_email    String?   @db.VarChar(191)
+  cliente_telefone String?   @db.VarChar(40)
+  cliente_doc      String?   @db.VarChar(40)
+  endereco         String?   @db.Text
+  cidade           String?   @db.VarChar(120)
+  departamento     String?   @db.VarChar(80)
+  cep              String?   @db.VarChar(20)
+  pais             String    @default("UY") @db.VarChar(2)
+  user_id          Int?
+  itens            String    @db.Text // JSON: [{sku, codigo, nome, qtd, valor}]
+  total            Float     @default(0)
+  moeda            String    @default("UYU") @db.VarChar(3)
+  transportadora   String?   @db.VarChar(80)
+  rastreio         String?   @db.VarChar(80)
+  observacao       String?   @db.Text
+  status           String    @default("ABERTA") @db.VarChar(20) // ABERTA, ENVIADA, ENTREGUE, CANCELADA
+  cupom            String?   @db.VarChar(40)
+  avaliada_em      DateTime?
+  // Financeiro (valores na moeda da venda). Link pago vira venda sozinho (origem LINK).
+  origem           String    @default("MANUAL") @db.VarChar(10) // MANUAL, LINK
+  link_id          Int?      @unique
+  canal            String?   @db.VarChar(20) // WHATSAPP, SITE, LINK, BALCAO, TELEFONE, MERCADOLIVRE, OUTRO
+  metodo           String?   @db.VarChar(20) // STRIPE, CARTAO, PIX, ABITAB, REDPAGOS, TRANSFERENCIA, DINHEIRO, OUTRO
+  frete_cobrado    Float     @default(0)
+  desconto         Float     @default(0)
+  taxa_pagamento   Float?
+  frete_custo      Float? // frete e embalagem pagos pela loja
+  cotacao_brl      Float? // R$ 1 = $U x no dia da venda (total em reais)
+  end_numero       String?   @db.VarChar(20) // Brasil: número e bairro separados (nota fiscal)
+  end_bairro       String?   @db.VarChar(80)
+  etapa            String    @default("AGUARDANDO") @db.VarChar(20) // acompanhamento do pedido (pedidos-comum.ts)
+  created_at       DateTime  @default(now())
+  updated_at       DateTime  @updatedAt
+
+  @@index([created_at])
+  @@index([user_id])
+}
+
+// Indique um amigo: cada cliente tem um código (que também é um cupom de primeira compra para o
+// amigo). Quando um link pago usa o código, quem indicou ganha um cupom de prêmio.
+model indicacoes {
+  id         Int      @id @default(autoincrement())
+  user_id    Int      @unique
+  codigo     String   @unique @db.VarChar(40)
+  cliques    Int      @default(0)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model indicacao_premios {
+  id             Int      @id @default(autoincrement())
+  indicacao_id   Int
+  link_id        Int      @unique
+  indicado_email String?  @db.VarChar(191)
+  cupom          String   @db.VarChar(40)
+  created_at     DateTime @default(now())
+
+  @@index([indicacao_id])
+}
+
+// Acompanhamento do pedido: cada troca de etapa feita no admin (e se o cliente foi avisado)
+model venda_etapas {
+  id         Int      @id @default(autoincrement())
+  venda_id   Int
+  etapa      String   @db.VarChar(20)
+  nota       String?  @db.Text
+  email      Boolean  @default(false) // e-mail enviado ao cliente
+  created_at DateTime @default(now())
+
+  @@index([venda_id])
+}
+
+// Sininho do site: avisos para o cliente logado (etapas do pedido etc.)
+model notificacoes {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  titulo     String   @db.VarChar(200)
+  texto      String?  @db.Text
+  link       String?  @db.VarChar(300)
+  lida       Boolean  @default(false)
+  created_at DateTime @default(now())
+
+  @@index([user_id, lida])
+}
+
+// Despesas do Financeiro: fixas (todo mês, de mes até mes_fim) ou de um mês só
+model despesas {
+  id         Int      @id @default(autoincrement())
+  descricao  String   @db.VarChar(160)
+  categoria  String   @default("FIXA") @db.VarChar(20) // FIXA, ANUNCIOS, PESSOAL, IMPOSTOS, OUTRA
+  valor      Float
+  moeda      String   @db.VarChar(3) // UYU (Uruguai) ou BRL (Brasil)
+  mes        String   @db.VarChar(7) // AAAA-MM (início)
+  recorrente Boolean  @default(true)
+  mes_fim    String?  @db.VarChar(7)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([mes])
+}
+
+// Avaliações de produtos (estrelas + comentário). Só aparecem no site depois de aprovadas.
+model avaliacoes {
+  id          Int       @id @default(autoincrement())
+  sku         String    @db.VarChar(64)
+  venda_id    Int?
+  user_id     Int?
+  nome        String    @db.VarChar(120)
+  cidade      String?   @db.VarChar(120)
+  nota        Int
+  comentario  String?   @db.Text
+  idioma      String    @default("es") @db.VarChar(2)
+  status      String    @default("PENDENTE") @db.VarChar(20) // PENDENTE, APROVADA, REJEITADA
+  resposta    String?   @db.Text
+  com_cupom   Boolean   @default(false)
+  verificada  Boolean   @default(false)
+  fotos       String?   @db.Text // JSON: fotos da peça instalada (uploads/avaliacoes/<venda>/...)
+  aprovada_em DateTime?
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+
+  @@index([sku, status])
+  @@index([status, created_at])
+  @@index([venda_id])
+}
+
+// Contato pelo WhatsApp (pop-up): só o celular, sem conta. Cupom de boas-vindas próprio.
+// Criada também por garantirTabelaContatos() (src/lib/contato-whatsapp.server.ts).
+model contatos_whatsapp {
+  id             Int       @id @default(autoincrement())
+  telefone       String    @unique @db.VarChar(20)
+  nome           String?   @db.VarChar(120)
+  cupom          String?   @unique @db.VarChar(20)
+  cupom_usado_em DateTime?
+  idioma         String    @default("es") @db.VarChar(2)
+  motivo         String?   @db.VarChar(20)
+  pagina         String?   @db.VarChar(300)
+  interesse      String?   @db.Text // JSON: códigos das peças / termos buscados
+  visitor_id     String?   @db.VarChar(64)
+  fonte          String?   @db.VarChar(40)
+  utm_campaign   String?   @db.VarChar(150)
+  cidade         String?   @db.VarChar(191)
+  vezes          Int       @default(1)
+  status         String    @default("NOVO") @db.VarChar(20)
+  nota           String?   @db.Text
+  created_at     DateTime  @default(now())
+  updated_at     DateTime  @default(now())
+
+  @@index([visitor_id])
+  @@index([created_at])
+}
+
+// «Avisame cuando baje el precio» (página da peça): WhatsApp ou e-mail. Status: ATIVO, WHATSAPP
+// (baixou, falta avisar pelo WhatsApp), AVISADO, VENCIDO. Criada também por garantirTabelaAvisos().
+model avisos_preco {
+  id              Int       @id @default(autoincrement())
+  sku             String    @db.VarChar(191)
+  telefone        String?   @db.VarChar(20)
+  email           String?   @db.VarChar(191)
+  user_id         Int?
+  idioma          String    @default("es") @db.VarChar(2)
+  preco_ref_brl   Float
+  preco_aviso_brl Float?
+  status          String    @default("ATIVO") @db.VarChar(20)
+  visitor_id      String?   @db.VarChar(64)
+  baixou_em       DateTime?
+  avisado_em      DateTime?
+  created_at      DateTime  @default(now())
+
+  @@index([status])
+  @@index([sku])
+}
+
+// Entrar com Face ID / digital (passkeys, WebAuthn): só a chave pública de cada aparelho.
+// Criada também por garantirTabelaPasskeys() (src/lib/passkey.server.ts).
+model passkeys {
+  id            Int       @id @default(autoincrement())
+  user_id       Int
+  credential_id String    @unique @db.VarChar(255)
+  public_key    String    @db.Text
+  counter       BigInt    @default(0)
+  transports    String?   @db.VarChar(200)
+  aparelho      String?   @db.VarChar(120)
+  sincronizada  Boolean   @default(false)
+  created_at    DateTime  @default(now())
+  usado_em      DateTime?
+
+  @@index([user_id])
+}
+
+// Notas fiscais (NF-e) das vendas do Brasil, emitidas pela Focus NFe (src/lib/fiscal.server.ts)
+model notas_fiscais {
+  id            Int      @id @default(autoincrement())
+  venda_id      Int
+  ref           String   @unique @db.VarChar(60)
+  ambiente      String   @db.VarChar(12) // homologacao (teste) ou producao
+  status        String   @default("PROCESSANDO") @db.VarChar(20) // PROCESSANDO, AUTORIZADA, ERRO, CANCELADA
+  numero        String?  @db.VarChar(20)
+  serie         String?  @db.VarChar(5)
+  chave         String?  @db.VarChar(44)
+  valor         Float    @default(0)
+  destinatario  String?  @db.VarChar(160)
+  danfe         String?  @db.VarChar(400)
+  xml           String?  @db.VarChar(400)
+  mensagem      String?  @db.Text
+  automatica    Boolean  @default(false)
+  email_enviado Boolean  @default(false)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @default(now())
+
+  @@index([venda_id])
+}
+
+// Extrato do banco importado no Admin → Fiscal → Extrato do banco (tabelas criadas também em
+// src/lib/extratos.server.ts, porque a produção não roda db push)
+model extrato_arquivos {
+  id         Int      @id @default(autoincrement())
+  banco      String   @db.VarChar(40)
+  nome       String   @db.VarChar(191)
+  titular    String?  @db.VarChar(160)
+  inicio     String   @db.VarChar(10)
+  fim        String   @db.VarChar(10)
+  movimentos Int      @default(0)
+  entradas   Float    @default(0)
+  saidas     Float    @default(0)
+  conferido  Boolean?
+  created_at DateTime @default(now())
+
+  @@unique([banco, inicio, fim])
+}
+
+model extrato_movimentos {
+  id          Int      @id @default(autoincrement())
+  arquivo_id  Int
+  banco       String   @db.VarChar(40)
+  data        String   @db.VarChar(10)
+  valor       Float
+  tipo        String   @db.VarChar(80)
+  contraparte String   @db.VarChar(160)
+  documento   String?  @db.VarChar(30)
+  descricao   String   @db.Text
+  categoria   String   @default("A_CLASSIFICAR") @db.VarChar(20)
+  manual      Boolean  @default(false)
+  venda_id    Int?
+  nota        String?  @db.VarChar(300)
+  subcategoria String? @db.VarChar(20) // Pessoal: mercado, combustível… (vazio = palpite/regra)
+  hash        String   @unique @db.VarChar(64)
+  created_at  DateTime @default(now())
+
+  @@index([data])
+  @@index([categoria])
+}
+
+model extrato_regras {
+  id         Int      @id @default(autoincrement())
+  chave      String   @db.VarChar(160)
+  sentido    String   @db.VarChar(1)
+  categoria  String   @db.VarChar(20)
+  created_at DateTime @default(now())
+
+  @@unique([chave, sentido])
+}
+
+// Produto gráfico (catálogo Printi): descrição HTML, opções do configurador, combinações com
+// tabela de preço por quantidade (já com a margem), FAQ, vídeos. Fora de `pecas` para a listagem
+// da loja não carregar este JSON. Montado por scripts/catalogo/importar_printi.cjs
+model pecas_detalhes {
+  sku        String   @id @db.VarChar(191)
+  dados      Json
+  updated_at DateTime @updatedAt
+}

@@ -1,0 +1,433 @@
+import type { Product, ProductImage, ListParams } from "./products";
+import { prisma } from "./prisma";
+import { TABELA_LEGADA } from "./linhas";
+import { buscaParaPortugues, sinonimosBusca } from "./pecas-es";
+import { limparCacheCatalogo } from "./busca-catalogo.server";
+import { semCusto } from "./precos.server";
+
+export async function listProducts(params: ListParams) {
+  const linha = TABELA_LEGADA ? params.linha : "AUTOMOTIVA";
+  const {
+    search,
+    categoria,
+    marca,
+    montadora,
+    veiculo,
+    precoMin,
+    precoMax,
+    sort = "nome-asc",
+    page = 1,
+    pageSize = 36,
+    cursor,
+    hasImage,
+    vitrine,
+  } = params;
+
+  // Filtra e ordena em memória (src/lib/busca-catalogo.server.ts) e só busca no banco as peças
+  // da página. Com filtro de preço, a consulta vai direto ao banco (mais abaixo).
+  if (linha === "AUTOMOTIVA" && precoMin == null && precoMax == null) {
+    const { buscarSkus } = await import("./busca-catalogo.server");
+    const skus = await buscarSkus({
+      search,
+      categoria,
+      marca,
+      montadora,
+      veiculo,
+      sort,
+      hasImage,
+      vitrine,
+    });
+    let inicio = 0;
+    if (cursor) {
+      const i = skus.indexOf(cursor);
+      inicio = i === -1 ? skus.length : i + 1;
+    } else if (page > 1) {
+      inicio = (page - 1) * pageSize;
+    }
+    const pagina = skus.slice(inicio, inicio + pageSize);
+    const encontrados = pagina.length
+      ? await prisma.pecas.findMany({
+          where: { sku: { in: pagina } },
+          include: { images: { orderBy: { sort_order: "asc" }, take: 1 } },
+        })
+      : [];
+    const porSku = new Map(encontrados.map((r) => [r.sku, r]));
+    const rows = pagina.map((s) => porSku.get(s)).filter(Boolean);
+    const hasNextPage = inicio + pageSize < skus.length;
+    return {
+      rows: rows.map((r: any) => semCusto(r)) as any,
+      hasNextPage,
+      nextCursor: rows.length ? (rows[rows.length - 1] as any).sku : undefined,
+      total: skus.length,
+    };
+  }
+
+  const where: any = { AND: [] };
+
+  // Versões de uma peça (duplicado_de) aparecem só na página do produto principal.
+  if (linha === "AUTOMOTIVA") {
+    where.AND.push({ duplicado_de: null });
+  }
+
+  if (hasImage) {
+    where.AND.push({
+      imagem_principal: { not: null },
+    });
+    where.AND.push({
+      imagem_principal: { not: "" },
+    });
+    // Ignore placeholder "redeparts" image
+    where.AND.push({
+      imagem_principal: { not: { contains: "redeparts" } },
+    });
+  }
+
+  if (vitrine) {
+    where.AND.push({ category_id: { not: null } });
+  }
+
+  if (search && search.trim()) {
+    const terms = search.trim().split(/\s+/);
+    for (const termo of terms) {
+      // O catálogo está em português: "rodamiento" também procura "ROLAMENTO".
+      const pt = buscaParaPortugues(termo);
+      const variantes = [
+        ...new Set([termo, pt, ...sinonimosBusca(termo)].map((s) => s.toUpperCase())),
+      ];
+      where.AND.push({
+        OR: variantes.flatMap((s) => [
+          { nome: { contains: s } },
+          { sku: { contains: s } },
+          { codigo_fabricante: { contains: s } },
+          // `fabricante` e as versões só existem na tabela pecas
+          ...(linha === "AUTOMOTIVA"
+            ? [
+                { fabricante: { contains: s } },
+                {
+                  variantes: {
+                    some: {
+                      OR: [{ codigo_fabricante: { contains: s } }, { fabricante: { contains: s } }],
+                    },
+                  },
+                },
+              ]
+            : []),
+          { categoria: { contains: s } },
+          { marca: { contains: s } },
+          { descricao: { contains: s } },
+          { veiculos_compativeis: { contains: s } },
+        ]),
+      });
+    }
+  }
+  // Categoria guardada como "Principal > Subcategoria": a principal pega todas as subcategorias
+  const filtroCategoria = (c: string) => ({
+    OR: [{ categoria: c }, { categoria: { startsWith: `${c} > ` } }],
+  });
+  if (categoria) {
+    if (Array.isArray(categoria) && categoria.length > 0) {
+      where.AND.push({ OR: categoria.map(filtroCategoria) });
+    } else if (typeof categoria === "string") {
+      where.AND.push(filtroCategoria(categoria));
+    }
+  }
+
+  if (marca) {
+    if (Array.isArray(marca) && marca.length > 0) {
+      where.AND.push({ marca: { in: marca } });
+    } else if (typeof marca === "string") {
+      where.AND.push({ marca: marca });
+    }
+  }
+
+  if (montadora) {
+    const montadorasArr = Array.isArray(montadora) ? montadora : [montadora];
+    if (montadorasArr.length > 0) {
+      if (linha === "AUTOMOTIVA") {
+        where.AND.push({
+          OR: montadorasArr.map((m) => ({
+            OR: [
+              { nome: { contains: m } },
+              { descricao: { contains: m } },
+              { categoria: { contains: m } },
+              { marca: { contains: m } },
+            ],
+          })),
+        });
+      } else {
+        where.AND.push({
+          OR: montadorasArr.map((m) => ({
+            OR: [
+              { nome: { contains: m } },
+              { descricao: { contains: m } },
+              { categoria: { contains: m } },
+              { marca: { contains: m } },
+              { aplicacoes: { some: { montadora: m } } },
+            ],
+          })),
+        });
+      }
+    }
+  }
+  if (typeof precoMin === "number") {
+    where.AND.push({ preco_brl: { gte: precoMin } });
+  }
+  if (typeof precoMax === "number") {
+    where.AND.push({ preco_brl: { lte: precoMax } });
+  }
+
+  if (where.AND.length === 0) {
+    delete where.AND;
+  }
+
+  const sortMap: Record<string, any> = {
+    "nome-asc": [{ nome: "asc" }, { sku: "asc" }],
+    "nome-desc": [{ nome: "desc" }, { sku: "asc" }],
+    popular: [{ popularidade: "desc" }, { nome: "asc" }],
+    "preco-asc": { preco_brl: "asc" },
+    "preco-desc": { preco_brl: "desc" },
+    sku: { sku: "asc" },
+    "created-desc": [{ created_at: "desc" }, { sku: "asc" }],
+  };
+
+  const orderBy = sortMap[sort] || { sku: "asc" };
+  const take = pageSize + 1; // Pega 1 a mais para saber se tem próxima página
+
+  const queryOptions: any = {
+    where,
+    orderBy,
+    take,
+    include: {
+      images: { orderBy: { sort_order: "asc" }, take: 1 },
+    },
+  };
+
+  if (cursor) {
+    queryOptions.cursor = { sku: cursor };
+    queryOptions.skip = 1; // Pula o próprio cursor
+  } else if (page > 1) {
+    queryOptions.skip = (page - 1) * pageSize; // Fallback para paginação clássica
+  }
+
+  const tabela: any = prisma.pecas;
+  const [data, total] = await Promise.all([
+    tabela.findMany(queryOptions) as Promise<Product[]>,
+    params.contar ? (tabela.count({ where }) as Promise<number>) : Promise.resolve(-1),
+  ]);
+
+  const hasNextPage = data.length > pageSize;
+  let nextCursor: string | undefined = undefined;
+
+  if (hasNextPage) {
+    data.pop(); // Remove o último item extra
+  }
+
+  if (data.length > 0) {
+    nextCursor = data[data.length - 1].sku;
+  }
+
+  return {
+    rows: (data as any[]).map((r) => semCusto(r)) as any,
+    hasNextPage,
+    nextCursor,
+    // Só conta quando pedido (admin): na loja o count() em cada rolagem pesaria no banco.
+    total,
+  };
+}
+
+export async function getProduct(sku: string) {
+  const data = await prisma.pecas.findUnique({
+    where: { sku },
+    include: {
+      aplicacoes: true,
+      fichas_tecnicas: true,
+      similares: true,
+      variantes: {
+        select: { sku: true, codigo_fabricante: true, fabricante: true, nome: true },
+        orderBy: { codigo_fabricante: "asc" },
+      },
+    },
+  });
+
+  // Custo e margem nunca saem para o site
+  return (data ? semCusto(data as any) : null) as unknown as Product | null;
+}
+
+export async function getProductImages(sku: string) {
+  const data = await prisma.pecas_img.findMany({
+    where: { sku },
+    orderBy: { sort_order: "asc" },
+  });
+
+  return data as unknown as ProductImage[];
+}
+
+export async function getRelatedProducts(sku: string, category_id: number | null, limit = 8) {
+  if (!category_id) return [];
+  const table: any = prisma.pecas;
+  const data = await table.findMany({
+    where: {
+      category_id,
+      sku: { not: sku },
+      duplicado_de: null,
+    },
+    take: limit,
+  });
+  return (data as any[]).map((r) => semCusto(r)) as unknown as Product[];
+}
+
+import fs from "fs";
+import path from "path";
+
+type FacetCount = { name: string; count: number };
+let facetsCache: Record<
+  string,
+  {
+    data: { categorias: FacetCount[]; marcas: FacetCount[]; montadoras?: FacetCount[] };
+    timestamp: number;
+  }
+> = {};
+
+// Chamado quando categorias mudam no admin, para a loja refletir na hora.
+// Limpa os caches da loja (filtros e índice de busca) depois de mudanças no catálogo
+export function limparCacheFacets() {
+  facetsCache = {};
+  limparCacheCatalogo();
+}
+
+export async function getFacets(linha?: string) {
+  const cacheKey = (TABELA_LEGADA ? linha : "AUTOMOTIVA") || "all";
+  if (facetsCache[cacheKey] && Date.now() - facetsCache[cacheKey].timestamp < 1000 * 60 * 5) {
+    return facetsCache[cacheKey].data;
+  }
+
+  // Contagens vindas do banco (antes, de um facets.json gerado à mão, que
+  // ficava desatualizado ao criar/renomear/excluir categorias no admin). Mesmo critério da
+  // vitrine da loja: só peças principais e com categoria.
+  if (cacheKey === "AUTOMOTIVA") {
+    const where = { duplicado_de: null, category_id: { not: null } };
+    const [cats, marcas] = await Promise.all([
+      prisma.pecas.groupBy({ by: ["categoria"], where, _count: { _all: true } }),
+      prisma.pecas.groupBy({
+        by: ["marca"],
+        where: { ...where, marca: { not: null } },
+        _count: { _all: true },
+      }),
+    ]);
+    const lista = (rows: any[], campo: string) =>
+      rows
+        .filter((r) => r[campo])
+        .map((r) => ({ name: r[campo] as string, count: r._count._all as number }))
+        .sort((a, b) => b.count - a.count);
+    // Filtro da loja pelas categorias principais ("Motor > Pistón" conta em "Motor")
+    const porPrincipal = new Map<string, number>();
+    for (const r of cats as any[]) {
+      if (!r.categoria) continue;
+      const principal = String(r.categoria).split(" > ")[0];
+      porPrincipal.set(principal, (porPrincipal.get(principal) ?? 0) + r._count._all);
+    }
+    const data = {
+      categorias: [...porPrincipal.entries()]
+        .map(([name, count]) => ({ name, count }))
+        .sort((a, b) => b.count - a.count),
+      marcas: lista(marcas, "marca"),
+      montadoras: lista(marcas, "marca"),
+    };
+    facetsCache[cacheKey] = { data, timestamp: Date.now() };
+    return data;
+  }
+
+  try {
+    const facetsPath = path.resolve(process.cwd(), "facets.json");
+    if (fs.existsSync(facetsPath)) {
+      const fileData = JSON.parse(fs.readFileSync(facetsPath, "utf-8"));
+      if (fileData[cacheKey]) {
+        facetsCache[cacheKey] = { data: fileData[cacheKey], timestamp: Date.now() };
+        return fileData[cacheKey];
+      }
+    }
+  } catch (e) {
+    console.error("Erro lendo facets.json", e);
+  }
+
+  // Fallback rápido para não travar o servidor
+  const result = { categorias: [], marcas: [], montadoras: [] };
+  facetsCache[cacheKey] = { data: result, timestamp: Date.now() };
+  return result;
+}
+
+export async function getRelatedCategories(category_id: number | null) {
+  if (!category_id) return [];
+
+  // Buscar a categoria atual
+  const currentCategory = await prisma.categories.findUnique({
+    where: { id: category_id },
+  });
+
+  if (!currentCategory || !currentCategory.parent_id) return [];
+
+  // Buscar outras categorias que tem o mesmo parent (irmãs)
+  const siblings = await prisma.categories.findMany({
+    where: {
+      parent_id: currentCategory.parent_id,
+      id: { not: category_id },
+    },
+    take: 10,
+  });
+
+  return siblings;
+}
+
+// Números do Dashboard do admin, da linha automotiva (antes contava a tabela automotiva
+// e devolvia valores fixos: "200 categorias", estoque = produtos × 10...).
+export async function getStats() {
+  const visiveis = { duplicado_de: null };
+  const semFoto = {
+    OR: [
+      { imagem_principal: null },
+      { imagem_principal: "" },
+      { imagem_principal: { contains: "redeparts" } },
+    ],
+  };
+  const [
+    pecas,
+    semFotoN,
+    semCategoria,
+    marcasConfirmadas,
+    categorias,
+    cotacoesNovas,
+    bannersAtivos,
+  ] = await Promise.all([
+    prisma.pecas.count({ where: visiveis }),
+    prisma.pecas.count({ where: { ...visiveis, ...semFoto } }),
+    prisma.pecas.count({ where: { ...visiveis, category_id: null } }),
+    prisma.pecas.count({
+      where: { ...visiveis, marca_confirmada: true, marca: { not: null } },
+    }),
+    prisma.categories.count({ where: { linha: "AUTOMOTIVA", pecas: { some: {} } } }),
+    prisma.quotes.count({ where: { status: "NOVA" } }),
+    prisma.site_banners.count({ where: { active: true, linha: "AUTOMOTIVA" } }),
+  ]);
+  return {
+    pecas,
+    comFoto: pecas - semFotoN,
+    semCategoria,
+    marcasConfirmadas,
+    categorias,
+    cotacoesNovas,
+    bannersAtivos,
+  };
+}
+
+export async function getPellegrinoStats() {
+  const [totalProducts, totalImages] = await Promise.all([
+    prisma.pecas.count(),
+    prisma.pecas_img.count(),
+  ]);
+  return { totalProducts, totalImages };
+}
+
+export function formatBRL(v: number | null | undefined) {
+  if (v == null) return "—";
+  return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(v);
+}

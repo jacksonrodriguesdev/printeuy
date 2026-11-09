@@ -1,0 +1,199 @@
+import "./lib/error-capture";
+
+import { consumeLastCapturedError } from "./lib/error-capture";
+import { renderErrorPage } from "./lib/error-page";
+import { SITE_URL, DOMINIOS_ALIAS } from "./lib/site";
+import { caminhoPtAntigo } from "./lib/idioma";
+
+// www e domínios antigos -> domínio principal (301), mantendo o caminho
+function redirecionarAlias(request: Request): Response | null {
+  const host = (request.headers.get("x-forwarded-host") || request.headers.get("host") || "")
+    .split(",")[0]
+    .trim()
+    .toLowerCase()
+    .replace(/:\d+$/, "");
+  if (!DOMINIOS_ALIAS.includes(host)) return null;
+  const u = new URL(request.url);
+  return new Response(null, {
+    status: 301,
+    headers: { Location: `${SITE_URL}${u.pathname}${u.search}` },
+  });
+}
+
+// Cabeçalhos de segurança em todas as respostas (páginas, APIs, arquivos):
+// - HSTS: o navegador passa a usar sempre https neste domínio (180 dias; sem subdomínios);
+// - nenhum outro site pode abrir o nosso dentro de uma moldura (golpe de clique escondido);
+// - o navegador não adivinha o tipo do arquivo (um upload não vira script);
+// - links para fora levam só o domínio, não o endereço completo;
+// - câmera, microfone e localização desligados (o site não usa).
+// Pagamentos (dLocal/Stripe) e prévias da Meta são iframes DE outros sites dentro do nosso: seguem
+// funcionando.
+const SEGURANCA: Record<string, string> = {
+  "Strict-Transport-Security": "max-age=15552000",
+  "X-Frame-Options": "SAMEORIGIN",
+  "X-Content-Type-Options": "nosniff",
+  "Referrer-Policy": "strict-origin-when-cross-origin",
+  "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
+};
+function comSeguranca(response: Response): Response {
+  let r = response;
+  for (const [k, v] of Object.entries(SEGURANCA)) {
+    if (r.headers.has(k)) continue;
+    try {
+      r.headers.set(k, v);
+    } catch {
+      // Cabeçalhos imutáveis (ex.: resposta de fetch repassada): copia a resposta
+      r = new Response(r.body, r);
+      r.headers.set(k, v);
+    }
+  }
+  // Moldura: também pela regra moderna (CSP), sem mexer na política que a CDN já envia
+  if (!r.headers.get("content-security-policy")?.includes("frame-ancestors"))
+    r.headers.append("Content-Security-Policy", "frame-ancestors 'self'");
+  return r;
+}
+
+// O site é só em espanhol (Uruguai): qualquer endereço "/pt/..." vai (301) para a página em espanhol
+function redirecionarCaminhoPt(request: Request): Response | null {
+  if (request.method !== "GET" && request.method !== "HEAD") return null;
+  const u = new URL(request.url);
+  const certo = caminhoPtAntigo(u.pathname);
+  if (!certo) return null;
+  return new Response(null, {
+    status: 301,
+    headers: { Location: `${SITE_URL}${certo}${u.search}` },
+  });
+}
+
+// CSRF: pedido que muda dados (POST…) nas funções do servidor e nas APIs só vale vindo das páginas
+// do próprio site. O cookie SameSite=Lax já barra a maioria; isto é a segunda tranca (Fetch Metadata
+// dos navegadores atuais e, sem ela, o cabeçalho Origin). Webhooks (Stripe, dLocal, Resend) ficam
+// em /api/public e não passam por aqui; chamadas sem navegador (sem esses cabeçalhos) seguem.
+function bloquearOutroSite(request: Request): Response | null {
+  if (["GET", "HEAD", "OPTIONS"].includes(request.method)) return null;
+  const u = new URL(request.url);
+  const protegido =
+    u.pathname.startsWith("/_serverFn") ||
+    (u.pathname.startsWith("/api/") && !u.pathname.startsWith("/api/public/"));
+  if (!protegido) return null;
+  const site = request.headers.get("sec-fetch-site");
+  let outro = site === "cross-site" || site === "same-site";
+  if (!site) {
+    const origem = request.headers.get("origin");
+    if (origem && origem !== "null") {
+      const host = (request.headers.get("x-forwarded-host") || request.headers.get("host") || "")
+        .split(",")[0]
+        .trim();
+      try {
+        const h = new URL(origem).host;
+        outro = h !== host && h !== new URL(SITE_URL).host;
+      } catch {
+        outro = true;
+      }
+    }
+  }
+  if (!outro) return null;
+  console.warn("bloqueado (outro site):", request.method, u.pathname, site ?? "origin");
+  return Response.json({ error: "Pedido de outro site bloqueado." }, { status: 403 });
+}
+
+type ServerEntry = {
+  fetch: (request: Request, env: unknown, ctx: unknown) => Promise<Response> | Response;
+};
+
+let serverEntryPromise: Promise<ServerEntry> | undefined;
+
+async function getServerEntry(): Promise<ServerEntry> {
+  if (!serverEntryPromise) {
+    serverEntryPromise = import("@tanstack/react-start/server-entry").then(
+      (m) => (m.default ?? m) as ServerEntry,
+    );
+  }
+  return serverEntryPromise;
+}
+
+// h3 swallows in-handler throws into a normal 500 Response with body
+// {"unhandled":true,"message":"HTTPError"} — try/catch alone never fires for those.
+async function normalizeCatastrophicSsrResponse(response: Response): Promise<Response> {
+  if (response.status < 500) return response;
+  const contentType = response.headers.get("content-type") ?? "";
+  if (!contentType.includes("application/json")) return response;
+
+  const body = await response.clone().text();
+  if (!isH3SwallowedErrorBody(body)) return response;
+
+  console.error(consumeLastCapturedError() ?? new Error(`h3 swallowed SSR error: ${body}`));
+  return new Response(renderErrorPage(), {
+    status: 500,
+    headers: { "content-type": "text/html; charset=utf-8" },
+  });
+}
+
+function isH3SwallowedErrorBody(body: string): boolean {
+  try {
+    const payload = JSON.parse(body) as { unhandled?: unknown; message?: unknown };
+    return payload.unhandled === true && payload.message === "HTTPError";
+  } catch {
+    return false;
+  }
+}
+
+// Automações de e-mail: o agendador começa junto com o primeiro acesso ao servidor
+let agendadorIniciado = false;
+function iniciarAutomacoes() {
+  if (agendadorIniciado) return;
+  agendadorIniciado = true;
+  // Colunas novas das tabelas de e-mail já no primeiro acesso (antes de qualquer tela ler os envios)
+  import("./lib/email.server")
+    .then((m) => m.garantirColunasEmail())
+    .catch((e) => console.error("colunas de e-mail", e));
+  import("./lib/automacoes.server")
+    .then((m) => m.iniciarAgendador())
+    .catch((e) => console.error("automações", e));
+  // Buscador por veículo e índice da loja: calcula já no primeiro acesso (cada um leva alguns
+  // segundos com 100 mil peças e 2 milhões de aplicações), para o cliente não esperar
+  import("./lib/veiculos.server")
+    .then(async (m) => {
+      await m.marcasVeiculo();
+      // Peças das montadoras dos sliders da home (src/components/home/SlidersHome.tsx)
+      for (const montadora of [
+        "VOLKSWAGEN",
+        "CHEVROLET",
+        "FIAT",
+        "FORD",
+        "RENAULT",
+        "PEUGEOT",
+        "TOYOTA",
+      ])
+        await m.skusDoVeiculo({ montadora });
+    })
+    .catch((e) => console.error("veículos", e));
+  import("./lib/busca-catalogo.server")
+    .then((m) => m.buscarSkus({ vitrine: true }))
+    .catch((e) => console.error("índice da loja", e));
+}
+
+export default {
+  async fetch(request: Request, env: unknown, ctx: unknown) {
+    iniciarAutomacoes();
+    const alias = redirecionarAlias(request);
+    if (alias) return comSeguranca(alias);
+    const pt = redirecionarCaminhoPt(request);
+    if (pt) return comSeguranca(pt);
+    const csrf = bloquearOutroSite(request);
+    if (csrf) return comSeguranca(csrf);
+    try {
+      const handler = await getServerEntry();
+      const response = await handler.fetch(request, env, ctx);
+      return comSeguranca(await normalizeCatastrophicSsrResponse(response));
+    } catch (error) {
+      console.error(error);
+      return comSeguranca(
+        new Response(renderErrorPage(), {
+          status: 500,
+          headers: { "content-type": "text/html; charset=utf-8" },
+        }),
+      );
+    }
+  },
+};

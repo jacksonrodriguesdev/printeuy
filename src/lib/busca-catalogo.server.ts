@@ -1,0 +1,289 @@
+// Busca da loja feita em memória.
+//
+// O MySQL precisava ordenar as ~29 mil peças a cada página (o nome é TEXT, sem índice) e a busca
+// com LIKE em vários campos levava ~0,5 s. Aqui fica um índice leve do catálogo (só os campos de
+// busca), recarregado a cada 5 minutos ou quando o admin altera algo; filtrar, ordenar por
+// relevância e paginar leva poucos milissegundos. Do banco só vêm as peças da página atual.
+import { prisma } from "./prisma";
+import { buscaParaPortugues, prepararBusca, sinonimosBusca } from "./pecas-es";
+import { fotoInvalida } from "./fotos";
+import { skusDoVeiculo, type FiltroVeiculo } from "./veiculos.server";
+
+type Item = {
+  sku: string;
+  nome: string;
+  nomeN: string; // nome normalizado (maiúsculas, sem acento)
+  codigos: string; // sku, código do fabricante e códigos das versões, normalizados e sem espaços
+  texto: string; // tudo que a busca procura, normalizado
+  categoria: string | null;
+  categoriaN: string;
+  temCategoria: boolean;
+  marca: string | null;
+  comImagem: boolean;
+  fotoPropria: boolean; // foto real da peça em public/catalogo (aparece primeiro)
+  temPreco: boolean; // preço de venda cadastrado (aparece antes das sem preço)
+  criado: number;
+  popularidade: number;
+  preco: number;
+};
+
+const VALIDADE = 30 * 60 * 1000;
+// A cada 30 s confere se o catálogo mudou (quantidade e última alteração). Assim mudanças
+// feitas direto no banco (importação pelo phpMyAdmin, scripts) aparecem na loja em até 30 s.
+const CONFERIR = 30 * 1000;
+// Índice guardado em globalThis: as rotas de API do admin e as funções da loja podem carregar
+// este módulo separadamente; assim todas usam (e limpam) o mesmo índice.
+type Indice = { itens: Item[]; em: number; assinatura: string; conferido: number };
+const G = globalThis as unknown as {
+  __indiceCatalogo?: { cache: Indice | null; carregando: Promise<Item[]> | null };
+};
+const estado = (G.__indiceCatalogo ??= { cache: null, carregando: null });
+
+async function assinaturaCatalogo(): Promise<string> {
+  const [r] = await prisma.$queryRawUnsafe<Array<{ n: bigint; u: Date | null }>>(
+    "SELECT COUNT(*) AS n, MAX(updated_at) AS u FROM pecas",
+  );
+  return `${r?.n ?? 0}|${r?.u ? new Date(r.u).getTime() : 0}`;
+}
+
+export const normalizar = (s: string | null | undefined) =>
+  (s ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toUpperCase();
+
+const soCodigo = (s: string) => normalizar(s).replace(/[^A-Z0-9]/g, "");
+
+// Chamada antes ou durante uma gravação do admin: limpa de novo alguns segundos depois para não
+// guardar uma leitura feita antes da gravação terminar.
+export function limparCacheCatalogo() {
+  estado.cache = null;
+  setTimeout(() => (estado.cache = null), 5000);
+}
+
+async function carregar(): Promise<Item[]> {
+  const linhas = await prisma.pecas.findMany({
+    select: {
+      sku: true,
+      nome: true,
+      nome_es: true,
+      categoria: true,
+      category_id: true,
+      marca: true,
+      codigo_fabricante: true,
+      fabricante: true,
+      imagem_principal: true,
+      created_at: true,
+      duplicado_de: true,
+      veiculos_compativeis: true,
+      preco_brl: true,
+      preco_uyu: true,
+      popularidade: true,
+    },
+  });
+
+  // Versões (duplicado_de) não aparecem na loja, mas seus códigos acham a peça principal
+  const extras = new Map<string, string[]>();
+  for (const l of linhas) {
+    if (!l.duplicado_de) continue;
+    const lista = extras.get(l.duplicado_de) ?? [];
+    lista.push(l.sku, l.codigo_fabricante ?? "", l.fabricante ?? "");
+    extras.set(l.duplicado_de, lista);
+  }
+
+  return linhas
+    .filter((l) => !l.duplicado_de)
+    .map((l) => {
+      const ext = extras.get(l.sku) ?? [];
+      const codigos = [l.sku, l.codigo_fabricante ?? "", ...ext]
+        .map(soCodigo)
+        .filter(Boolean)
+        .join(" ");
+      const img = l.imagem_principal ?? "";
+      return {
+        sku: l.sku,
+        nome: l.nome,
+        nomeN: normalizar(l.nome),
+        codigos,
+        texto: normalizar(
+          [
+            l.nome,
+            l.nome_es,
+            l.sku,
+            l.codigo_fabricante,
+            l.fabricante,
+            l.marca,
+            l.categoria,
+            l.veiculos_compativeis,
+            ...ext,
+          ].join(" "),
+        ),
+        categoria: l.categoria,
+        categoriaN: normalizar(l.categoria),
+        temCategoria: l.category_id != null,
+        marca: l.marca,
+        comImagem: img !== "" && !fotoInvalida(img),
+        fotoPropria: img.startsWith("/catalogo/"),
+        temPreco: (l.preco_brl ?? 0) > 0 || (l.preco_uyu ?? 0) > 0,
+        criado: l.created_at.getTime(),
+        popularidade: l.popularidade ?? 0,
+        preco: l.preco_brl ?? 0,
+      };
+    });
+}
+
+async function itens(): Promise<Item[]> {
+  if (estado.cache && Date.now() - estado.cache.em < VALIDADE) {
+    if (Date.now() - estado.cache.conferido < CONFERIR) return estado.cache.itens;
+    estado.cache.conferido = Date.now();
+    try {
+      if ((await assinaturaCatalogo()) === estado.cache.assinatura) return estado.cache.itens;
+    } catch {
+      return estado.cache.itens; // banco indisponível: segue com o índice atual
+    }
+  }
+  // Várias requisições juntas esperam a mesma carga
+  estado.carregando ??= (async () => {
+    const assinatura = await assinaturaCatalogo().catch(() => "");
+    const lista = await carregar();
+    estado.cache = { itens: lista, em: Date.now(), assinatura, conferido: Date.now() };
+    return lista;
+  })().finally(() => (estado.carregando = null));
+  return estado.carregando;
+}
+
+export type FiltrosBusca = {
+  search?: string;
+  categoria?: string | string[];
+  marca?: string | string[];
+  montadora?: string | string[];
+  veiculo?: FiltroVeiculo;
+  sort?: string;
+  hasImage?: boolean;
+  vitrine?: boolean;
+};
+
+const comoLista = (v?: string | string[]) =>
+  (v == null ? [] : Array.isArray(v) ? v : [v]).filter(Boolean);
+const fotoPeso = (i: Item) => (i.fotoPropria ? 2 : i.comImagem ? 1 : 0);
+const compararNome = (a: Item, b: Item) =>
+  a.nome < b.nome ? -1 : a.nome > b.nome ? 1 : a.sku < b.sku ? -1 : 1;
+
+// Devolve os SKUs na ordem de exibição.
+export async function buscarSkus(f: FiltrosBusca): Promise<string[]> {
+  let lista = await itens();
+
+  const termos = prepararBusca(f.search ?? "");
+  const consultaCodigo = soCodigo(f.search ?? "");
+  // Cada termo pode vir em espanhol: "rodamiento" também procura "ROLAMENTO"
+  const variantes = termos.map((t) => {
+    const pt = buscaParaPortugues(t);
+    return [...new Set([normalizar(t), normalizar(pt), ...sinonimosBusca(t).map(normalizar)])];
+  });
+
+  if (f.vitrine) lista = lista.filter((i) => i.temCategoria);
+  if (f.hasImage) lista = lista.filter((i) => i.comImagem);
+
+  const categorias = comoLista(f.categoria).map(normalizar);
+  if (categorias.length)
+    // Categoria guardada como "Principal > Subcategoria": filtrar pela principal pega todas as subcategorias
+    lista = lista.filter((i) =>
+      categorias.some((c) => i.categoriaN === c || i.categoriaN.startsWith(`${c} > `)),
+    );
+
+  const marcas = comoLista(f.marca);
+  if (marcas.length) lista = lista.filter((i) => i.marca != null && marcas.includes(i.marca));
+
+  const montadoras = comoLista(f.montadora).map(normalizar);
+  if (montadoras.length) lista = lista.filter((i) => montadoras.some((m) => i.texto.includes(m)));
+
+  if (f.veiculo?.montadora) {
+    const doVeiculo = await skusDoVeiculo(f.veiculo);
+    lista = lista.filter((i) => doVeiculo.has(i.sku));
+  }
+
+  if (variantes.length) {
+    lista = lista.filter((i) => variantes.every((vs) => vs.some((v) => i.texto.includes(v))));
+  }
+
+  // Ordem: com busca e ordem padrão, os mais relevantes primeiro (código exato no topo)
+  if (termos.length && (!f.sort || f.sort === "nome-asc")) {
+    const primeiro = variantes[0];
+    const pontos = (i: Item) => {
+      let p = 0;
+      if (consultaCodigo.length >= 3) {
+        const cods = i.codigos.split(" ");
+        if (cods.includes(consultaCodigo)) p += 100;
+        else if (cods.some((c) => c.startsWith(consultaCodigo))) p += 50;
+      }
+      if (primeiro.some((v) => i.nomeN.startsWith(v))) p += 20;
+      else if (primeiro.some((v) => i.nomeN.includes(` ${v}`))) p += 5;
+      if (i.temCategoria) p += 2;
+      if (i.comImagem) p += 1;
+      if (i.fotoPropria) p += 3;
+      return p;
+    };
+    const comPontos = lista.map((i) => ({ i, p: pontos(i) }));
+    comPontos.sort((a, b) => b.p - a.p || compararNome(a.i, b.i));
+    return comPontos.map((x) => x.i.sku);
+  }
+
+  const ordenada = [...lista];
+  if (f.sort === "nome-desc") ordenada.sort((a, b) => compararNome(b, a));
+  else if (f.sort === "created-desc")
+    ordenada.sort((a, b) => b.criado - a.criado || (a.sku < b.sku ? -1 : 1));
+  else if (f.sort === "sku") ordenada.sort((a, b) => (a.sku < b.sku ? -1 : 1));
+  else if (f.sort === "variado") return variado(ordenada);
+  else if (f.sort === "popular")
+    ordenada.sort((a, b) => b.popularidade - a.popularidade || compararNome(a, b));
+  else if (f.sort === "preco-asc") ordenada.sort((a, b) => (a.preco || 1e12) - (b.preco || 1e12));
+  else if (f.sort === "preco-desc") ordenada.sort((a, b) => b.preco - a.preco);
+  // Ordem padrão: com foto primeiro, depois com preço; nomes que começam com letra antes dos
+  // que começam com número ("2008 - 2015 C/ Tunel" é descrição de tapete, não um bom destaque)
+  else
+    ordenada.sort(
+      (a, b) =>
+        fotoPeso(b) - fotoPeso(a) ||
+        Number(b.temPreco) - Number(a.temPreco) ||
+        Number(/^[0-9]/.test(a.nome)) - Number(/^[0-9]/.test(b.nome)) ||
+        compararNome(a, b),
+    );
+  return ordenada.map((i) => i.sku);
+}
+
+// Vitrine variada (sliders da home): peças com foto (com preço primeiro, quando houver),
+// intercalando os tipos de peça (primeira palavra do nome: "Anillo", "Junta", "Bomba"...) para o
+// slider não mostrar 16 anéis seguidos. A escolha muda a cada dia.
+function variado(lista: Item[]): string[] {
+  const comFoto = lista.filter((i) => fotoPeso(i) > 0 && !/^[0-9]/.test(i.nome));
+  const comPreco = comFoto.filter((i) => i.temPreco);
+  // Sem preços cadastrados (ex.: preços retirados para trocar), mostra as peças com foto
+  const boas = comPreco.length >= 16 ? comPreco : comFoto;
+  const dia = Math.floor(Date.now() / 86_400_000);
+  const grupos = new Map<string, Item[]>();
+  for (const i of boas) {
+    const tipo = i.nome.split(/\s+/)[0].toLowerCase();
+    grupos.set(tipo, [...(grupos.get(tipo) ?? []), i]);
+  }
+  const filas = [...grupos.values()].sort((a, b) => b.length - a.length);
+  // Gira a ordem dos tipos e o começo de cada fila conforme o dia
+  const ini = filas.length ? dia % filas.length : 0;
+  const ordem = [...filas.slice(ini), ...filas.slice(0, ini)].map((g) => {
+    const k = dia % g.length;
+    return [...g.slice(k), ...g.slice(0, k)];
+  });
+  const saida: string[] = [];
+  for (let rodada = 0; saida.length < boas.length && rodada < 10_000; rodada++)
+    for (const g of ordem) if (g[rodada]) saida.push(g[rodada].sku);
+  return saida;
+}
+
+// Pedido rápido: acha cada código digitado pelo cliente (SKU, código do fabricante ou de uma
+// versão). Devolve, para cada código, o SKU da peça ou null.
+export async function acharPorCodigos(
+  codigos: string[],
+): Promise<Array<{ codigo: string; sku: string | null }>> {
+  const lista = await itens();
+  const porCodigo = new Map<string, string>();
+  for (const i of lista) {
+    for (const c of i.codigos.split(" ")) if (c && !porCodigo.has(c)) porCodigo.set(c, i.sku);
+  }
+  return codigos.map((codigo) => ({ codigo, sku: porCodigo.get(soCodigo(codigo)) ?? null }));
+}

@@ -1,0 +1,73 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+.output
+.vinxi
+.tanstack/**
+.nitro
+*.local
+
+# Wrangler / Cloudflare
+.wrangler/
+.dev.vars
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+# Large files and uploads
+rstratorpecas_backup.sql
+*.sql
+*.csv
+uploads/
+# Secrets e dados locais
+.env
+.env.*
+!.env.example
+lote1_imagens/
+dados/backup_*
+
+# Pacotes de deploy (banco com dados de clientes, imagens)
+dados/deploy/
+
+# Dados brutos de extração (CSV + fotos originais); as fotos convertidas ficam em public/catalogo
+PRODUCTS/
+
+# Base de localização por IP (baixada pelo servidor)
+geoip/
+
+# Originais dos catálogos dos fabricantes (grandes, fora do site e do git)
+dados/catalogos-maquinas-originais/
+
+# Saídas pesadas dos geradores de vídeo/posts (gerar de novo com o script)
+marketing/videos/saida/*.webm
+marketing/posts_pecas/saida/*.webm
+marketing/posts_pecas/saida/*.png
+
+# Catálogo baixado do agrotrator.com.br (preços de referência)
+dados/precos_agrotrator/
+
+# Verificação automática (scripts/ci)
+.ci-uploads/
+servidor.log
+
+# PRINTE UY
+# A migração do Prisma precisa ir para o git (o "*.sql" acima a deixaria de fora)
+!prisma/migrations/**/*.sql
+# Logs e pacotes de deploy (banco, fotos) gerados na pasta dados/
+dados/

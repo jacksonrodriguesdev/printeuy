@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="PRINTE UY">
+  <defs>
+    <linearGradient id="fundo" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#173a72"/>
+      <stop offset="1" stop-color="#0b1f3f"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#fundo)"/>
+  <!-- folha impressa saindo -->
+  <path d="M168 96h176v120H168z" fill="#ffffff"/>
+  <path d="M192 128h128M192 156h96M192 184h112" stroke="#c9d3e3" stroke-width="12" stroke-linecap="round"/>
+  <!-- corpo da impressora -->
+  <rect x="104" y="208" width="304" height="152" rx="36" fill="#ff7a29"/>
+  <rect x="152" y="320" width="208" height="96" rx="14" fill="#ffffff"/>
+  <!-- gotas CMYK -->
+  <circle cx="196" cy="368" r="18" fill="#00a6e0"/>
+  <circle cx="236" cy="368" r="18" fill="#e5007e"/>
+  <circle cx="276" cy="368" r="18" fill="#ffd400"/>
+  <circle cx="316" cy="368" r="18" fill="#1d1d1b"/>
+  <circle cx="364" cy="248" r="12" fill="#ffffff"/>
+</svg>
