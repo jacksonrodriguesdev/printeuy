@@ -316,8 +316,8 @@ function Conexao({
       <Card className="p-5">
         <h2 className="text-lg font-extrabold text-zinc-900">Conectar ao Search Console</h2>
         <p className="mt-1 text-sm text-zinc-600">
-          Uma vez só, com a conta Google que é dona da propriedade printecuy.com no Search Console. O
-          acesso é <b>só de leitura</b>.
+          Uma vez só, com a conta Google que é dona da propriedade printecuy.com no Search Console.
+          O acesso é <b>só de leitura</b>.
         </p>
         <ol className="mt-4 list-decimal space-y-2 pl-5 text-sm text-zinc-700">
           <li>
