@@ -81,13 +81,14 @@ Os zips são feitos a partir de `deploy_midia/` (ver o fim deste arquivo).
 
 ### Variáveis de ambiente (hPanel → app Node.js → Variáveis)
 
-| Variável        | Valor                                                     |
-| --------------- | --------------------------------------------------------- |
-| `DATABASE_URL`  | `mysql://USUARIO:SENHA@localhost:3306/NOME_DO_BANCO`      |
-| `JWT_SECRET`    | texto aleatório de 64+ caracteres (comando abaixo)        |
-| `VITE_SITE_URL` | `https://printecuy.com` (o domínio final; entra no build) |
-| `UPLOADS_DIR`   | `/home/SEU_USUARIO/printeuy-midia` (a pasta do passo 2)   |
-| `NODE_ENV`      | `production`                                              |
+| Variável        | Valor                                                                                                        |
+| --------------- | ------------------------------------------------------------------------------------------------------------ |
+| `DATABASE_URL`  | `mysql://USUARIO:SENHA@localhost:3306/NOME_DO_BANCO`                                                         |
+| `JWT_SECRET`    | texto aleatório de 64+ caracteres (comando abaixo)                                                           |
+| `VITE_SITE_URL` | `https://printecuy.com` (o domínio final; entra no build)                                                    |
+| `UPLOADS_DIR`   | `/home/SEU_USUARIO/printeuy-midia` (a pasta do passo 2)                                                      |
+| `MIDIA_URL`     | `https://pub-981d243748dc47d2af5a629f5f55278b.r2.dev/printeuy` (fotos no R2; ver `../scripts/enviar_r2.cjs`) |
+| `NODE_ENV`      | `production`                                                                                                 |
 
 ```bash
 node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"

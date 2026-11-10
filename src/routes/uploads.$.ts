@@ -46,6 +46,18 @@ export const Route = createFileRoute("/uploads/$")({
             },
           });
         } catch {
+          // Fotos e vídeos do catálogo ficam no Cloudflare R2 (MIDIA_URL); só os uploads do admin
+          // ficam no servidor.
+          const midia = process.env.MIDIA_URL?.replace(/\/+$/, "");
+          if (midia) {
+            return new Response(null, {
+              status: 301,
+              headers: {
+                Location: `${midia}/${params._splat ?? ""}`,
+                "Cache-Control": "public, max-age=604800",
+              },
+            });
+          }
           return new Response("Não encontrado", { status: 404 });
         }
       },
