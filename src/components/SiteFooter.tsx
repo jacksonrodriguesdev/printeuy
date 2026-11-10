@@ -140,6 +140,16 @@ export function SiteFooter() {
                 {t("Mi cuenta", "Minha conta")}
               </Link>
             </li>
+            <li>
+              <Link to={"/privacidad" as never} className={linkCls}>
+                {t("Política de privacidad", "Política de privacidade")}
+              </Link>
+            </li>
+            <li>
+              <Link to={"/eliminar-datos" as never} className={linkCls}>
+                {t("Eliminación de datos", "Exclusão de dados")}
+              </Link>
+            </li>
           </ul>
         </div>
 

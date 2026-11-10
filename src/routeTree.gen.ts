@@ -19,9 +19,11 @@ import { Route as CadastroRouteImport } from './routes/cadastro'
 import { Route as CotizarRouteImport } from './routes/cotizar'
 import { Route as CuentaRouteImport } from './routes/cuenta'
 import { Route as CuponesRouteImport } from './routes/cupones'
+import { Route as EliminarDatosRouteImport } from './routes/eliminar-datos'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as LojaRouteImport } from './routes/loja'
 import { Route as PedidoRapidoRouteImport } from './routes/pedido-rapido'
+import { Route as PrivacidadRouteImport } from './routes/privacidad'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
@@ -189,6 +191,11 @@ const CuponesRoute = CuponesRouteImport.update({
   path: '/cupones',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EliminarDatosRoute = EliminarDatosRouteImport.update({
+  id: '/eliminar-datos',
+  path: '/eliminar-datos',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -202,6 +209,11 @@ const LojaRoute = LojaRouteImport.update({
 const PedidoRapidoRoute = PedidoRapidoRouteImport.update({
   id: '/pedido-rapido',
   path: '/pedido-rapido',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacidadRoute = PrivacidadRouteImport.update({
+  id: '/privacidad',
+  path: '/privacidad',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
@@ -804,9 +816,11 @@ export interface FileRoutesByFullPath {
   '/cotizar': typeof CotizarRoute
   '/cuenta': typeof CuentaRoute
   '/cupones': typeof CuponesRoute
+  '/eliminar-datos': typeof EliminarDatosRoute
   '/login': typeof LoginRoute
   '/loja': typeof LojaRoute
   '/pedido-rapido': typeof PedidoRapidoRoute
+  '/privacidad': typeof PrivacidadRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/ads': typeof AdminAdsRoute
@@ -934,9 +948,11 @@ export interface FileRoutesByTo {
   '/cotizar': typeof CotizarRoute
   '/cuenta': typeof CuentaRoute
   '/cupones': typeof CuponesRoute
+  '/eliminar-datos': typeof EliminarDatosRoute
   '/login': typeof LoginRoute
   '/loja': typeof LojaRoute
   '/pedido-rapido': typeof PedidoRapidoRoute
+  '/privacidad': typeof PrivacidadRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/ads': typeof AdminAdsRoute
@@ -1066,9 +1082,11 @@ export interface FileRoutesById {
   '/cotizar': typeof CotizarRoute
   '/cuenta': typeof CuentaRoute
   '/cupones': typeof CuponesRoute
+  '/eliminar-datos': typeof EliminarDatosRoute
   '/login': typeof LoginRoute
   '/loja': typeof LojaRoute
   '/pedido-rapido': typeof PedidoRapidoRoute
+  '/privacidad': typeof PrivacidadRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/ads': typeof AdminAdsRoute
@@ -1199,9 +1217,11 @@ export interface FileRouteTypes {
     | '/cotizar'
     | '/cuenta'
     | '/cupones'
+    | '/eliminar-datos'
     | '/login'
     | '/loja'
     | '/pedido-rapido'
+    | '/privacidad'
     | '/robots.txt'
     | '/sitemap.xml'
     | '/admin/ads'
@@ -1329,9 +1349,11 @@ export interface FileRouteTypes {
     | '/cotizar'
     | '/cuenta'
     | '/cupones'
+    | '/eliminar-datos'
     | '/login'
     | '/loja'
     | '/pedido-rapido'
+    | '/privacidad'
     | '/robots.txt'
     | '/sitemap.xml'
     | '/admin/ads'
@@ -1460,9 +1482,11 @@ export interface FileRouteTypes {
     | '/cotizar'
     | '/cuenta'
     | '/cupones'
+    | '/eliminar-datos'
     | '/login'
     | '/loja'
     | '/pedido-rapido'
+    | '/privacidad'
     | '/robots.txt'
     | '/sitemap.xml'
     | '/admin/ads'
@@ -1592,9 +1616,11 @@ export interface RootRouteChildren {
   CotizarRoute: typeof CotizarRoute
   CuentaRoute: typeof CuentaRoute
   CuponesRoute: typeof CuponesRoute
+  EliminarDatosRoute: typeof EliminarDatosRoute
   LoginRoute: typeof LoginRoute
   LojaRoute: typeof LojaRoute
   PedidoRapidoRoute: typeof PedidoRapidoRoute
+  PrivacidadRoute: typeof PrivacidadRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   AvaliarCodigoRoute: typeof AvaliarCodigoRoute
@@ -1729,6 +1755,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CuponesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/eliminar-datos': {
+      id: '/eliminar-datos'
+      path: '/eliminar-datos'
+      fullPath: '/eliminar-datos'
+      preLoaderRoute: typeof EliminarDatosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -1748,6 +1781,13 @@ declare module '@tanstack/react-router' {
       path: '/pedido-rapido'
       fullPath: '/pedido-rapido'
       preLoaderRoute: typeof PedidoRapidoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacidad': {
+      id: '/privacidad'
+      path: '/privacidad'
+      fullPath: '/privacidad'
+      preLoaderRoute: typeof PrivacidadRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/robots.txt': {
@@ -2754,9 +2794,11 @@ const rootRouteChildren: RootRouteChildren = {
   CotizarRoute: CotizarRoute,
   CuentaRoute: CuentaRoute,
   CuponesRoute: CuponesRoute,
+  EliminarDatosRoute: EliminarDatosRoute,
   LoginRoute: LoginRoute,
   LojaRoute: LojaRoute,
   PedidoRapidoRoute: PedidoRapidoRoute,
+  PrivacidadRoute: PrivacidadRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   AvaliarCodigoRoute: AvaliarCodigoRoute,

@@ -538,8 +538,8 @@ function Conexao({ st, atualizar }: { st: any; atualizar: () => void }) {
             <code className="rounded bg-amber-100 px-1">{st.callback}</code>
           </li>
           <li>
-            Na mesma tela, em «Gerar tokens de acesso», <b>adicione a conta @rsautopiezas</b> como
-            testadora e aceite o convite no app do Instagram (Configurações → Apps e sites).
+            Na mesma tela, em «Gerar tokens de acesso», <b>adicione a conta do Instagram da loja</b>{" "}
+            como testadora e aceite o convite no app do Instagram (Configurações → Apps e sites).
           </li>
           <li>
             Copie o <b>ID do app do Instagram</b> e a <b>Chave secreta do app do Instagram</b> e

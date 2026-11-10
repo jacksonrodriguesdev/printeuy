@@ -284,7 +284,7 @@ function CadastroPage() {
           <span>
             {t("Acepto los términos y la", "Aceito os termos e a")}{" "}
             <a
-              href={href("/ayuda") + "#privacidad"}
+              href={href("/privacidad")}
               target="_blank"
               className="font-semibold text-primary underline"
             >

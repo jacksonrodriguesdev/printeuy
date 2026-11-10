@@ -887,7 +887,7 @@ export function PopupAcesso() {
                   </form>
                   <p className="mt-2 text-center text-[11px] leading-relaxed text-zinc-400">
                     {t("Al continuar aceptás la", "Ao continuar, você aceita a")}{" "}
-                    <a href={href("/ayuda") + "#privacidad"} target="_blank" className="underline">
+                    <a href={href("/privacidad")} target="_blank" className="underline">
                       {t("política de privacidad", "política de privacidade")}
                     </a>{" "}
                     {t(
