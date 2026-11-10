@@ -14,7 +14,7 @@ const SAIDAS = [
   ["icon-512.png", 512, 0, "png"],
   ["icon-maskable-192.png", 192, 0.12, "png"],
   ["icon-maskable-512.png", 512, 0.12, "png"],
-  ["apple-touch-icon.png", 180, 0, "png"],
+  ["apple-touch-icon.png", 180, 0.06, "png"],
   ["favicon-48.png", 48, 0, "png"],
   ["logo.png", 256, 0, "png"],
   ["badge-96.png", 96, 0, "png"],
@@ -33,7 +33,7 @@ const SAIDAS = [
     await page.setViewportSize({ width: tam, height: tam });
     await page.setContent(`<!doctype html><html><head><style>
       @font-face{font-family:"Plus Jakarta Sans";src:url(data:font/woff2;base64,${fonte}) format("woff2");font-weight:200 800}
-      html,body{margin:0;background:${margem ? "#0f2850" : "transparent"}}
+      html,body{margin:0;background:${margem ? "#ffffff" : "transparent"}}
       .c{width:${tam}px;height:${tam}px;box-sizing:border-box;padding:${pad}px}
       svg{width:100%;height:100%;display:block}
     </style></head><body><div class="c">${svg}</div></body></html>`);
