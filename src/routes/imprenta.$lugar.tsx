@@ -62,7 +62,13 @@ export const Route = createFileRoute("/imprenta/$lugar")({
     const { lugar, populares } = loaderData;
     const caminho = `/imprenta/${lugar.slug}`;
     const n = nomeCompleto(lugar);
-    const titulo = `Imprenta en ${lugar.nome}: tarjetas, adhesivos y más | PRINTE UY`;
+    const onde =
+      lugar.tipo === "departamento" && lugar.nome !== "Montevideo"
+        ? `el departamento de ${lugar.nome}`
+        : lugar.tipo === "barrio"
+          ? `${lugar.nome} (Montevideo)`
+          : lugar.nome;
+    const titulo = `Imprenta en ${onde}: tarjetas, adhesivos y más | PRINTE UY`;
     const desc = `Imprenta online con envío a ${n}. Tarjetas de presentación, adhesivos, volantes, packaging, banners y regalos con tu logo. Precio al instante y atención por WhatsApp.`;
     const { faq } = textosLugar(lugar);
     return {
