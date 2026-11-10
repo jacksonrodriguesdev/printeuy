@@ -1,11 +1,11 @@
 import { nomeProduto } from "./pecas-es";
 import { SITE_URL } from "./site";
 
-// Número de contato (WhatsApp das cotações): +55 (47) 99191-9365.
-// PHONE vai no link do WhatsApp: código do país + DDD + número, só dígitos (55 47 991919365).
+// Número de contato (WhatsApp das cotações): +55 (53) 99134-3980.
+// PHONE vai no link do WhatsApp: código do país + DDD + número, só dígitos (55 53 991343980).
 // A verificação do GitHub (scripts/ci/fumaca.cjs) confere este número no site.
-export const PHONE = "5547991919365";
-export const PHONE_DISPLAY = "+55 (47) 99191-9365";
+export const PHONE = "5553991343980";
+export const PHONE_DISPLAY = "+55 (53) 99134-3980";
 
 // Usamos api.whatsapp.com/send diretamente (sem passar por wa.me).
 // O redirect do wa.me pode ser bloqueado dentro de iframes de preview
@@ -24,13 +24,13 @@ export function whatsappQuoteUrl(
   if (idioma === "pt") {
     const link = `${SITE_URL}/pt/produto/${encodeURIComponent(product.sku)}`;
     return buildUrl(
-      `Olá! Quero orçamento desta peça (cliente do Brasil):\n\n*${product.nome}*\nCódigo: ${product.sku}\n${link}`,
+      `Olá! Quero orçamento deste produto (cliente do Brasil):\n\n*${product.nome}*\nCódigo: ${product.sku}\n${link}`,
     );
   }
   const es = nomeProduto(product);
   const link = `${SITE_URL}/produto/${encodeURIComponent(product.sku)}`;
   const msg =
-    `¡Hola! Quiero cotizar este repuesto:\n\n` +
+    `¡Hola! Quiero cotizar este producto:\n\n` +
     `*${es}*\n` +
     (es !== product.nome ? `(${product.nome})\n` : "") +
     `Código: ${product.sku}\n${link}`;

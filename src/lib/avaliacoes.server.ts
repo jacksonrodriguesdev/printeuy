@@ -661,7 +661,7 @@ export const REMETENTE_PADRAO: Remetente = {
   nome: "PRINTE UY",
   endereco: "",
   cidade: "Chuy, Rocha — Uruguay",
-  telefone: "+55 47 99191-9365",
+  telefone: "+55 53 99134-3980",
   doc: "",
 };
 export async function lerRemetente(): Promise<Remetente> {

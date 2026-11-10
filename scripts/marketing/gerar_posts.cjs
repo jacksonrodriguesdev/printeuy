@@ -13,7 +13,7 @@ const { chromium } = require("playwright");
 const PASTA = path.resolve(process.argv[2] || "marketing/posts");
 const PECAS = JSON.parse(fs.readFileSync(path.join(PASTA, "pecas.json"), "utf8"));
 const LOGO = fs.readFileSync(path.join(__dirname, "../../public/logo.svg"), "utf8");
-const ZAP = "+55 47 99191-9365";
+const ZAP = "+55 53 99134-3980";
 const SITE = "autopiezasuy.com";
 
 // ---------- Textos ----------

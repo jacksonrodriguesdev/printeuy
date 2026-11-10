@@ -23,7 +23,7 @@ export type PecaTexto = {
   preco: { uyu: string; brl: string | null; desconto: number } | null;
 };
 
-export const WHATSAPP = "5547991919365";
+export const WHATSAPP = "5553991343980";
 export const SITE = "https://printecuy.com";
 export const linkPeca = (sku: string, idioma: Idioma) =>
   `${SITE}${idioma === "pt" ? "/pt" : ""}/produto/${encodeURIComponent(sku)}`;
@@ -333,8 +333,8 @@ export function roteiroReels(tema: string, idioma: Idioma) {
 export const RESPOSTAS: Array<{ k: string; es: string; pt: string }> = [
   {
     k: "Preço",
-    es: "¡Hola! 👋 Te pasamos el precio por WhatsApp: escribinos al +55 47 99191-9365 con el código de la pieza.",
-    pt: "Olá! 👋 Passamos o preço pelo WhatsApp: chame no +55 47 99191-9365 com o código da peça.",
+    es: "¡Hola! 👋 Te pasamos el precio por WhatsApp: escribinos al +55 53 99134-3980 con el código de la pieza.",
+    pt: "Olá! 👋 Passamos o preço pelo WhatsApp: chame no +55 53 99134-3980 com o código da peça.",
   },
   {
     k: "Tem/hay?",

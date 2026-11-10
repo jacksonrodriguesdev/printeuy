@@ -79,7 +79,7 @@ const TXT: Record<"es" | "pt", Textos> = {
     codSub: "Temos. Envio para todo o RS.",
   },
 };
-const WHATS = "+55 47 99191-9365";
+const WHATS = "+55 53 99134-3980";
 const esc = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 

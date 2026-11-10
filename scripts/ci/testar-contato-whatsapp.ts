@@ -17,8 +17,8 @@ import assert from "node:assert/strict";
   try {
     assert.equal(c.normalizarCelular("099 123 456", "es"), "+59899123456");
     assert.equal(c.normalizarCelular("+598 91 234 567", "es"), "+59891234567");
-    assert.equal(c.normalizarCelular("(47) 99191-9365", "pt"), "+5547991919365");
-    assert.equal(c.normalizarCelular("+55 47 99191-9365", "es"), "+5547991919365");
+    assert.equal(c.normalizarCelular("(53) 99134-3980", "pt"), "+5553991343980");
+    assert.equal(c.normalizarCelular("+55 53 99134-3980", "es"), "+5553991343980");
     assert.equal(c.normalizarCelular("123", "es"), null);
 
     await prisma.site_visits.create({

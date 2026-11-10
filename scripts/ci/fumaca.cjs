@@ -82,8 +82,8 @@ const QUEBRADA = [/Something went wrong/i, /Algo salió mal/i, /Algo deu errado/
   }
 
   // WhatsApp das cotações: todo link do WhatsApp nas páginas principais vai para o número certo
-  // (+55 47 99191-9365). Um dígito a menos e nenhuma cotação chega.
-  const WHATSAPP = "5547991919365";
+  // (+55 53 99134-3980). Um dígito a menos e nenhuma cotação chega.
+  const WHATSAPP = "5553991343980";
   for (const caminho of ["/", "/produto/CI-001", "/repuestos-autos/montevideo", "/vehiculos/volkswagen/gol"]) {
     const html = await (await fetch(BASE + caminho)).text();
     const numeros = [...html.matchAll(/api\.whatsapp\.com\/send\?phone=(\d+)/g)].map((m) => m[1]);
