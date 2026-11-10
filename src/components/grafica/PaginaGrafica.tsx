@@ -7,11 +7,13 @@ import {
   ChevronRight,
   FileUp,
   MessageCircle,
+  Play,
   Palette,
   Ruler,
   ShieldCheck,
   ShoppingCart,
   Star,
+  X,
 } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { ProductRail } from "@/components/home/ProductRail";
@@ -110,6 +112,7 @@ export function PaginaGrafica({
   const [qtd, setQtd] = useState<number | null>(combinacoes[0]?.precos[0]?.quantidade ?? null);
   const [abertos, setAbertos] = useState<Record<string, boolean>>({});
   const [foto, setFoto] = useState(0);
+  const [videoAberto, setVideoAberto] = useState(false);
   const [aba, setAba] = useState<"descricao" | "specs" | "faq">("descricao");
   const abasRef = useRef<HTMLDivElement>(null);
 
@@ -194,13 +197,57 @@ export function PaginaGrafica({
                   )}
                 />
               ))}
+              {/* Vídeo do produto: miniatura tocando sem som no canto, como na Printi; ao clicar abre grande */}
+              {detalhes.videos[0] &&
+                (videoAberto ? (
+                  <div className="absolute inset-0 z-10 bg-black">
+                    <video
+                      src={detalhes.videos[0]}
+                      controls
+                      autoPlay
+                      playsInline
+                      className="h-full w-full object-contain"
+                    />
+                    <button
+                      onClick={() => setVideoAberto(false)}
+                      aria-label="Cerrar video"
+                      className="absolute right-3 top-3 grid h-10 w-10 place-items-center rounded-full bg-white/90 text-zinc-900 shadow transition hover:bg-white"
+                    >
+                      <X className="h-5 w-5" />
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setVideoAberto(true)}
+                    aria-label="Ver video del producto"
+                    className="group absolute bottom-3 right-3 z-10 aspect-video w-36 overflow-hidden rounded-xl bg-black shadow-lg ring-2 ring-white/80 transition hover:scale-[1.03] sm:w-48 md:bottom-4 md:right-4 md:w-56"
+                  >
+                    <video
+                      src={detalhes.videos[0]}
+                      muted
+                      autoPlay
+                      loop
+                      playsInline
+                      preload="metadata"
+                      className="h-full w-full object-cover"
+                    />
+                    <span className="absolute inset-0 grid place-items-center bg-black/10 transition group-hover:bg-black/25">
+                      <span className="grid h-11 w-11 place-items-center rounded-full border-2 border-white/90 bg-black/20 text-white backdrop-blur-sm">
+                        <Play className="ml-0.5 h-5 w-5 fill-current" />
+                      </span>
+                    </span>
+                  </button>
+                ))}
             </div>
             {fotos.length > 1 && (
               <div className="scrollbar-none mt-3 flex gap-3 overflow-x-auto">
                 {fotos.map((f, i) => (
                   <button
                     key={f}
-                    onClick={() => setFoto(i)}
+                    onClick={() => {
+                      setFoto(i);
+                      setVideoAberto(false);
+                    }}
                     aria-label={`Foto ${i + 1}`}
                     className={cn(
                       "aspect-[4/3] w-28 shrink-0 overflow-hidden rounded-xl bg-zinc-100 ring-2 transition md:w-36",
