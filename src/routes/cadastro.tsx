@@ -176,7 +176,7 @@ function CadastroPage() {
           label="Celular (WhatsApp)"
           erro={mostrar("telefone")}
           dica={t(
-            "Te escribimos por acá con el precio de tus repuestos.",
+            "Te escribimos por acá con el precio de tus impresos.",
             "Mandamos por aqui o preço das suas peças.",
           )}
         >

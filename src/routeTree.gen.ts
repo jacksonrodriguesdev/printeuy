@@ -64,10 +64,13 @@ import { Route as AdminVisitantesRouteImport } from './routes/admin.visitantes'
 import { Route as AvaliarCodigoRouteImport } from './routes/avaliar.$codigo'
 import { Route as CatalogosIndexRouteImport } from './routes/catalogos.index'
 import { Route as CatalogosSlugRouteImport } from './routes/catalogos.$slug'
+import { Route as CategoriaSlugRouteImport } from './routes/categoria.$slug'
 import { Route as EtiquetaIdRouteImport } from './routes/etiqueta.$id'
 import { Route as FeedsArquivoRouteImport } from './routes/feeds.$arquivo'
 import { Route as GuiasIndexRouteImport } from './routes/guias.index'
 import { Route as GuiasSlugRouteImport } from './routes/guias.$slug'
+import { Route as ImprentaIndexRouteImport } from './routes/imprenta.index'
+import { Route as ImprentaLugarRouteImport } from './routes/imprenta.$lugar'
 import { Route as PagarCodigoRouteImport } from './routes/pagar.$codigo'
 import { Route as PedidoCodigoRouteImport } from './routes/pedido.$codigo'
 import { Route as ProdutoSkuRouteImport } from './routes/produto.$sku'
@@ -416,6 +419,11 @@ const CatalogosSlugRoute = CatalogosSlugRouteImport.update({
   path: '/catalogos/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CategoriaSlugRoute = CategoriaSlugRouteImport.update({
+  id: '/categoria/$slug',
+  path: '/categoria/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EtiquetaIdRoute = EtiquetaIdRouteImport.update({
   id: '/etiqueta/$id',
   path: '/etiqueta/$id',
@@ -434,6 +442,16 @@ const GuiasIndexRoute = GuiasIndexRouteImport.update({
 const GuiasSlugRoute = GuiasSlugRouteImport.update({
   id: '/guias/$slug',
   path: '/guias/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ImprentaIndexRoute = ImprentaIndexRouteImport.update({
+  id: '/imprenta/',
+  path: '/imprenta/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ImprentaLugarRoute = ImprentaLugarRouteImport.update({
+  id: '/imprenta/$lugar',
+  path: '/imprenta/$lugar',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PagarCodigoRoute = PagarCodigoRouteImport.update({
@@ -859,9 +877,11 @@ export interface FileRoutesByFullPath {
   '/admin/visitantes': typeof AdminVisitantesRoute
   '/avaliar/$codigo': typeof AvaliarCodigoRoute
   '/catalogos/$slug': typeof CatalogosSlugRoute
+  '/categoria/$slug': typeof CategoriaSlugRoute
   '/etiqueta/$id': typeof EtiquetaIdRoute
   '/feeds/$arquivo': typeof FeedsArquivoRoute
   '/guias/$slug': typeof GuiasSlugRoute
+  '/imprenta/$lugar': typeof ImprentaLugarRoute
   '/pagar/$codigo': typeof PagarCodigoRoute
   '/pedido/$codigo': typeof PedidoCodigoRoute
   '/produto/$sku': typeof ProdutoSkuRoute
@@ -872,6 +892,7 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/catalogos/': typeof CatalogosIndexRoute
   '/guias/': typeof GuiasIndexRoute
+  '/imprenta/': typeof ImprentaIndexRoute
   '/repuestos-autos/': typeof RepuestosAutosIndexRoute
   '/repuestos/': typeof RepuestosIndexRoute
   '/vehiculos/': typeof VehiculosIndexRoute
@@ -991,9 +1012,11 @@ export interface FileRoutesByTo {
   '/admin/visitantes': typeof AdminVisitantesRoute
   '/avaliar/$codigo': typeof AvaliarCodigoRoute
   '/catalogos/$slug': typeof CatalogosSlugRoute
+  '/categoria/$slug': typeof CategoriaSlugRoute
   '/etiqueta/$id': typeof EtiquetaIdRoute
   '/feeds/$arquivo': typeof FeedsArquivoRoute
   '/guias/$slug': typeof GuiasSlugRoute
+  '/imprenta/$lugar': typeof ImprentaLugarRoute
   '/pagar/$codigo': typeof PagarCodigoRoute
   '/pedido/$codigo': typeof PedidoCodigoRoute
   '/produto/$sku': typeof ProdutoSkuRoute
@@ -1004,6 +1027,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/catalogos': typeof CatalogosIndexRoute
   '/guias': typeof GuiasIndexRoute
+  '/imprenta': typeof ImprentaIndexRoute
   '/repuestos-autos': typeof RepuestosAutosIndexRoute
   '/repuestos': typeof RepuestosIndexRoute
   '/vehiculos': typeof VehiculosIndexRoute
@@ -1125,9 +1149,11 @@ export interface FileRoutesById {
   '/admin/visitantes': typeof AdminVisitantesRoute
   '/avaliar/$codigo': typeof AvaliarCodigoRoute
   '/catalogos/$slug': typeof CatalogosSlugRoute
+  '/categoria/$slug': typeof CategoriaSlugRoute
   '/etiqueta/$id': typeof EtiquetaIdRoute
   '/feeds/$arquivo': typeof FeedsArquivoRoute
   '/guias/$slug': typeof GuiasSlugRoute
+  '/imprenta/$lugar': typeof ImprentaLugarRoute
   '/pagar/$codigo': typeof PagarCodigoRoute
   '/pedido/$codigo': typeof PedidoCodigoRoute
   '/produto/$sku': typeof ProdutoSkuRoute
@@ -1138,6 +1164,7 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/catalogos/': typeof CatalogosIndexRoute
   '/guias/': typeof GuiasIndexRoute
+  '/imprenta/': typeof ImprentaIndexRoute
   '/repuestos-autos/': typeof RepuestosAutosIndexRoute
   '/repuestos/': typeof RepuestosIndexRoute
   '/vehiculos/': typeof VehiculosIndexRoute
@@ -1260,9 +1287,11 @@ export interface FileRouteTypes {
     | '/admin/visitantes'
     | '/avaliar/$codigo'
     | '/catalogos/$slug'
+    | '/categoria/$slug'
     | '/etiqueta/$id'
     | '/feeds/$arquivo'
     | '/guias/$slug'
+    | '/imprenta/$lugar'
     | '/pagar/$codigo'
     | '/pedido/$codigo'
     | '/produto/$sku'
@@ -1273,6 +1302,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/catalogos/'
     | '/guias/'
+    | '/imprenta/'
     | '/repuestos-autos/'
     | '/repuestos/'
     | '/vehiculos/'
@@ -1392,9 +1422,11 @@ export interface FileRouteTypes {
     | '/admin/visitantes'
     | '/avaliar/$codigo'
     | '/catalogos/$slug'
+    | '/categoria/$slug'
     | '/etiqueta/$id'
     | '/feeds/$arquivo'
     | '/guias/$slug'
+    | '/imprenta/$lugar'
     | '/pagar/$codigo'
     | '/pedido/$codigo'
     | '/produto/$sku'
@@ -1405,6 +1437,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/catalogos'
     | '/guias'
+    | '/imprenta'
     | '/repuestos-autos'
     | '/repuestos'
     | '/vehiculos'
@@ -1525,9 +1558,11 @@ export interface FileRouteTypes {
     | '/admin/visitantes'
     | '/avaliar/$codigo'
     | '/catalogos/$slug'
+    | '/categoria/$slug'
     | '/etiqueta/$id'
     | '/feeds/$arquivo'
     | '/guias/$slug'
+    | '/imprenta/$lugar'
     | '/pagar/$codigo'
     | '/pedido/$codigo'
     | '/produto/$sku'
@@ -1538,6 +1573,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/catalogos/'
     | '/guias/'
+    | '/imprenta/'
     | '/repuestos-autos/'
     | '/repuestos/'
     | '/vehiculos/'
@@ -1625,9 +1661,11 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   AvaliarCodigoRoute: typeof AvaliarCodigoRoute
   CatalogosSlugRoute: typeof CatalogosSlugRoute
+  CategoriaSlugRoute: typeof CategoriaSlugRoute
   EtiquetaIdRoute: typeof EtiquetaIdRoute
   FeedsArquivoRoute: typeof FeedsArquivoRoute
   GuiasSlugRoute: typeof GuiasSlugRoute
+  ImprentaLugarRoute: typeof ImprentaLugarRoute
   PagarCodigoRoute: typeof PagarCodigoRoute
   PedidoCodigoRoute: typeof PedidoCodigoRoute
   ProdutoSkuRoute: typeof ProdutoSkuRoute
@@ -1637,6 +1675,7 @@ export interface RootRouteChildren {
   UploadsSplatRoute: typeof UploadsSplatRoute
   CatalogosIndexRoute: typeof CatalogosIndexRoute
   GuiasIndexRoute: typeof GuiasIndexRoute
+  ImprentaIndexRoute: typeof ImprentaIndexRoute
   RepuestosAutosIndexRoute: typeof RepuestosAutosIndexRoute
   RepuestosIndexRoute: typeof RepuestosIndexRoute
   VehiculosIndexRoute: typeof VehiculosIndexRoute
@@ -2070,6 +2109,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CatalogosSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/categoria/$slug': {
+      id: '/categoria/$slug'
+      path: '/categoria/$slug'
+      fullPath: '/categoria/$slug'
+      preLoaderRoute: typeof CategoriaSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/etiqueta/$id': {
       id: '/etiqueta/$id'
       path: '/etiqueta/$id'
@@ -2096,6 +2142,20 @@ declare module '@tanstack/react-router' {
       path: '/guias/$slug'
       fullPath: '/guias/$slug'
       preLoaderRoute: typeof GuiasSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/imprenta/': {
+      id: '/imprenta/'
+      path: '/imprenta'
+      fullPath: '/imprenta/'
+      preLoaderRoute: typeof ImprentaIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/imprenta/$lugar': {
+      id: '/imprenta/$lugar'
+      path: '/imprenta/$lugar'
+      fullPath: '/imprenta/$lugar'
+      preLoaderRoute: typeof ImprentaLugarRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/pagar/$codigo': {
@@ -2803,9 +2863,11 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   AvaliarCodigoRoute: AvaliarCodigoRoute,
   CatalogosSlugRoute: CatalogosSlugRoute,
+  CategoriaSlugRoute: CategoriaSlugRoute,
   EtiquetaIdRoute: EtiquetaIdRoute,
   FeedsArquivoRoute: FeedsArquivoRoute,
   GuiasSlugRoute: GuiasSlugRoute,
+  ImprentaLugarRoute: ImprentaLugarRoute,
   PagarCodigoRoute: PagarCodigoRoute,
   PedidoCodigoRoute: PedidoCodigoRoute,
   ProdutoSkuRoute: ProdutoSkuRoute,
@@ -2815,6 +2877,7 @@ const rootRouteChildren: RootRouteChildren = {
   UploadsSplatRoute: UploadsSplatRoute,
   CatalogosIndexRoute: CatalogosIndexRoute,
   GuiasIndexRoute: GuiasIndexRoute,
+  ImprentaIndexRoute: ImprentaIndexRoute,
   RepuestosAutosIndexRoute: RepuestosAutosIndexRoute,
   RepuestosIndexRoute: RepuestosIndexRoute,
   VehiculosIndexRoute: VehiculosIndexRoute,

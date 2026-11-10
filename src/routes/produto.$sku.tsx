@@ -37,7 +37,7 @@ import { categoriaEs, nomeEs, nomeProduto, nomePeca } from "@/lib/pecas-es";
 import { descricaoPeca, metaDescricaoPeca, tituloPeca, type PecaTexto } from "@/lib/descricao-peca";
 import { linksIdioma, comPrefixo, tr, useT, type Idioma } from "@/lib/idioma";
 import { principalDe } from "@/components/PrecoTag";
-import { urlRepuestos } from "@/lib/seo-paginas";
+import { urlCategoria } from "@/lib/seo-imprenta";
 import { whatsappQuoteUrl } from "@/lib/whatsapp";
 import { AvisoPreco } from "@/components/AvisoPreco";
 import { AjudaPeca } from "@/components/AjudaPeca";
@@ -81,7 +81,12 @@ export const Route = createFileRoute("/produto/$sku")({
       // Produto gráfico: configurações com preço, opções, descrição, FAQ e vídeos
       getDetalhesGraficaFn({ data: product.sku }).catch(() => null),
     ]);
-    return { product, precos, avaliacoes, detalhes };
+    // Produto gráfico: a descrição do cadastro é a da Printi (em português) e o url é o de lá;
+    // na página e nos dados enviados ao navegador vai só o texto em espanhol
+    const limpo = detalhes
+      ? { ...product, descricao: detalhes.descricaoCurta, url: null, fichas_tecnicas: [] }
+      : product;
+    return { product: limpo as typeof product, precos, avaliacoes, detalhes };
   },
   head: ({ loaderData, match }) => {
     const idioma: Idioma = match.context?.idioma ?? "es";
@@ -89,7 +94,7 @@ export const Route = createFileRoute("/produto/$sku")({
     if (!loaderData) {
       return {
         meta: [
-          { title: t("Repuesto no encontrado", "Peça não encontrada") },
+          { title: t("Producto no encontrado", "Producto no encontrado") },
           { name: "robots", content: "noindex" },
         ],
       };
@@ -100,7 +105,7 @@ export const Route = createFileRoute("/produto/$sku")({
     const codigo = codigoExibicao(p);
     // "420462 · Retén New Holland | Uruguay": código, nome e marca (o que se busca), até ~60 caracteres
     const graf = loaderData.detalhes;
-    const title = graf ? `${nome} | PRINTE UY` : tituloPeca(p, idioma);
+    const title = graf ? graf.seo?.titulo || `${nome} | PRINTE UY` : tituloPeca(p, idioma);
     // Só a moeda do país da página: R$ em português (Brasil), $U em espanhol (Uruguai)
     const precoMeta = loaderData.precos?.mostrar
       ? precoDoPais(precoVenda(p, loaderData.precos), idioma)
@@ -212,7 +217,7 @@ export const Route = createFileRoute("/produto/$sku")({
                 "@type": "ListItem",
                 position: 2,
                 name: categoriaNo(p.categoria, idioma),
-                item: `${SITE}${comPrefixo(urlRepuestos({ categoria: p.categoria }) ?? `/loja?categoria=${encodeURIComponent(p.categoria)}`, idioma)}`,
+                item: `${SITE}${urlCategoria(p.categoria)}`,
               },
             ]
           : []),
@@ -252,7 +257,7 @@ function ErroPeca() {
       <SiteHeader />
       <div className="mx-auto max-w-2xl px-4 py-16 text-center">
         <h1 className="text-2xl font-semibold">
-          {t("No pudimos cargar el repuesto", "Não conseguimos carregar a peça")}
+          {t("No pudimos cargar el producto", "No pudimos cargar el producto")}
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
           {t(
@@ -275,11 +280,11 @@ function PecaNaoEncontrada() {
       <SiteHeader />
       <div className="mx-auto max-w-2xl px-4 py-16 text-center">
         <h1 className="text-2xl font-semibold">
-          {t("Repuesto no encontrado", "Peça não encontrada")}
+          {t("Producto no encontrado", "Producto no encontrado")}
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
           {t(
-            "El código no existe o fue retirado del catálogo. Buscá otra pieza o consultanos por WhatsApp.",
+            "El producto no existe o fue retirado del catálogo. Buscá otro producto o consultanos por WhatsApp.",
             "O código não existe ou foi retirado do catálogo. Busque outra peça ou fale conosco pelo WhatsApp.",
           )}
         </p>
@@ -405,7 +410,7 @@ function ProductDetail() {
           <ChevronRight className="h-3.5 w-3.5 shrink-0" />
           <a
             href={comPrefixo(
-              (product.categoria && urlRepuestos({ categoria: product.categoria })) || "/loja",
+              (product.categoria && urlCategoria(product.categoria)) || "/loja",
               idioma,
             )}
             className="shrink-0 hover:text-primary"

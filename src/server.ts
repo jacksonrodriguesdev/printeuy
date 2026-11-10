@@ -65,6 +65,28 @@ function redirecionarCaminhoPt(request: Request): Response | null {
   });
 }
 
+// Endereços do site de autopeças de onde este projeto nasceu (/repuestos, /vehiculos, /guias,
+// /repuestos-autos/<local>): 301 para a página equivalente da imprenta, para o Google trocar
+// as URLs antigas e não sobrar página fora do tema.
+function redirecionarAutopecas(request: Request): Response | null {
+  if (request.method !== "GET" && request.method !== "HEAD") return null;
+  const u = new URL(request.url);
+  const p = u.pathname.replace(/\/+$/, "");
+  let destino: string | null = null;
+  const local = p.match(/^\/repuestos-autos(?:\/([^/]+))?$/);
+  if (local) {
+    const slug = local[1] && local[1] !== "uruguay" ? local[1] : null;
+    destino = slug ? `/imprenta/${slug}` : "/imprenta";
+  } else if (/^\/(repuestos|vehiculos|guias)(\/|$)/.test(p)) destino = "/loja";
+  // Lista de códigos de peças e catálogos/manuais de oficina: sem equivalente na imprenta
+  else if (p === "/pedido-rapido") destino = "/cotizar";
+  else if (p === "/catalogos" || /^\/catalogos\/[^/]+$/.test(p)) destino = "/loja";
+  else if (/^\/loja$/.test(p) && /[?&](auto|marca|montadora|linha)=/.test(u.search))
+    destino = "/loja";
+  if (!destino) return null;
+  return new Response(null, { status: 301, headers: { Location: `${SITE_URL}${destino}` } });
+}
+
 // CSRF: pedido que muda dados (POST…) nas funções do servidor e nas APIs só vale vindo das páginas
 // do próprio site. O cookie SameSite=Lax já barra a maioria; isto é a segunda tranca (Fetch Metadata
 // dos navegadores atuais e, sem ela, o cabeçalho Origin). Webhooks (Stripe, dLocal, Resend) ficam
@@ -180,6 +202,8 @@ export default {
     if (alias) return comSeguranca(alias);
     const pt = redirecionarCaminhoPt(request);
     if (pt) return comSeguranca(pt);
+    const antigo = redirecionarAutopecas(request);
+    if (antigo) return comSeguranca(antigo);
     const csrf = bloquearOutroSite(request);
     if (csrf) return comSeguranca(csrf);
     try {

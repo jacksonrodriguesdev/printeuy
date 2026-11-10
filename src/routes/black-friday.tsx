@@ -5,7 +5,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { Contagem, HeroCampanha, ListaOfertas } from "@/components/campanha/Campanha";
 import { CuponsLista, cuponsDaMoeda } from "@/components/campanha/Cupons";
 import { paginaCampanhaFn } from "@/lib/campanhas";
-import { urlRepuestos } from "@/lib/seo-paginas";
+import { urlCategoria } from "@/lib/seo-imprenta";
 import { categoriaEs } from "@/lib/pecas-es";
 import { linksIdioma, tr, useT, type Idioma } from "@/lib/idioma";
 import { SITE_URL } from "@/lib/site";
@@ -24,15 +24,15 @@ export const Route = createFileRoute("/black-friday")({
     const ano = new Date(c?.alvo ?? loaderData?.proxima?.inicio ?? Date.now()).getFullYear();
     const titulo = c
       ? t(
-          `Black Friday ${ano}: repuestos para autos con hasta -${c.maxPct}% | PRINTE UY`,
-          `Black Friday ${ano}: peças para autos com até -${c.maxPct}% | PRINTE UY`,
+          `Black Friday ${ano}: impresos personalizados con hasta -${c.maxPct}% | PRINTE UY`,
+          `Black Friday ${ano}: impresos personalizados con hasta -${c.maxPct}% | PRINTE UY`,
         )
       : t(
-          `Black Friday ${ano} en repuestos para autos | PRINTE UY`,
-          `Black Friday ${ano} em peças para autos | PRINTE UY`,
+          `Black Friday ${ano} en impresos personalizados | PRINTE UY`,
+          `Black Friday ${ano} en impresos personalizados | PRINTE UY`,
         );
     const desc = t(
-      `Black Friday PRINTE UY ${ano}: descuentos en repuestos para autos y camionetas Volkswagen, Chevrolet, Fiat y Ford. Cotizá por WhatsApp.`,
+      `Black Friday PRINTE UY ${ano}: descuentos en tarjetas, adhesivos, packaging, banners y regalos con tu logo. Envíos a todo Uruguay.`,
       `Black Friday PRINTE UY ${ano}: descontos em peças para carros e caminhonetes Volkswagen, Chevrolet, Fiat e Ford. Envio para todo o Sul do Brasil.`,
     );
     // Evento de vendas (datas reais da campanha, ou da próxima)
@@ -96,7 +96,7 @@ function PaginaBlack() {
               </h1>
               <p className="mx-auto mt-4 max-w-2xl text-white/80">
                 {t(
-                  "Descuentos en repuestos para autos y camionetas. Creá tu cuenta y te avisamos apenas empiece.",
+                  "Descuentos en impresos personalizados. Creá tu cuenta y te avisamos apenas empiece.",
                   "Descontos em peças para carros e caminhonetes. Crie sua conta e avisamos assim que começar.",
                 )}
               </p>
@@ -132,12 +132,7 @@ function PaginaBlack() {
                           ? r.alvo
                           : categoriaEs(r.alvo)
                         : r.alvo;
-                  const url =
-                    r.tipo === "CATEGORIA"
-                      ? urlRepuestos({ categoria: r.alvo })
-                      : r.tipo === "MARCA"
-                        ? urlRepuestos({ marca: r.alvo })
-                        : "/loja";
+                  const url = r.tipo === "CATEGORIA" ? urlCategoria(r.alvo) : "/loja";
                   return (
                     <a
                       key={i}
@@ -193,14 +188,14 @@ function PaginaBlack() {
               <li>
                 •{" "}
                 {t(
-                  "Los descuentos ya aparecen en el precio de cada repuesto del sitio.",
+                  "Los descuentos ya aparecen en el precio de cada producto del sitio.",
                   "Os descontos já aparecem no preço de cada peça do site.",
                 )}
               </li>
               <li>
                 •{" "}
                 {t(
-                  "Pedí tu cotización por WhatsApp y te confirmamos la pieza, el precio con descuento y el envío.",
+                  "Configurá tu producto o escribinos por WhatsApp y te confirmamos el precio con descuento y el envío.",
                   "Peça o orçamento pelo WhatsApp e confirmamos a peça, o preço com desconto e o frete.",
                 )}
               </li>

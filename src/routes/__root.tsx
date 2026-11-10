@@ -28,6 +28,7 @@ import { FloatingContact } from "@/components/FloatingContact";
 import { VisitTracker } from "@/components/VisitTracker";
 import { PopupAcesso } from "@/components/PopupAcesso";
 import { AppPwa } from "@/components/AppInstalavel";
+import { APP_ATIVO } from "@/lib/app-pwa";
 import { SiteFooter } from "@/components/SiteFooter";
 import { MobileTabBar } from "@/components/MobileTabBar";
 import { SugestaoIdioma } from "@/components/SugestaoIdioma";
@@ -134,12 +135,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     const idioma: Idioma = match.context?.idioma ?? "es";
     const t = (es: string, pt: string) => tr(idioma, es, pt);
     const titulo = t(
-      "PRINTE UY — Repuestos para autos en Uruguay",
-      "PRINTE UY — Peças para carros no RS, SC e PR",
+      "PRINTE UY — Imprenta online en Uruguay",
+      "PRINTE UY — Imprenta online en Uruguay",
     );
     const resumo = t(
-      "Repuestos para autos y camionetas. Cotizá por WhatsApp.",
-      "Peças para carros e caminhonetes. Envio para RS, SC e PR por Correios ou transportadora. Orçamento pelo WhatsApp.",
+      "Imprenta online: tarjetas, adhesivos, packaging, volantes y regalos con tu logo. Envíos a todo Uruguay.",
+      "Imprenta online: tarjetas, adhesivos, packaging, volantes y regalos con tu logo. Envíos a todo Uruguay.",
     );
     return {
       meta: [
@@ -148,7 +149,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         // viewport-fit=cover: usa a tela inteira no iPhone (com pb-safe/pt-safe nas barras)
         { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
         // Aparência de aplicativo: cor da barra do navegador e instalação na tela inicial
-        { name: "theme-color", content: "#0f2850" },
+        { name: "theme-color", content: "#141414" },
         { name: "mobile-web-app-capable", content: "yes" },
         { name: "apple-mobile-web-app-capable", content: "yes" },
         { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
@@ -157,8 +158,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         {
           name: "description",
           content: t(
-            "Repuestos para autos y camionetas Volkswagen, Chevrolet, Fiat, Ford, Renault y Peugeot. Cotizá por WhatsApp.",
-            "Peças para carros e caminhonetes Volkswagen, Chevrolet, Fiat, Ford, Renault e Peugeot. Envio para RS, SC e PR por Correios ou transportadora. Orçamento pelo WhatsApp.",
+            "Imprenta online en Uruguay: tarjetas de presentación, adhesivos, volantes, packaging, banners, tazas y regalos empresariales personalizados. Precio al instante y envío a todo el país.",
+            "Imprenta online en Uruguay: tarjetas de presentación, adhesivos, volantes, packaging, banners, tazas y regalos empresariales personalizados. Precio al instante y envío a todo el país.",
           ),
         },
         { property: "og:locale", content: OG_LOCALE[idioma] },
@@ -182,11 +183,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           rel: "stylesheet",
           href: appCss,
         },
-        // App instalável: o de /pt abre em português (página inicial /pt)
-        {
-          rel: "manifest",
-          href: "/manifest.webmanifest",
-        },
+        // App instalável desligado (APP_ATIVO em src/lib/app-pwa.ts): sem manifest o navegador
+        // não oferece "Instalar"
+        ...(APP_ATIVO ? [{ rel: "manifest", href: "/manifest.webmanifest" }] : []),
         { rel: "icon", href: "/favicon.ico", sizes: "32x32" },
         { rel: "icon", href: "/favicon-48.png", type: "image/png", sizes: "48x48" },
         // O Google mostra o ícone nos resultados (pede múltiplo de 48 px; maior fica mais nítido)

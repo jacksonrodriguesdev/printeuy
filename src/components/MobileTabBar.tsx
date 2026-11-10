@@ -8,6 +8,7 @@ import { whatsappContactUrl } from "@/lib/whatsapp";
 import { useCategoriasLoja } from "@/hooks/use-categorias-loja";
 import { cn } from "@/lib/utils";
 import { useT } from "@/lib/idioma";
+import { urlCategoria } from "@/lib/seo-imprenta";
 import { SeletorIdioma } from "@/components/SeletorIdioma";
 
 // Barra de navegação inferior no celular: "dock" azul flutuante com o vehículo do cliente no
@@ -103,8 +104,7 @@ export function MobileTabBar() {
             {categorias.map((c) => (
               <Link
                 key={c.nome}
-                to="/loja"
-                search={{ categoria: c.nome } as never}
+                to={urlCategoria(c.nome) as never}
                 onClick={() => setSheet(null)}
                 className="flex flex-col items-center gap-2 rounded-2xl bg-zinc-50 p-3 text-center text-xs font-medium text-zinc-700 active:scale-95 active:bg-primary/10"
               >

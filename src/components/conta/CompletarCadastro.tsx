@@ -127,7 +127,7 @@ export function CompletarCadastro({ perfil, destino }: { perfil: Perfil; destino
                   ¿Cómo te contactamos?
                 </h1>
                 <p className="mt-1 text-sm text-slate-500">
-                  Te respondemos por WhatsApp con el precio de tus repuestos.
+                  Te respondemos por WhatsApp con el precio de tus impresos.
                 </p>
               </div>
               <Campo id="c-nome" label="Tu nombre" icone={User}>

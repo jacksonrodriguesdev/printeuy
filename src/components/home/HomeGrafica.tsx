@@ -20,6 +20,7 @@ import { ProductRail } from "@/components/home/ProductRail";
 import { useCategoriasLoja } from "@/hooks/use-categorias-loja";
 import { listProducts, type ListParams, type Product } from "@/lib/products";
 import { whatsappContactUrl } from "@/lib/whatsapp";
+import { urlCategoria } from "@/lib/seo-imprenta";
 import { cn } from "@/lib/utils";
 
 // Home da gráfica (PRINTE UY), na estrutura da Printi: banner rotativo, 4 vantagens, categorias
@@ -88,8 +89,8 @@ function BannerRotativo() {
           <div className="flex">
             {SLIDES.map((s, i) => {
               const destino = s.sku
-                ? { to: "/produto/$sku" as const, params: { sku: s.sku } }
-                : { to: "/loja" as const, search: { categoria: s.categoria } as never };
+                ? ({ to: "/produto/$sku", params: { sku: s.sku } } as object)
+                : ({ to: urlCategoria(s.categoria) } as object);
               return (
                 <div key={s.titulo} className="min-w-0 flex-[0_0_100%]">
                   <div
@@ -104,7 +105,7 @@ function BannerRotativo() {
                       </h2>
                       <p className="mt-3 text-white/80 md:text-lg">{s.texto}</p>
                       <Link
-                        {...destino}
+                        {...(destino as { to: "/" })}
                         className="mt-6 inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 font-bold text-zinc-900 transition hover:gap-3"
                       >
                         {s.cta} <ArrowRight className="h-4 w-4" />
@@ -236,6 +237,8 @@ function Vantagens() {
 }
 
 // ---------------------------------------------------------------- Títulos de seção
+const cat = (s?: object) => (s as { categoria?: string } | undefined)?.categoria;
+
 function Titulo({
   titulo,
   sub,
@@ -255,8 +258,9 @@ function Titulo({
       </div>
       {link && (
         <Link
-          to="/loja"
-          search={link.search as never}
+          {...(cat(link.search)
+            ? { to: urlCategoria(cat(link.search)) as never }
+            : { to: "/loja", search: link.search as never })}
           className="flex shrink-0 items-center gap-1 rounded-full border border-zinc-300 px-4 py-2 text-sm font-semibold text-zinc-900 transition hover:border-zinc-900 hover:bg-zinc-900 hover:text-white"
         >
           {link.texto ?? "Ver todos"} <ArrowRight className="h-4 w-4" />
@@ -276,8 +280,7 @@ function CategoriasPopulares() {
         {categorias.slice(0, 6).map((c) => (
           <Link
             key={c.nome}
-            to="/loja"
-            search={{ categoria: c.nome } as never}
+            to={urlCategoria(c.nome) as never}
             className="group flex w-28 shrink-0 flex-col items-center gap-3 text-center md:w-auto"
           >
             <span className="relative flex aspect-square w-full items-center justify-center overflow-hidden rounded-full bg-zinc-100 ring-4 ring-transparent transition duration-300 group-hover:ring-accent/30">

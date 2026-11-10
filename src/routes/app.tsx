@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import {
   BellRing,
@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { AtivarAvisosGrande, BotaoInstalar, PassosIos, useApp } from "@/components/AppInstalavel";
-import { navegadorDeApp } from "@/lib/app-pwa";
+import { APP_ATIVO, navegadorDeApp } from "@/lib/app-pwa";
 import { registrarEvento } from "@/lib/eventos";
 import { linksIdioma, tr, useT, type Idioma } from "@/lib/idioma";
 import { SITE_URL } from "@/lib/site";
@@ -22,6 +22,10 @@ import { qrSiteFn } from "@/lib/qr";
 // Página do app (/app em espanhol, /pt/app em português). Mostra o jeito certo de instalar em cada
 // aparelho; o app instalado a partir daqui é o do idioma da página (manifest em src/routes/__root.tsx).
 export const Route = createFileRoute("/app")({
+  // App instalável desligado (APP_ATIVO): a página manda para a home
+  beforeLoad: () => {
+    if (!APP_ATIVO) throw redirect({ to: "/", statusCode: 301 } as never);
+  },
   head: ({ match }) => {
     const idioma: Idioma = (match.context as any)?.idioma ?? "es";
     const t = (es: string, pt: string) => tr(idioma, es, pt);

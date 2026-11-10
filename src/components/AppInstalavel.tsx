@@ -32,6 +32,8 @@ import {
   type EstadoAvisos,
   type MotivoOferta,
   type Plataforma,
+  APP_ATIVO,
+  removerServiceWorker,
 } from "@/lib/app-pwa";
 
 // App instalável (PWA) no site. Tudo no idioma da página: em /pt o app instalado é o português
@@ -64,7 +66,16 @@ const SEM_OFERTA = [
 const VISITAS = "ap_app_visitas";
 const SESSAO = "ap_app_sessao"; // sessionStorage: esta visita já foi contada / já ofereceu
 
+// App desligado (APP_ATIVO): só limpa o service worker antigo dos aparelhos
+function AppDesligado() {
+  useEffect(() => removerServiceWorker(), []);
+  return null;
+}
 export function AppPwa() {
+  return APP_ATIVO ? <AppPwaAtivo /> : <AppDesligado />;
+}
+
+function AppPwaAtivo() {
   const { idioma } = useT();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const caminho = useRef(pathname);
@@ -335,7 +346,11 @@ export function PassosIos({
 }
 
 // Botão "Avisar no celular" (aviso de preço…): some quando não dá para usar
-export function BotaoAvisos({ origem, className = "" }: { origem: string; className?: string }) {
+export function BotaoAvisos(p: { origem: string; className?: string }) {
+  return APP_ATIVO ? <BotaoAvisosAtivo {...p} /> : null;
+}
+
+function BotaoAvisosAtivo({ origem, className = "" }: { origem: string; className?: string }) {
   const { t, idioma } = useT();
   const { avisos, setAvisos } = useApp();
   const [ocupado, setOcupado] = useState(false);
@@ -424,6 +439,10 @@ export function AtivarAvisosGrande({ origem }: { origem: string }) {
 
 // ---------- Rodapé: "Tené PRINTE UY en tu celular" ----------
 export function CartaoApp() {
+  return APP_ATIVO ? <CartaoAppAtivo /> : null;
+}
+
+function CartaoAppAtivo() {
   const { t, idioma } = useT();
   const { avisos, setAvisos, plat } = useApp();
   const [ocupado, setOcupado] = useState(false);

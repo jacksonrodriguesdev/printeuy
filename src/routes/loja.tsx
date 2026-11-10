@@ -22,6 +22,7 @@ import { whatsappContactUrl } from "@/lib/whatsapp";
 import { cn } from "@/lib/utils";
 import { BotaoFotoPieza } from "@/components/FotoPieza";
 import { linksIdioma, comPrefixo, tr, useT, type Idioma } from "@/lib/idioma";
+import { categoriaImprentaPorNome } from "@/lib/seo-imprenta";
 
 // Categoria no idioma da página: em português é o nome do cadastro
 // Categorias já estão em espanhol no banco; "Motor > Pistón" aparece como "Pistón"
@@ -97,7 +98,9 @@ export const Route = createFileRoute("/loja")({
     if (categoria) params.set("categoria", categoria);
     if (marca) params.set("marca", marca);
     const qs = params.toString();
-    const caminho = `/loja${qs ? `?${qs}` : ""}`;
+    // Categoria com página própria (/categoria/<slug>): o canonical aponta para ela
+    const pagCat = categoria && !marca ? categoriaImprentaPorNome(categoria) : null;
+    const caminho = pagCat ? `/categoria/${pagCat.slug}` : `/loja${qs ? `?${qs}` : ""}`;
     return {
       links: linksIdioma(caminho, idioma),
       meta: [

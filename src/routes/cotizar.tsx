@@ -7,7 +7,7 @@ import { comPrefixo, linksIdioma, tr, useT, type Idioma } from "@/lib/idioma";
 import { whatsappContactUrl } from "@/lib/whatsapp";
 import { SITE_URL } from "@/lib/site";
 
-// Página de cotação: "Somos distribuidores de repuestos para autos en Uruguay"
+// Página de cotação de impressos sob medida (medida, quantidade ou produto especial)
 export const Route = createFileRoute("/cotizar")({
   head: ({ match }) => {
     const idioma: Idioma = match.context?.idioma ?? "es";
@@ -17,21 +17,21 @@ export const Route = createFileRoute("/cotizar")({
       meta: [
         {
           title: t(
-            "Cotizá repuestos para autos — Distribuidores en Uruguay | PRINTE UY",
+            "Cotizá tu impreso a medida en Uruguay | PRINTE UY",
             "Orçamento de peças para autos com envio para o Sul do Brasil | PRINTE UY",
           ),
         },
         {
           name: "description",
           content: t(
-            "Somos distribuidores de repuestos para autos y camionetas en Uruguay. Pedí tu cotización gratis: te respondemos por WhatsApp.",
+            "¿Necesitás una medida, cantidad o producto especial? Pedí tu cotización gratis de tarjetas, adhesivos, packaging, banners y más: te respondemos por WhatsApp.",
             "Peças para carros e caminhonetes no RS, SC e PR. Peça seu orçamento grátis: respondemos pelo WhatsApp. Envio para todo o Sul do Brasil.",
           ),
         },
         {
           property: "og:title",
           content: t(
-            "Cotizá tus repuestos con PRINTE UY — Distribuidores en Uruguay",
+            "Cotizá tu impreso a medida con PRINTE UY",
             "Peça seu orçamento na PRINTE UY — envio para todo o Sul do Brasil",
           ),
         },
@@ -43,9 +43,9 @@ export const Route = createFileRoute("/cotizar")({
 });
 
 const PASSOS = [
-  ["Contanos qué necesitás", "Código, nombre de la pieza o una foto."],
-  ["Te pasamos el precio", "Por WhatsApp, con disponibilidad y costo de envío."],
-  ["Coordinamos por WhatsApp", "Te pasamos precio y disponibilidad antes de confirmar."],
+  ["Contanos qué necesitás", "Producto, cantidad, medidas y tu diseño (si ya lo tenés)."],
+  ["Te pasamos el precio", "Por WhatsApp, con el plazo de producción y el costo de envío."],
+  ["Confirmás y producimos", "Revisamos tu archivo, imprimimos y lo enviamos a tu ciudad."],
 ];
 const PASSOS_PT = [
   ["Conte o que precisa", "Código, nome da peça ou uma foto."],
@@ -76,22 +76,17 @@ function CotizarPage() {
               ) : (
                 <BandeiraUruguay className="h-3.5 w-5 rounded-sm" />
               )}{" "}
-              {t("Distribuidores en Uruguay", "Atendemos RS, SC e PR")}
+              Imprenta online en Uruguay
             </span>
             <h1 className="mt-4 text-3xl font-extrabold leading-tight md:text-5xl md:leading-[1.05]">
-              {t(
-                "Somos distribuidores de repuestos para autos en Uruguay",
-                "Peças para autos com envio para todo o Sul do Brasil",
-              )}
+              Cotizá tu impreso a medida
             </h1>
             <p className="mt-3 text-xl font-bold text-orange-300 md:text-2xl">
-              {t("Hacé tu cotización con nosotros.", "Peça seu orçamento com a gente.")}
+              Medidas, cantidades o productos especiales.
             </p>
             <p className="mt-4 max-w-xl text-white/80">
-              {t(
-                "Tienda online con envíos a todo Uruguay. Repuestos para autos y camionetas Volkswagen, Chevrolet, Fiat y Ford y más. Para particulares, talleres y revendedores.",
-                "Loja online de peças para autos para o Sul do Brasil. Peças para carros e caminhonetes Volkswagen, Chevrolet, Fiat y Ford e mais. Para produtores, oficinas e revendedores.",
-              )}
+              Si no encontrás la medida, la cantidad o el producto que necesitás, contanos tu idea y
+              te pasamos el precio por WhatsApp. Para comercios, empresas, emprendedores y eventos.
             </p>
             <ul className="mt-6 grid gap-3 sm:grid-cols-2">
               {(pt ? VANTAGENS_PT : VANTAGENS).map((v) => (
@@ -136,33 +131,32 @@ function CotizarPage() {
 
         <section className="grid gap-3 md:grid-cols-3">
           <Link
-            to="/pedido-rapido"
+            to="/loja"
             className="flex items-center gap-4 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-black/5 hover:ring-primary/40"
           >
             <ListChecks className="h-8 w-8 shrink-0 text-primary" />
             <div>
-              <p className="font-bold">{t("¿Muchos códigos?", "Muitos códigos?")}</p>
+              <p className="font-bold">¿Ya sabés qué querés?</p>
               <p className="text-sm text-zinc-600">
-                {t("Pegá tu lista en el pedido rápido.", "Cole sua lista no pedido rápido.")}
+                Configurá tu producto y mirá el precio al instante.
               </p>
             </div>
           </Link>
           <Link
-            to="/catalogos"
+            to="/ayuda"
+            hash="archivos"
             className="flex items-center gap-4 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-black/5 hover:ring-primary/40"
           >
             <BookOpen className="h-8 w-8 shrink-0 text-primary" />
             <div>
-              <p className="font-bold">{t("¿No sabés el código?", "Não sabe o código?")}</p>
-              <p className="text-sm text-zinc-600">
-                {t("Buscalo en los catálogos en PDF.", "Procure nos catálogos em PDF.")}
-              </p>
+              <p className="font-bold">¿Cómo preparo mi archivo?</p>
+              <p className="text-sm text-zinc-600">Medidas, sangrado, resolución y colores.</p>
             </div>
           </Link>
           <a
             href={whatsappContactUrl(
               t(
-                "¡Hola! Quiero cotizar repuestos con PRINTE UY.",
+                "¡Hola! Quiero cotizar un impreso con PRINTE UY.",
                 "Olá! Quero fazer um orçamento de peças com a PRINTE UY.",
               ),
             )}

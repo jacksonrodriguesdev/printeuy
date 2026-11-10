@@ -202,7 +202,7 @@ export const TIPOS_EMAIL: TipoBlocoEmail[] = [
     icone: "PanelTop",
     padrao: {
       selo: "OFERTAS",
-      titulo: "¡Hola {{nombre}}! Repuestos para tu vehículo",
+      titulo: "¡Hola {{nombre}}! Impresos para tu marca",
       texto: "Pedí tu cotización por WhatsApp y te respondemos con precio y disponibilidad.",
       botao: "Ver ofertas",
       link: "/loja",
@@ -309,7 +309,7 @@ export const TIPOS_EMAIL: TipoBlocoEmail[] = [
     nome: "Botão",
     desc: "Botão com link. Cheio, contorno ou na largura toda.",
     icone: "MousePointerClick",
-    padrao: { texto: "Ver todos los repuestos", link: "/loja", estilo: "cheio", cor: "" },
+    padrao: { texto: "Ver todos los productos", link: "/loja", estilo: "cheio", cor: "" },
     campos: [
       { k: "texto", rotulo: "Texto", tipo: "texto" },
       { k: "link", rotulo: "Link", tipo: "link" },
@@ -469,7 +469,7 @@ export const TIPOS_EMAIL: TipoBlocoEmail[] = [
     padrao: {
       imagem: "",
       titulo: "Catálogos en PDF",
-      texto: "Descargá los catálogos de las marcas y encontrá el código de la pieza.",
+      texto: "Mirá todos nuestros productos personalizables con precio al instante.",
       botao: "Ver catálogos",
       link: "/catalogos",
       lado: "esq",
@@ -499,7 +499,7 @@ export const TIPOS_EMAIL: TipoBlocoEmail[] = [
     padrao: {
       titulo: "¿Cómo comprar?",
       itens: [
-        { titulo: "Elegí", texto: "Buscá la pieza por nombre o código en el sitio." },
+        { titulo: "Elegí", texto: "Buscá el producto en el sitio y configuralo a tu medida." },
         { titulo: "Pedí", texto: "Mandanos tu pedido por WhatsApp o desde el carrito." },
         { titulo: "Confirmá", texto: "Te pasamos precio y disponibilidad." },
       ],
@@ -537,7 +537,7 @@ export const TIPOS_EMAIL: TipoBlocoEmail[] = [
     desc: "Caixa com chamada e o botão verde do WhatsApp da loja.",
     icone: "MessageCircle",
     padrao: {
-      titulo: "¿No encontrás la pieza?",
+      titulo: "¿Necesitás algo especial?",
       texto: "Mandanos el código o una foto y te cotizamos.",
       botao: "Cotizar por WhatsApp",
     },
@@ -623,7 +623,7 @@ export const novoBloco = (tipo: string, d: Record<string, any> = {}): BlocoEmail
 // ---------------------------------------------------------------- textos fixos
 const L = {
   es: {
-    lema: "Repuestos para autos · Uruguay",
+    lema: "Imprenta online · Uruguay",
     codigo: "TU CÓDIGO",
     valido: "Válido",
     dias: "DÍAS",
@@ -636,7 +636,7 @@ const L = {
     baixa: "Darme de baja de estos e-mails",
     zap: "Cotizar por WhatsApp",
     empieza: "Empieza",
-    exemplo: "Las piezas se eligen solas al enviar el e-mail",
+    exemplo: "Los productos se eligen solos al enviar el e-mail",
   },
   pt: {
     lema: "Peças para autos · Uruguai e RS",

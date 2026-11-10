@@ -2,6 +2,20 @@
 // O service worker é public/sw.js; o servidor das notificações, src/lib/push.server.ts.
 import { visitanteAtual } from "./visitante";
 
+// Chave geral do app instalável. Desligado: sem manifest, sem service worker (o que já estava
+// instalado nos aparelhos é removido), sem barra/cartão "Instale o app" e sem a página /app.
+// Para religar: true aqui (e o sw.js antigo de volta, ver o histórico do git de public/sw.js).
+export const APP_ATIVO = false;
+
+// Remove o service worker que ficou registrado nos aparelhos de quem já visitou o site
+export function removerServiceWorker() {
+  if (typeof navigator === "undefined" || !("serviceWorker" in navigator)) return;
+  navigator.serviceWorker
+    .getRegistrations()
+    .then((rs) => rs.forEach((r) => r.unregister()))
+    .catch(() => {});
+}
+
 type EventoInstalar = Event & {
   prompt: () => Promise<void>;
   userChoice: Promise<{ outcome: string }>;
@@ -95,6 +109,7 @@ let iniciado = false;
 export function iniciarApp(aoInstalar: (origem: string) => void) {
   if (iniciado || typeof window === "undefined") return;
   iniciado = true;
+  if (!APP_ATIVO) return removerServiceWorker();
   if (abertoComoApp()) gravar(INSTALADO, "1");
   window.addEventListener("beforeinstallprompt", (e) => {
     e.preventDefault(); // o nosso botão (barra, página /app, rodapé) mostra na hora certa
@@ -224,6 +239,6 @@ export async function renovarInscricao(idioma: "es" | "pt") {
 export type MotivoOferta = "visita_repetida" | "whatsapp" | "aviso_preco" | "cadastro";
 export const EVENTO_OFERTA = "ap:oferta-app";
 export function ofertarApp(motivo: MotivoOferta) {
-  if (typeof window !== "undefined")
+  if (APP_ATIVO && typeof window !== "undefined")
     window.dispatchEvent(new CustomEvent(EVENTO_OFERTA, { detail: motivo }));
 }

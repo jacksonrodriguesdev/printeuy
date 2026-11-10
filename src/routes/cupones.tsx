@@ -12,11 +12,11 @@ export const Route = createFileRoute("/cupones")({
     const idioma: Idioma = (match.context as any)?.idioma ?? "es";
     const t = (es: string, pt: string) => tr(idioma, es, pt);
     const titulo = t(
-      "Cupones de descuento en repuestos para autos | PRINTE UY",
-      "Cupons de desconto em peças para autos | PRINTE UY",
+      "Cupones de descuento en impresos personalizados | PRINTE UY",
+      "Cupones de descuento en impresos personalizados | PRINTE UY",
     );
     const desc = t(
-      "Cupones de descuento de PRINTE UY para repuestos de autos y camionetas. Copiá el código y usalo al pedir tu cotización.",
+      "Cupones de descuento de PRINTE UY para tarjetas, adhesivos, packaging, banners y regalos personalizados. Copiá el código y usalo en tu pedido.",
       "Cupons de desconto da PRINTE UY para peças de carros e caminhonetes. Copie o código e use ao pedir o orçamento.",
     );
     return {

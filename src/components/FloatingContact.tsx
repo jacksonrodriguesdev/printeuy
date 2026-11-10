@@ -14,7 +14,7 @@ export function FloatingContact() {
   return (
     <a
       href={whatsappContactUrl(
-        t("¡Hola! Quiero consultar por repuestos.", "Olá! Quero consultar sobre peças."),
+        t("¡Hola! Quiero consultar por un impreso.", "¡Hola! Quiero consultar por un impreso."),
       )}
       target="_blank"
       rel="noreferrer noopener"

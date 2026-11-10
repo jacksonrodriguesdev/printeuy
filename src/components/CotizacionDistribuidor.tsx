@@ -19,36 +19,36 @@ import { Reveal } from "@/components/home/Reveal";
 import { BandeiraUruguay, BandeiraBrasil } from "@/components/Bandeiras";
 import { useT } from "@/lib/idioma";
 import { DEPARTAMENTOS_UY, normalizarCelularUY, formatarCelularUY } from "@/lib/validacao-conta";
-import { MARCAS_VEICULO } from "@/lib/navegacao";
+import { CATEGORIAS } from "@/lib/navegacao";
 import { whatsappContactUrl } from "@/lib/whatsapp";
 import { registrarEvento } from "@/lib/eventos";
 import { getSessionFn } from "@/lib/user-auth";
 import { pedirCadastro } from "@/lib/pedir-cadastro";
 import { cn } from "@/lib/utils";
 
-// Cotação com a PRINTE UY (distribuidora de repuestos para autos no Uruguai).
+// Cotação de impressos com a PRINTE UY (produto, quantidade, medidas e o arquivo do design).
 // Vai para Admin → Cotações (tabela quotes, mesma rota do "Mejoramos tu presupuesto").
 
 export const VANTAGENS = [
   {
     icon: PackageCheck,
-    titulo: "Amplio catálogo",
-    texto: "Repuestos para autos y camionetas de todas las marcas.",
+    titulo: "Más de 600 productos",
+    texto: "Papelería, adhesivos, packaging, cartelería y regalos con tu logo.",
   },
   {
     icon: Truck,
-    titulo: "Respuesta por WhatsApp",
-    texto: "Te pasamos precio y disponibilidad de toda tu lista.",
+    titulo: "Envío a todo Uruguay",
+    texto: "Coordinamos la entrega en tu ciudad.",
   },
   {
     icon: Wrench,
-    titulo: "La pieza correcta",
-    texto: "Confirmamos la compatibilidad antes de enviar.",
+    titulo: "Revisamos tu archivo",
+    texto: "Chequeamos medidas y colores antes de imprimir.",
   },
   {
     icon: MessageCircle,
     titulo: "Respuesta por WhatsApp",
-    texto: "Te pasamos precio y disponibilidad.",
+    texto: "Te pasamos el precio y el plazo de entrega.",
   },
 ];
 
@@ -102,8 +102,9 @@ export function CotizacionForm({ compacto = false }: { compacto?: boolean }) {
 
   const resumo = () =>
     [
-      f.marca && `${t("Vehículo", "Veículo")}: ${f.marca}${f.modelo ? ` ${f.modelo}` : ""}`,
-      f.pecas && `${t("Repuestos", "Peças")}:\n${f.pecas}`,
+      f.marca && `Producto: ${f.marca}`,
+      f.modelo && `Cantidad y medidas: ${f.modelo}`,
+      f.pecas && `Detalles:\n${f.pecas}`,
     ]
       .filter(Boolean)
       .join("\n\n");
@@ -127,8 +128,8 @@ export function CotizacionForm({ compacto = false }: { compacto?: boolean }) {
     if (f.pecas.trim().length < 3 && !foto)
       return setErro(
         t(
-          "Contanos qué repuestos necesitás o mandá una foto de la pieza.",
-          "Conte quais peças você precisa ou mande uma foto da peça.",
+          "Contanos qué querés imprimir o adjuntá tu diseño.",
+          "Contanos qué querés imprimir o adjuntá tu diseño.",
         ),
       );
     setBusy(true);
@@ -168,7 +169,7 @@ export function CotizacionForm({ compacto = false }: { compacto?: boolean }) {
         </h3>
         <p className="mt-2 max-w-sm text-zinc-600">
           {t(
-            "Te escribimos por WhatsApp con el precio y la disponibilidad. Si es urgente, mandanos un mensaje ahora:",
+            "Te escribimos por WhatsApp con el precio y el plazo de entrega. Si es urgente, mandanos un mensaje ahora:",
             "Vamos responder pelo WhatsApp com preço, disponibilidade e frete. Se for urgente, mande uma mensagem agora:",
           )}
         </p>
@@ -262,10 +263,10 @@ export function CotizacionForm({ compacto = false }: { compacto?: boolean }) {
       </Campo>
       <div>
         <span className="mb-1.5 block text-sm font-semibold text-zinc-800">
-          {t("Marca del vehículo", "Marca do veículo ou caminhão")}
+          ¿Qué querés imprimir?
         </span>
         <div className="flex flex-wrap gap-2">
-          {[...MARCAS_VEICULO.slice(0, 10).map((v) => v.nome), t("Otra", "Outra")].map((m) => (
+          {[...CATEGORIAS.slice(0, 10).map((c) => c.curto), "Otro"].map((m) => (
             <button
               key={m}
               type="button"
@@ -282,10 +283,10 @@ export function CotizacionForm({ compacto = false }: { compacto?: boolean }) {
           ))}
         </div>
       </div>
-      <Campo id="c-modelo" label={t("Modelo y año (opcional)", "Modelo e ano (opcional)")}>
+      <Campo id="c-modelo" label="Cantidad y medidas (opcional)">
         <input
           id="c-modelo"
-          placeholder={t("Ej.: MF 4275, 2012", "Ex.: MF 4275, 2012")}
+          placeholder="Ej.: 500 unidades, 9 x 5 cm"
           value={f.modelo}
           onChange={(e) => set("modelo")(e.target.value)}
           className={inputCls(false)}
@@ -293,19 +294,15 @@ export function CotizacionForm({ compacto = false }: { compacto?: boolean }) {
       </Campo>
       <Campo
         id="c-pecas"
-        label={t("¿Qué repuestos necesitás?", "Quais peças você precisa?")}
-        dica={t(
-          "Código original, nombre de la pieza o una descripción. Uno por línea.",
-          "Código original, nome da peça ou uma descrição. Uma por linha.",
-        )}
+        label="Contanos tu idea"
+        dica="Papel, terminación, colores, fecha en que lo necesitás o cualquier detalle."
       >
         <textarea
           id="c-pecas"
           rows={4}
-          placeholder={t(
-            "Ej.:\n2x Filtro de aceite 3136019\nRetén del eje delantero",
-            "Ex.:\n2x Filtro de óleo 3136019\nRetentor do eixo dianteiro",
-          )}
+          placeholder={
+            "Ej.: Adhesivos redondos de 5 cm con mi logo,\nen papel brillante, para el 20 de diciembre."
+          }
           value={f.pecas}
           onChange={(e) => set("pecas")(e.target.value)}
           className={cn(inputCls(false), "h-auto py-3")}
@@ -315,7 +312,6 @@ export function CotizacionForm({ compacto = false }: { compacto?: boolean }) {
         ref={arq}
         type="file"
         accept="image/*,application/pdf"
-        capture="environment"
         className="hidden"
         onChange={(e) => setFoto(e.target.files?.[0] ?? null)}
       />
@@ -329,7 +325,7 @@ export function CotizacionForm({ compacto = false }: { compacto?: boolean }) {
               setFoto(null);
               if (arq.current) arq.current.value = "";
             }}
-            aria-label={t("Quitar foto", "Remover foto")}
+            aria-label="Quitar archivo"
           >
             <X className="h-5 w-5" />
           </button>
@@ -340,8 +336,7 @@ export function CotizacionForm({ compacto = false }: { compacto?: boolean }) {
           onClick={() => arq.current?.click()}
           className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-zinc-200 py-3.5 text-sm font-semibold text-zinc-600 hover:border-primary hover:text-primary"
         >
-          <Camera className="h-5 w-5" />{" "}
-          {t("Agregar foto de la pieza (opcional)", "Adicionar foto da peça (opcional)")}
+          <Camera className="h-5 w-5" /> Adjuntar tu diseño o una referencia (opcional)
         </button>
       )}
       {erro && (
@@ -361,9 +356,9 @@ export function CotizacionForm({ compacto = false }: { compacto?: boolean }) {
         {busy ? t("Enviando…", "Enviando…") : t("Enviar cotización", "Enviar pedido de orçamento")}
       </button>
       <p className="text-center text-xs text-zinc-500">
-        {t("¿Muchos códigos? Usá el", "Muitos códigos? Use o")}{" "}
-        <Link to="/pedido-rapido" className="font-semibold text-primary underline">
-          {t("pedido rápido", "pedido rápido")}
+        ¿Ya sabés qué producto querés?{" "}
+        <Link to="/loja" className="font-semibold text-primary underline">
+          Mirá el precio al instante
         </Link>
         .
       </p>
@@ -371,7 +366,7 @@ export function CotizacionForm({ compacto = false }: { compacto?: boolean }) {
   );
 }
 
-// Seção da home: "Somos distribuidores de repuestos en Uruguay"
+// Seção da home: cotização de impressos
 export function CotizacionDistribuidorBlock() {
   const { t, idioma } = useT();
   const pt = idioma === "pt";
@@ -398,19 +393,16 @@ export function CotizacionDistribuidorBlock() {
               ) : (
                 <BandeiraUruguay className="h-3.5 w-5 rounded-sm" />
               )}{" "}
-              {t("Distribuidores en Uruguay", "Atendemos RS, SC e PR")}
+              Imprenta online en Uruguay
             </span>
             <h2
               id="cotizar-titulo"
               className="mt-4 text-3xl font-extrabold leading-tight md:text-[2.6rem] md:leading-[1.08]"
             >
-              {t(
-                "Somos distribuidores de repuestos para autos en Uruguay",
-                "Peças para autos com envio para todo o Sul do Brasil",
-              )}
+              ¿Necesitás algo especial? Cotizalo con nosotros
             </h2>
             <p className="mt-3 text-lg font-bold text-orange-300 md:text-xl">
-              {t("Hacé tu cotización con nosotros.", "Peça seu orçamento com a gente.")}
+              Medidas, cantidades o productos a medida.
             </p>
             <ul className="mt-6 grid gap-3 sm:grid-cols-2 md:grid-cols-1">
               {(pt ? VANTAGENS_PT : VANTAGENS).map((v) => (

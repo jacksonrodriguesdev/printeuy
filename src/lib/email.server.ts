@@ -129,7 +129,7 @@ export const cabecalhosBaixa = (origem: string, userId: number) => ({
 export function dadosRender(origem: string, extra: Partial<DadosRender> = {}): DadosRender {
   return {
     origem,
-    whatsappUrl: `https://api.whatsapp.com/send?phone=${PHONE}&text=${encodeURIComponent("¡Hola! Vi el e-mail de PRINTE UY y quiero cotizar repuestos.")}`,
+    whatsappUrl: `https://api.whatsapp.com/send?phone=${PHONE}&text=${encodeURIComponent("¡Hola! Vi el e-mail de PRINTE UY y quiero cotizar un impreso.")}`,
     enderecoRodape: process.env.EMAIL_ENDERECO?.trim() || undefined,
     ...extra,
   };

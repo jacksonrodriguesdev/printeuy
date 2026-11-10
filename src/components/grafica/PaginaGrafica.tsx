@@ -24,6 +24,7 @@ import { nomeProduto } from "@/lib/pecas-es";
 import { SITE_URL } from "@/lib/site";
 import { idYoutube, type CombinacaoGrafica, type DetalhesGrafica } from "@/lib/grafica";
 import type { Product } from "@/lib/products";
+import { urlCategoria } from "@/lib/seo-imprenta";
 import { cn } from "@/lib/utils";
 
 // Página do produto gráfico, na estrutura da Printi:
@@ -168,11 +169,7 @@ export function PaginaGrafica({
           <ChevronRight className="h-3.5 w-3.5" />
           {produto.categoria && (
             <>
-              <Link
-                to="/loja"
-                search={{ categoria: produto.categoria } as never}
-                className="hover:text-zinc-900"
-              >
+              <Link to={urlCategoria(produto.categoria) as never} className="hover:text-zinc-900">
                 {produto.categoria}
               </Link>
               <ChevronRight className="h-3.5 w-3.5" />

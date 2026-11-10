@@ -13,19 +13,26 @@ const url = (caminho: string, extra = "") =>
   `<url><loc>${esc(endereco(caminho))}</loc>` +
   `<xhtml:link rel="alternate" hreflang="${HREFLANG.es}" href="${esc(endereco(caminho))}"/>${extra}</url>`;
 const urlset = (linhas: string[]) =>
-  `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${linhas.join("\n")}\n</urlset>\n`;
+  `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n${linhas.join("\n")}\n</urlset>\n`;
 
-let cache: { pecas: Array<{ sku: string; data: string }>; em: number } | null = null;
+let cache: {
+  pecas: Array<{ sku: string; data: string; imagem: string | null }>;
+  em: number;
+} | null = null;
 async function pecas() {
   if (cache && Date.now() - cache.em < 60 * 60 * 1000) return cache.pecas;
   const { prisma } = await import("./prisma");
   const rows = await prisma.pecas.findMany({
     where: { duplicado_de: null, category_id: { not: null } },
-    select: { sku: true, updated_at: true },
+    select: { sku: true, updated_at: true, imagem_principal: true },
     orderBy: { sku: "asc" },
   });
   cache = {
-    pecas: rows.map((r) => ({ sku: r.sku.trim(), data: r.updated_at.toISOString().slice(0, 10) })),
+    pecas: rows.map((r) => ({
+      sku: r.sku.trim(),
+      data: r.updated_at.toISOString().slice(0, 10),
+      imagem: r.imagem_principal,
+    })),
     em: Date.now(),
   };
   return cache.pecas;
@@ -42,56 +49,27 @@ export async function indiceSitemap() {
 
 export async function sitemapParte(arquivo: string): Promise<string | null> {
   if (arquivo === "paginas.xml") {
-    const { MARCAS_SEO, CATEGORIAS_SEO, MAQUINAS_SEO, PECAS_SEO } = await import("./seo-paginas");
-    const { LOCAIS_SEO } = await import("./locais-seo");
-    const { buscarSkus } = await import("./busca-catalogo.server");
-    // Marca + categoria só quando tem peças (página vazia não vale a pena indexar)
-    const combos: string[] = [];
-    for (const m of MARCAS_SEO)
-      for (const c of CATEGORIAS_SEO)
-        if ((await buscarSkus({ marca: m.marca, categoria: c.categoria, vitrine: true })).length)
-          combos.push(`/repuestos/${m.slug}/${c.slug}`);
+    // Imprenta: home, loja, categorias, páginas por localidade e institucionais.
+    // (As páginas de autopeças do site de origem redirecionam: ver redirecionarAutopecas em src/server.ts.)
+    const { CATEGORIAS_IMPRENTA } = await import("./seo-imprenta");
+    const { LUGARES } = await import("./ciudades-uy");
     return urlset([
       url(`/`, "<changefreq>daily</changefreq><priority>1.0</priority>"),
       url(`/loja`, "<changefreq>daily</changefreq><priority>0.9</priority>"),
-      url(`/repuestos`, "<changefreq>weekly</changefreq><priority>0.9</priority>"),
-      ...MARCAS_SEO.map((m) =>
-        url(`/repuestos/${m.slug}`, "<changefreq>weekly</changefreq><priority>0.9</priority>"),
+      ...CATEGORIAS_IMPRENTA.map((c) =>
+        url(`/categoria/${c.slug}`, "<changefreq>weekly</changefreq><priority>0.9</priority>"),
       ),
-      ...CATEGORIAS_SEO.map((c) =>
-        url(`/repuestos/${c.slug}`, "<changefreq>weekly</changefreq><priority>0.8</priority>"),
-      ),
-      ...[...MAQUINAS_SEO, ...PECAS_SEO].map((c) =>
-        url(`/repuestos/${c.slug}`, "<changefreq>weekly</changefreq><priority>0.9</priority>"),
-      ),
-      ...combos.map((u) => url(u, "<priority>0.7</priority>")),
-      // Páginas por veículo (/vehiculos/volkswagen/gol): só modelos com peças no catálogo
-      url(`/vehiculos`, "<changefreq>weekly</changefreq><priority>0.9</priority>"),
-      ...(await paginasVeiculo()).map((u) =>
-        url(u, "<changefreq>weekly</changefreq><priority>0.8</priority>"),
-      ),
-      url(`/repuestos-autos`, "<changefreq>weekly</changefreq><priority>0.8</priority>"),
-      ...LOCAIS_SEO.map((l) =>
+      url(`/imprenta`, "<changefreq>weekly</changefreq><priority>0.8</priority>"),
+      ...LUGARES.map((l) =>
         url(
-          `/repuestos-autos/${l.slug}`,
-          "<changefreq>weekly</changefreq><priority>0.7</priority>",
+          `/imprenta/${l.slug}`,
+          `<changefreq>weekly</changefreq><priority>${l.tipo === "barrio" ? "0.6" : "0.7"}</priority>`,
         ),
       ),
-      url(`/catalogos`, "<changefreq>weekly</changefreq><priority>0.7</priority>"),
-      ...(await catalogosPublicos()).map((c) =>
-        url(c.caminho, `<lastmod>${c.data}</lastmod><priority>0.7</priority>`),
-      ),
-      url(`/cotizar`, "<changefreq>weekly</changefreq><priority>0.7</priority>"),
-      url(`/pedido-rapido`, "<priority>0.6</priority>"),
+      url(`/cotizar`, "<changefreq>weekly</changefreq><priority>0.6</priority>"),
       url(`/ayuda`, "<priority>0.5</priority>"),
-      // Guias técnicos
-      url(`/guias`, "<changefreq>monthly</changefreq><priority>0.6</priority>"),
-      ...(await import("./guias")).GUIAS.map((g) =>
-        url(`/guias/${g.slug}`, "<changefreq>monthly</changefreq><priority>0.6</priority>"),
-      ),
-      // Campanha (endereço fixo o ano todo) e cupons
-      url(`/black-friday`, "<changefreq>daily</changefreq><priority>0.8</priority>"),
-      url(`/cupones`, "<changefreq>daily</changefreq><priority>0.6</priority>"),
+      url(`/cupones`, "<changefreq>daily</changefreq><priority>0.5</priority>"),
+      url(`/privacidad`, "<priority>0.2</priority>"),
     ]);
   }
   const m = arquivo.match(/^pecas-(\d+)\.xml$/);
@@ -100,32 +78,16 @@ export async function sitemapParte(arquivo: string): Promise<string | null> {
   const lista = (await pecas()).slice(i * POR_ARQUIVO, (i + 1) * POR_ARQUIVO);
   if (!lista.length) return null;
   return urlset(
-    lista.map((p) => url(`/produto/${encodeURIComponent(p.sku)}`, `<lastmod>${p.data}</lastmod>`)),
+    lista.map((p) =>
+      url(
+        `/produto/${encodeURIComponent(p.sku)}`,
+        `<lastmod>${p.data}</lastmod>` +
+          (p.imagem
+            ? `<image:image><image:loc>${esc(p.imagem.startsWith("http") ? p.imagem : endereco(p.imagem))}</image:loc></image:image>`
+            : ""),
+      ),
+    ),
   );
-}
-
-// Endereços /vehiculos/<marca>/<modelo> com pelo menos uma peça compatível
-async function paginasVeiculo(): Promise<string[]> {
-  const { VEICULOS_UY, urlVeiculo } = await import("./veiculos-seo");
-  const { skusDoVeiculo } = await import("./veiculos.server");
-  const out: string[] = [];
-  for (const v of VEICULOS_UY)
-    for (const m of v.modelos)
-      if ((await skusDoVeiculo({ montadora: v.valor, modelo: m })).size) out.push(urlVeiculo(v, m));
-  return out;
-}
-
-// Página pública de cada catálogo publicado (/catalogos/<titulo>-<id>)
-async function catalogosPublicos() {
-  const { prisma } = await import("./prisma");
-  const { urlCatalogo } = await import("./catalogos");
-  const rows = await prisma.catalogos
-    .findMany({ where: { ativo: true }, select: { id: true, titulo: true, updated_at: true } })
-    .catch(() => []);
-  return rows.map((c) => ({
-    caminho: urlCatalogo(c),
-    data: c.updated_at.toISOString().slice(0, 10),
-  }));
 }
 
 // Todas as URLs do mapa (para avisar o Bing pela IndexNow). desde: só peças/catálogos alterados depois
@@ -137,18 +99,7 @@ export async function urlsDoSite(desde?: Date): Promise<string[]> {
       select: { sku: true },
       take: 10_000,
     });
-    const cats = await prisma.catalogos
-      .findMany({
-        where: { ativo: true, updated_at: { gt: desde } },
-        select: { id: true, titulo: true },
-      })
-      .catch(() => []);
-    const { urlCatalogo } = await import("./catalogos");
-    return [
-      ...pecasNovas.map((p) => endereco(`/produto/${encodeURIComponent(p.sku.trim())}`)),
-      ...cats.map((c) => endereco(urlCatalogo(c))),
-      ...(cats.length ? [endereco("/catalogos")] : []),
-    ];
+    return [...pecasNovas.map((p) => endereco(`/produto/${encodeURIComponent(p.sku.trim())}`))];
   }
   const paginas = await sitemapParte("paginas.xml");
   const locs = [...(paginas ?? "").matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) =>

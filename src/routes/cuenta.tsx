@@ -220,7 +220,7 @@ function CuentaPage() {
             <p>
               <b>{t("Completá tu celular", "Complete seu celular")}</b>{" "}
               {t(
-                "para que podamos responderte por WhatsApp con el precio de tus repuestos.",
+                "para que podamos responderte por WhatsApp con el precio de tus impresos.",
                 "para respondermos pelo WhatsApp com o preço das suas peças.",
               )}
             </p>

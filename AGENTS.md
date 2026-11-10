@@ -39,6 +39,20 @@ Layout na estrutura da printi.com.br (mais fluido):
 - Loja/categoria: `src/routes/loja.tsx` (banner da categoria, chips, ordem "popular" = `pecas.popularidade`).
 - Marca: `public/logo.svg`; ícones: `CHROMIUM_PATH=<chrome.exe> node scripts/marca/gerar_icones.cjs`.
 
+## SEO (Google)
+
+- Categorias: `/categoria/<slug>` (`src/routes/categoria.$slug.tsx`, textos e FAQ em `src/lib/seo-imprenta.ts`).
+  `/loja?categoria=X` tem canonical para a página da categoria; menus e rodapé usam `urlCategoria()`.
+- Cidades: `/imprenta` e `/imprenta/<lugar>` (19 departamentos, cidades e bairros de Montevidéu em
+  `src/lib/ciudades-uy.ts`): texto próprio, sliders de produtos no HTML do servidor, FAQ e JSON-LD.
+- Textos dos produtos: a Printi deixou descrição/FAQ/características em português; são gerados em
+  espanhol na hora (`src/lib/textos-es.ts`, chamado em `getDetalhesGraficaFn`).
+- Sitemap: `src/lib/sitemap.server.ts` (páginas + produtos com imagem). Endereços do site de autopeças
+  (/repuestos, /vehiculos, /guias, /repuestos-autos, /catalogos, /pedido-rapido) redirecionam (301)
+  em `redirecionarAutopecas` (`src/server.ts`).
+- App instalável (PWA) desligado: `APP_ATIVO` em `src/lib/app-pwa.ts` (o `public/sw.js` atual só se
+  remove dos aparelhos; o completo está em `public/sw-app-desligado.js.txt`).
+
 ## Pontos importantes
 
 - Uploads (banners, fotos) ficam em `uploads/` (fora do git) e são servidos por `src/routes/uploads.$.ts`.

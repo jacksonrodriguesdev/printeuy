@@ -15,6 +15,7 @@ import { CATEGORIAS, INSTAGRAM_URL, INSTAGRAM_USUARIO, FACEBOOK_URL } from "@/li
 import { BandeiraUruguay } from "@/components/Bandeiras";
 import { useT } from "@/lib/idioma";
 import { SeletorIdioma } from "@/components/SeletorIdioma";
+import { urlCategoria } from "@/lib/seo-imprenta";
 import { CartaoApp } from "@/components/AppInstalavel";
 
 const AYUDA = [
@@ -27,6 +28,17 @@ const AYUDA = [
 
 const tituloCls = "mb-4 text-xs font-black uppercase tracking-[0.18em] text-amber-400";
 const linkCls = "text-slate-300 transition-colors hover:text-white";
+
+// Cidades com mais busca: links fixos em todas as páginas (as demais estão em /imprenta)
+const CIDADES_RODAPE: Array<[string, string]> = [
+  ["montevideo", "Montevideo"],
+  ["canelones", "Canelones"],
+  ["ciudad-de-la-costa", "Ciudad de la Costa"],
+  ["maldonado", "Maldonado"],
+  ["punta-del-este", "Punta del Este"],
+  ["salto", "Salto"],
+  ["paysandu", "Paysandú"],
+];
 
 export function SiteFooter() {
   const { t } = useT();
@@ -71,7 +83,7 @@ export function SiteFooter() {
       </div>
 
       {/* Colunas */}
-      <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.1fr]">
+      <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1.1fr]">
         <div>
           <Link to="/" className="flex items-center gap-3">
             <img
@@ -117,11 +129,29 @@ export function SiteFooter() {
             </li>
             {CATEGORIAS.slice(0, 6).map((c) => (
               <li key={c.nome}>
-                <Link to="/loja" search={{ categoria: c.nome } as never} className={linkCls}>
+                <Link to={urlCategoria(c.nome) as never} className={linkCls}>
                   {c.nome}
                 </Link>
               </li>
             ))}
+          </ul>
+        </div>
+
+        <div>
+          <h3 className={tituloCls}>Imprenta en tu ciudad</h3>
+          <ul className="space-y-2.5">
+            {CIDADES_RODAPE.map(([slug, nome]) => (
+              <li key={slug}>
+                <Link to={`/imprenta/${slug}` as never} className={linkCls}>
+                  Imprenta en {nome}
+                </Link>
+              </li>
+            ))}
+            <li>
+              <Link to={"/imprenta" as never} className={linkCls}>
+                Todas las localidades
+              </Link>
+            </li>
           </ul>
         </div>
 

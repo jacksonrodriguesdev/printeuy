@@ -479,15 +479,15 @@ export function PopupAcesso() {
       ? t("Registrate para cotizar", "Cadastre-se para fazer seu orçamento")
       : motivo === "limite"
         ? t(
-            "Registrate gratis para seguir viendo piezas",
-            "Cadastre-se grátis para continuar vendo peças",
+            "Registrate gratis para seguir viendo productos",
+            "Registrate gratis para seguir viendo productos",
           )
         : motivo === "carrinho"
           ? t("Registrate para cotizar tu pedido", "Cadastre-se para orçar seu pedido")
           : motivo === "busca"
             ? termo
               ? t(`¿No encontraste "${termo}"?`, `Não encontrou "${termo}"?`)
-              : t("¿No encontraste la pieza?", "Não encontrou a peça?")
+              : t("¿No encontraste lo que buscabas?", "¿No encontraste lo que buscabas?")
             : motivo === "catalogo"
               ? t("Ingresá para abrir el catálogo", "Entre para abrir o catálogo")
               : // O texto do admin (Pop-up de cadastro) é o do site em espanhol
@@ -502,8 +502,8 @@ export function PopupAcesso() {
         )
       : motivo === "limite"
         ? t(
-            `Ya viste ${LIMITE_PECAS} piezas. Creá tu cuenta en segundos y seguí viendo todo el catálogo. Además: ${desconto}% OFF en tu primera compra.`,
-            `Você já viu ${LIMITE_PECAS} peças. Crie sua conta em segundos e continue vendo todo o catálogo. E mais: ${desconto}% OFF na primeira compra.`,
+            `Ya viste ${LIMITE_PECAS} productos. Creá tu cuenta en segundos y seguí viendo todo el catálogo. Además: ${desconto}% OFF en tu primera compra.`,
+            `Ya viste ${LIMITE_PECAS} productos. Creá tu cuenta en segundos y seguí viendo todo el catálogo. Además: ${desconto}% OFF en tu primera compra.`,
           )
         : !motivo
           ? idioma === "pt"
@@ -687,14 +687,14 @@ export function PopupAcesso() {
                         <b className="text-zinc-900">"{termo}"</b>
                       </>
                     ) : (
-                      t(" la pieza", " a peça")
+                      t(" ese producto", " ese producto")
                     )}
                     .
                   </>
                 ) : motivo === "limite" ? (
                   t(
-                    "Ya podés seguir viendo todas las piezas.",
-                    "Agora você já pode ver todas as peças.",
+                    "Ya podés seguir viendo todos los productos.",
+                    "Ya podés seguir viendo todos los productos.",
                   )
                 ) : motivo === "carrinho" ? (
                   t("Tu pedido queda guardado en tu cuenta.", "Seu pedido fica salvo na sua conta.")
@@ -836,8 +836,8 @@ export function PopupAcesso() {
                   t("Si ya tenés cuenta con contraseña.", "Se você já tem conta com senha.")
                 ) : etapa === "whatsapp" ? (
                   t(
-                    "Por ahí te pasamos precios, te avisamos de ofertas y confirmamos si la pieza sirve para tu vehículo.",
-                    "Por ele passamos preços, avisamos de ofertas e confirmamos se a peça serve no seu veículo.",
+                    "Por ahí te pasamos precios, te avisamos de ofertas y coordinamos tus pedidos.",
+                    "Por ahí te pasamos precios, te avisamos de ofertas y coordinamos tus pedidos.",
                   )
                 ) : etapa === "faceid" ? (
                   t(

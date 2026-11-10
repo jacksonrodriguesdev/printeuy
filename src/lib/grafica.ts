@@ -53,8 +53,20 @@ export const getDetalhesGraficaFn = createServerFn({ method: "GET" })
   .validator((sku: string) => String(sku).slice(0, 191))
   .handler(async ({ data }): Promise<DetalhesGrafica | null> => {
     const { prisma } = await import("./prisma");
-    const r = await prisma.pecas_detalhes.findUnique({ where: { sku: data } });
-    return (r?.dados as unknown as DetalhesGrafica) ?? null;
+    const [r, p] = await Promise.all([
+      prisma.pecas_detalhes.findUnique({ where: { sku: data } }),
+      prisma.pecas.findUnique({
+        where: { sku: data },
+        select: { nome: true, nome_es: true, categoria: true },
+      }),
+    ]);
+    if (!r?.dados) return null;
+    // Textos do catálogo (em português, da Printi) gerados em espanhol para o Uruguai
+    const { detalhesEmEspanhol } = await import("./textos-es");
+    return detalhesEmEspanhol(r.dados as unknown as DetalhesGrafica, {
+      nome: p?.nome_es || p?.nome || "",
+      categoria: p?.categoria ?? null,
+    });
   });
 
 // Nome do atributo sem a instrução que a Printi coloca depois dos dois-pontos

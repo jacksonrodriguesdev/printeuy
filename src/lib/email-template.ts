@@ -123,12 +123,12 @@ export const PUBLICO_PADRAO: Publico = { tipo: "todos", departamentos: [], dias:
 
 export const CONTEUDO_PADRAO: ConteudoEmail = {
   destaque: "OFERTAS DEL MES",
-  titulo: "¡Hola {{nombre}}! Repuestos para tu vehículo con precio especial",
+  titulo: "¡Hola {{nombre}}! Impresos para tu marca con precio especial",
   texto:
-    "Seleccionamos repuestos con **precio especial** para este mes.\n\nPedí tu cotización por WhatsApp y te respondemos con precio y disponibilidad.",
+    "Seleccionamos productos con **precio especial** para este mes.\n\nConfigurá tu pedido en el sitio o escribinos por WhatsApp.",
   produtosTitulo: "Destacados del mes",
   produtos: [],
-  botaoTexto: "Ver todos los repuestos",
+  botaoTexto: "Ver todos los productos",
   botaoUrl: "/loja",
   whatsapp: true,
   fotos: false,
@@ -319,7 +319,7 @@ export function renderEmail(c: ConteudoEmail, d: DadosRender): string {
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
 <td><a href="${esc(comUtm("/", d))}" style="text-decoration:none"><img src="${esc(d.origem)}/logo.png" alt="PRINTE UY" width="40" height="40" style="display:inline-block;vertical-align:middle;border:0;border-radius:8px">
 <span style="${fonte};font-size:19px;font-weight:800;color:#ffffff;vertical-align:middle;margin-left:8px">PRINTE UY</span></a></td>
-<td align="right" style="${fonte};font-size:12px;color:#a7d7b6">${tx(d, "Repuestos para autos · Uruguay", "Peças para autos · Sul do Brasil")}</td>
+<td align="right" style="${fonte};font-size:12px;color:#a7d7b6">${tx(d, "Imprenta online · Uruguay", "Imprenta online · Uruguay")}</td>
 </tr></table></td></tr>
 ${cab ? `<tr><td>${c.cabecalhoLink ? `<a href="${esc(comUtm(c.cabecalhoLink, d))}">` : ""}<img src="${esc(cab)}" alt="${esc(titulo)}" width="600" style="display:block;width:100%;height:auto;border:0">${c.cabecalhoLink ? "</a>" : ""}</td></tr>` : ""}
 <tr><td style="padding:30px 30px 10px;${fonte}">
@@ -398,8 +398,8 @@ export function textoEmail(c: ConteudoEmail, d: DadosRender): string {
   partes.push(
     tx(
       d,
-      "PRINTE UY · Repuestos para autos · Atención por WhatsApp",
-      "PRINTE UY · Peças para autos · Atendimento pelo WhatsApp",
+      "PRINTE UY · Imprenta online · Atención por WhatsApp",
+      "PRINTE UY · Imprenta online · Atención por WhatsApp",
     ),
   );
   if (d.urlBaixa) partes.push(`${tx(d, "Darme de baja", "Cancelar os e-mails")}: ${d.urlBaixa}`);

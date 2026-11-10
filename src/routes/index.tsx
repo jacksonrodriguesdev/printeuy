@@ -28,6 +28,7 @@ import { SITE_URL } from "@/lib/site";
 import { PHONE } from "@/lib/whatsapp";
 import { tipoNovo } from "@/lib/blocos-home";
 import { HomeGrafica } from "@/components/home/HomeGrafica";
+import { CATEGORIAS_IMPRENTA } from "@/lib/seo-imprenta";
 import { BlocoNovo } from "@/components/home/BlocosNovos";
 import { HeroCampanhaHome } from "@/components/campanha/Campanha";
 
@@ -41,11 +42,22 @@ const lojaLd = {
   logo: `${SITE_URL}/logo.png`,
   image: `${SITE_URL}/icon-512.png`,
   telephone: `+${PHONE}`,
-  email: "contacto@printecuy.com",
+  email: "printeuy@gmail.com",
   description:
     "Imprenta online en Uruguay: tarjetas de presentación, adhesivos, packaging, volantes y regalos empresariales personalizados, con precio al instante y envío a todo el país.",
   areaServed: { "@type": "Country", name: "Uruguay" },
   address: { "@type": "PostalAddress", addressCountry: "UY" },
+  priceRange: "$",
+  // Categorias que a loja vende (o Google entende o tipo de negócio)
+  hasOfferCatalog: {
+    "@type": "OfferCatalog",
+    name: "Productos de imprenta",
+    itemListElement: CATEGORIAS_IMPRENTA.map((c) => ({
+      "@type": "OfferCatalog",
+      name: c.categoria,
+      url: `${SITE_URL}/categoria/${c.slug}`,
+    })),
+  },
 };
 const siteLd = {
   "@context": "https://schema.org",

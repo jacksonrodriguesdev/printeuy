@@ -28,6 +28,7 @@ import { getSessionFn } from "@/lib/user-auth";
 import { listProducts, type Product } from "@/lib/products";
 import { nomeProduto } from "@/lib/pecas-es";
 import { whatsappContactUrl } from "@/lib/whatsapp";
+import { urlCategoria } from "@/lib/seo-imprenta";
 import { cn } from "@/lib/utils";
 
 // Header do PRINTE UY (mesma estrutura da Printi, mais fluido):
@@ -65,8 +66,7 @@ function ProdutosDaCategoria({
       <div className="mb-4 flex items-center justify-between">
         <p className="text-lg font-bold text-zinc-900">{categoria.rotulo}</p>
         <Link
-          to="/loja"
-          search={{ categoria: categoria.nome } as never}
+          to={urlCategoria(categoria.nome) as never}
           onClick={fechar}
           className="flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
         >
@@ -132,8 +132,7 @@ function MegaMenu({
           {categorias.map((c, i) => (
             <li key={c.nome}>
               <Link
-                to="/loja"
-                search={{ categoria: c.nome } as never}
+                to={urlCategoria(c.nome) as never}
                 onMouseEnter={() => setAtiva(i)}
                 onFocus={() => setAtiva(i)}
                 onClick={fechar}
@@ -417,8 +416,7 @@ export function SiteHeader() {
               return (
                 <Link
                   key={c.nome}
-                  to="/loja"
-                  search={{ categoria: c.nome } as never}
+                  to={urlCategoria(c.nome) as never}
                   onMouseEnter={fecharMega}
                   className={cn(
                     "group relative flex shrink-0 items-center justify-center px-3 text-center leading-tight transition hover:text-zinc-950 md:max-w-[150px] md:flex-1",

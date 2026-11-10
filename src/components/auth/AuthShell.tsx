@@ -48,7 +48,7 @@ export function AuthShell({
             <span className="leading-none">
               <span className="block text-lg font-black tracking-tight">PRINTE UY</span>
               <span className="mt-1 block text-[11px] font-bold tracking-[0.22em] text-amber-400">
-                {t("REPUESTOS PARA AUTOS", "AUTOPEÇAS")}
+                {t("IMPRENTA ONLINE", "IMPRENTA ONLINE")}
               </span>
             </span>
           </Link>
@@ -127,24 +127,24 @@ export function AuthShell({
               {t("Tu cuenta", "Sua conta")}
             </p>
             <p className="mt-2 text-[26px] font-black leading-tight">
-              {t("Tu garaje online", "Sua garagem online")}
+              {t("Tu imprenta online", "Tu imprenta online")}
             </p>
             <ul className="relative mt-7 space-y-4">
               {[
                 [
                   Search,
-                  t("Guardá tu vehículo", "Salve seu veículo"),
-                  t("y encontrá repuestos que le sirven", "e ache peças que servem"),
+                  t("Guardá tus pedidos", "Guardá tus pedidos"),
+                  t("y repetilos cuando quieras", "y repetilos cuando quieras"),
                 ],
                 [
                   MessageCircle,
-                  t("Cotizá en 1 clic", "Orçamento em 1 clique"),
-                  t("por WhatsApp, con tus datos", "pelo WhatsApp, com seus dados"),
+                  t("Cotizá en 1 clic", "Cotizá en 1 clic"),
+                  t("por WhatsApp, con tus datos", "por WhatsApp, con tus datos"),
                 ],
                 [
                   PackageCheck,
-                  t("Seguí tus pedidos", "Acompanhe seus pedidos"),
-                  t("y tu historial de compras", "e seu histórico"),
+                  t("Seguí tus pedidos", "Seguí tus pedidos"),
+                  t("y tu historial de compras", "y tu historial de compras"),
                 ],
               ].map(([Icone, forte, resto]: any) => (
                 <li key={forte} className="flex items-start gap-3">
@@ -159,9 +159,12 @@ export function AuthShell({
               ))}
             </ul>
             <div className="relative mt-auto rounded-2xl bg-[#0b1d3a]/90 p-4">
-              <p className="text-3xl font-black">+100.000</p>
+              <p className="text-3xl font-black">+600</p>
               <p className="text-sm text-white/75">
-                {t("repuestos con envío a todo Uruguay", "peças com envio para todo o Uruguai")}
+                {t(
+                  "productos personalizables con envío a todo Uruguay",
+                  "productos personalizables con envío a todo Uruguay",
+                )}
               </p>
             </div>
           </aside>
