@@ -10,7 +10,8 @@ export const Route = createFileRoute("/api/admin/instagram/conectar")({
         const { requireAdmin } = await import("@/lib/auth.server");
         const negado = await requireAdmin(request);
         if (negado) return negado;
-        const { instagramConfigurado, urlConectar } = await import("@/lib/instagram.server");
+        const { instagramConfigurado, loginInstagramConfigurado, urlConectar } =
+          await import("@/lib/instagram.server");
         const { origemPublica } = await import("@/lib/google-oauth.server");
         if (!instagramConfigurado())
           return new Response(null, {
@@ -18,8 +19,14 @@ export const Route = createFileRoute("/api/admin/instagram/conectar")({
             headers: {
               Location:
                 "/admin/instagram?ig=erro&msg=" +
-                encodeURIComponent("Falta INSTAGRAM_APP_ID / INSTAGRAM_APP_SECRET no hPanel"),
+                encodeURIComponent("Falta META_APP_ID / META_APP_SECRET no hPanel"),
             },
+          });
+        // App novo da Meta (login unificado): o Instagram vem pela Página do Facebook
+        if (!loginInstagramConfigurado())
+          return new Response(null, {
+            status: 302,
+            headers: { Location: "/api/admin/facebook/conectar" },
           });
         const state = crypto.randomBytes(16).toString("hex");
         const seguro = origemPublica(request).startsWith("https:") ? "; Secure" : "";

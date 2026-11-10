@@ -1,4 +1,7 @@
-// Publicações no Instagram pela API oficial da Meta («Instagram API com login do Instagram»).
+// Publicações no Instagram pela API oficial da Meta. Dois caminhos:
+// - «login do Instagram» (apps antigos): INSTAGRAM_APP_ID/SECRET, token guardado em ig_*;
+// - «login unificado» (apps novos da Meta): sem ig_*, usa a Página escolhida em «Conectar Facebook»
+//   (facebook.server.ts) e a conta do Instagram ligada a ela, pela API do Facebook.
 // Precisa de INSTAGRAM_APP_ID e INSTAGRAM_APP_SECRET (Meta for Developers → app → Instagram →
 // Configuração da API com login do Instagram) no hPanel, e do redirecionamento
 // https://<domínio>/api/admin/instagram/callback cadastrado no app.
@@ -17,8 +20,11 @@ export const ESCOPOS = [
   "instagram_business_manage_comments",
 ];
 
-export const instagramConfigurado = () =>
+export const loginInstagramConfigurado = () =>
   !!(process.env.INSTAGRAM_APP_ID?.trim() && process.env.INSTAGRAM_APP_SECRET?.trim());
+export const instagramConfigurado = () =>
+  loginInstagramConfigurado() ||
+  !!(process.env.META_APP_ID?.trim() && process.env.META_APP_SECRET?.trim());
 export const callbackInstagram = (origem: string) => `${origem}/api/admin/instagram/callback`;
 
 // ---------------------------------------------------------------- tabela
@@ -87,6 +93,7 @@ type Conta = {
   foto: string | null;
   expira: number; // ms
   renovadoEm: number;
+  via: "instagram" | "facebook";
 };
 async function lerConfig() {
   const { prisma } = await import("./prisma");
@@ -105,9 +112,29 @@ async function gravar(v: Record<string, string | null>) {
       });
   }
 }
+// Sem login do Instagram: a conta do Instagram ligada à Página do Facebook conectada
+async function contaPelaPagina(): Promise<Conta | null> {
+  try {
+    const { paginaAtual } = await import("./facebook.server");
+    const p = await paginaAtual();
+    if (!p?.ig || !p.token) return null;
+    return {
+      token: p.token, // token da Página: não vence
+      userId: p.ig,
+      username: null,
+      foto: null,
+      expira: Date.now() + 365 * 86400_000,
+      renovadoEm: Date.now(),
+      via: "facebook",
+    };
+  } catch {
+    return null;
+  }
+}
+
 async function lerConta(): Promise<Conta | null> {
   const c = await lerConfig();
-  if (!c.ig_token || !c.ig_user_id) return null;
+  if (!c.ig_token || !c.ig_user_id) return contaPelaPagina();
   try {
     return {
       token: decifrar(c.ig_token),
@@ -116,6 +143,7 @@ async function lerConta(): Promise<Conta | null> {
       foto: c.ig_foto ?? null,
       expira: Number(c.ig_expira) || 0,
       renovadoEm: Number(c.ig_renovado) || 0,
+      via: "instagram",
     };
   } catch {
     return null; // JWT_SECRET mudou: precisa conectar de novo
@@ -128,7 +156,11 @@ async function graph(
   params: Record<string, string> = {},
   metodo: "GET" | "POST" = "GET",
 ) {
-  const url = new URL(`${GRAPH()}/${VERSAO()}/${caminho.replace(/^\//, "")}`);
+  // Token do Facebook (EAA…, login unificado) vai na API do Facebook; o do Instagram, na do Instagram
+  const base = String(params.access_token ?? "").startsWith("EAA")
+    ? `${(process.env.META_GRAPH_URL || "https://graph.facebook.com").replace(/\/+$/, "")}/v21.0`
+    : `${GRAPH()}/${VERSAO()}`;
+  const url = new URL(`${base}/${caminho.replace(/^\//, "")}`);
   const corpo = new URLSearchParams(params);
   if (metodo === "GET") url.search = corpo.toString();
   const r = await fetch(url, {
@@ -215,7 +247,11 @@ export async function desconectar() {
 // Token válido: renova sozinho quando faltam menos de 20 dias (a Meta só renova com 24 h de uso)
 async function conta(): Promise<Conta> {
   const c = await lerConta();
-  if (!c) throw new Error("Instagram não conectado: clique em «Conectar Instagram».");
+  if (!c)
+    throw new Error(
+      "Instagram não conectado: conecte o Facebook e escolha a Página ligada ao Instagram.",
+    );
+  if (c.via === "facebook") return c;
   const faltam = c.expira - Date.now();
   if (faltam < 20 * 86400_000 && Date.now() - c.renovadoEm > 86400_000) {
     const j: any = await fetch(
@@ -248,9 +284,8 @@ export async function statusInstagram() {
   if (c) {
     try {
       const cc = await conta();
-      perfil = await graph("me", {
-        fields:
-          "user_id,username,name,profile_picture_url,followers_count,follows_count,media_count",
+      perfil = await graph(cc.via === "facebook" ? cc.userId : "me", {
+        fields: "id,username,name,profile_picture_url,followers_count,follows_count,media_count",
         access_token: cc.token,
       });
       const l = await graph(`${cc.userId}/content_publishing_limit`, {
@@ -276,6 +311,7 @@ export async function statusInstagram() {
   return {
     configurado: instagramConfigurado(),
     conectado: !!c,
+    via: c?.via ?? null,
     erro: cfg.ig_erro ?? null,
     username: perfil?.username ?? c?.username ?? null,
     nome: perfil?.name ?? null,
@@ -544,7 +580,10 @@ export async function desempenhoInstagram(dias = 28) {
     return typeof v === "number" ? v : null;
   };
   const [perfil, alcance, visitas, interacoes, engajadas, midias] = await Promise.all([
-    graph("me", { fields: "username,followers_count,media_count", access_token: c.token }),
+    graph(c.via === "facebook" ? c.userId : "me", {
+      fields: "username,followers_count,media_count",
+      access_token: c.token,
+    }),
     total("reach"),
     total("profile_views"),
     total("total_interactions"),

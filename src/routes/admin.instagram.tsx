@@ -526,30 +526,31 @@ function Conexao({ st, atualizar }: { st: any; atualizar: () => void }) {
         <ol className="list-decimal space-y-1.5 pl-5 text-amber-950">
           <li>
             No app do Instagram:{" "}
-            <b>Configurações → Tipo de conta → Mudar para conta profissional</b> (Empresa).
+            <b>Configurações → Tipo de conta → Mudar para conta profissional</b> (Empresa) e ligue a
+            conta a uma <b>Página do Facebook</b>.
           </li>
           <li>
-            Em <b>developers.facebook.com</b>, entre com sua conta e clique em <b>Criar app</b> →
-            caso de uso <b>«Gerenciar mensagens e conteúdo no Instagram»</b>.
+            Em <b>developers.facebook.com</b>: <b>Criar app</b> → caso de uso{" "}
+            <b>«Gerenciar mensagens e conteúdo no Instagram»</b>.
           </li>
           <li>
-            No app: <b>Instagram → Configuração da API com login do Instagram</b>. Em «Configurar
-            login comercial do Instagram», cadastre o URL de redirecionamento:{" "}
-            <code className="rounded bg-amber-100 px-1">{st.callback}</code>
+            No app: <b>Casos de uso → API do Instagram → API setup with Unified login</b>. Escolha o
+            portfólio empresarial, crie a configuração e cadastre o URL de redirecionamento:{" "}
+            <code className="rounded bg-amber-100 px-1">
+              {String(st.callback).replace("/instagram/", "/facebook/")}
+            </code>
           </li>
           <li>
-            Na mesma tela, em «Gerar tokens de acesso», <b>adicione a conta do Instagram da loja</b>{" "}
-            como testadora e aceite o convite no app do Instagram (Configurações → Apps e sites).
+            No hPanel da Hostinger, em variáveis de ambiente:{" "}
+            <code className="rounded bg-amber-100 px-1">META_APP_ID</code> (ID do aplicativo),{" "}
+            <code className="rounded bg-amber-100 px-1">META_APP_SECRET</code> (Chave secreta, em
+            Configurações → Básico) e{" "}
+            <code className="rounded bg-amber-100 px-1">META_LOGIN_CONFIG_ID</code> (Identificação
+            da configuração). A chave secreta vai só no hPanel, nunca em chat ou e-mail.
           </li>
           <li>
-            Copie o <b>ID do app do Instagram</b> e a <b>Chave secreta do app do Instagram</b> e
-            coloque no hPanel da Hostinger como{" "}
-            <code className="rounded bg-amber-100 px-1">INSTAGRAM_APP_ID</code> e{" "}
-            <code className="rounded bg-amber-100 px-1">INSTAGRAM_APP_SECRET</code>. A chave secreta
-            vai só no hPanel, nunca em chat ou e-mail.
-          </li>
-          <li>
-            Reinicie o app na Hostinger, volte aqui e clique em <b>Conectar Instagram</b>.
+            Reinicie o app na Hostinger, volte aqui, clique em <b>Conectar Instagram</b> e escolha a
+            Página ligada ao Instagram.
           </li>
         </ol>
       </Card>
@@ -561,8 +562,8 @@ function Conexao({ st, atualizar }: { st: any; atualizar: () => void }) {
         <div className="min-w-0 flex-1 text-sm">
           <p className="font-semibold">Conecte o Instagram da loja</p>
           <p className="text-muted-foreground">
-            Você entra com o Instagram na tela da Meta; o site guarda só a autorização
-            (criptografada).
+            Você entra com o Facebook na tela da Meta e escolhe a Página ligada ao Instagram da
+            loja; o site guarda só a autorização (criptografada).
           </p>
         </div>
         <Button asChild size="lg">

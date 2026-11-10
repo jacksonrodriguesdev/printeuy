@@ -12,16 +12,19 @@ const GRAPH = () =>
 const DIALOGO = () =>
   (process.env.META_DIALOG_URL || "https://www.facebook.com").replace(/\/+$/, "");
 const V = "v21.0";
+// Só permissões liberadas no app (Casos de uso → API do Instagram). pages_manage_posts e
+// read_insights não existem no caso de uso do Instagram e fazem a Meta recusar o login.
+// Com META_LOGIN_CONFIG_ID, a Meta usa as permissões da configuração e ignora esta lista.
 export const ESCOPOS_FB = [
   "pages_show_list",
   "pages_read_engagement",
-  "pages_manage_posts",
-  "read_insights",
+  "business_management",
   "ads_read",
   "ads_management",
-  "business_management",
-  "leads_retrieval",
-  "pages_manage_ads",
+  "instagram_basic",
+  "instagram_content_publish",
+  "instagram_manage_comments",
+  "instagram_manage_insights",
 ];
 
 export const facebookConfigurado = () =>
