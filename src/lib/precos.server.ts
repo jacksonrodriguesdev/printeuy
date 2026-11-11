@@ -1,4 +1,4 @@
-import type { ConfigPrecos } from "./precos";
+import { PRECOS_NO_SITE, type ConfigPrecos } from "./precos";
 
 // Cotação R$ → $U do dia e configurações de preço.
 // A cotação é buscada na internet quando a guardada tem mais de 6 horas (sem tarefa agendada:
@@ -84,7 +84,7 @@ export async function configPrecos(forcarCotacao = false): Promise<ConfigPrecos>
     arredondar: Number(c.arredondar_uyu) || 0,
     ajuste: Number(c.ajuste_cambio) || 0,
     margemPadrao: Number(c.margem_padrao) || 0,
-    mostrar: c.mostrar_precos === "1",
+    mostrar: PRECOS_NO_SITE && c.mostrar_precos === "1",
   };
   // Descontos da campanha no ar (Black Friday…)
   const { campanhaParaPrecos } = await import("./campanha.server");

@@ -83,7 +83,7 @@ export function CardGrafica({
             </p>
           </div>
         ) : (
-          <p className="mt-1.5 text-sm font-medium text-zinc-500">Precio a consultar</p>
+          <p className="mt-1.5 text-sm font-medium text-zinc-500">Pedí tu cotización</p>
         )}
       </Link>
     </div>

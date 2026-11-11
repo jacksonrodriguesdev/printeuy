@@ -78,7 +78,9 @@ export function PaginaGrafica({
   adicionar: () => void;
 }) {
   const cfg = usePrecos(precos);
-  const uyu = (brl: number) => (cfg?.mostrar && cfg.cotacao ? uyuDeBrl(brl, cfg) : null);
+  // Preços desligados (PRECOS_NO_SITE / admin): a página vira só cotação, sem "A cotizar" repetido
+  const comPreco = !!(cfg?.mostrar && cfg.cotacao);
+  const uyu = (brl: number) => (comPreco && cfg ? uyuDeBrl(brl, cfg) : null);
   const nome = nomeProduto(produto);
   const link = `${SITE_URL}/produto/${encodeURIComponent(produto.sku)}`;
 
@@ -139,10 +141,10 @@ export function PaginaGrafica({
 
   const chips = atributos.map((a) => sel[a.chave]).filter(Boolean);
   const mensagem =
-    `¡Hola! Quiero pedir:\n\n*${nome}*\n` +
+    `¡Hola! ${comPreco ? "Quiero pedir" : "Quiero una cotización de"}:\n\n*${nome}*\n` +
     atributos.map((a) => `• ${a.nome}: ${sel[a.chave]}`).join("\n") +
     (linha ? `\nCantidad: ${linha.quantidade.toLocaleString("es-UY")} un.` : "") +
-    (total ? `\nPrecio en la web: ${fmtUYU(total)}` : "\nPrecio: a cotizar") +
+    (total ? `\nPrecio en la web: ${fmtUYU(total)}` : "") +
     `\n${link}`;
   const zap = whatsappContactUrl(mensagem);
 
@@ -286,7 +288,13 @@ export function PaginaGrafica({
               </p>
             )}
 
-            {precoDesde && (
+            {!comPreco && (
+              <p className="mt-5 rounded-xl bg-zinc-50 p-4 text-sm text-zinc-600">
+                <b className="text-zinc-900">Precio a medida.</b> Elegí las opciones y la cantidad,
+                y te enviamos la cotización por WhatsApp, sin compromiso.
+              </p>
+            )}
+            {precoDesde && comPreco && (
               <div className="mt-5">
                 <p className="text-sm text-zinc-500">
                   {(linha?.quantidade ?? precoDesde.quantidade).toLocaleString("es-UY")} unidades
@@ -385,10 +393,16 @@ export function PaginaGrafica({
                     </div>
                     {p0 && (
                       <p className="text-sm text-zinc-500">
-                        {p0.quantidade.toLocaleString("es-UY")} un. por{" "}
-                        <span className="font-semibold text-zinc-900">
-                          {v ? fmtUYU(v) : "consultar"}
-                        </span>
+                        {p0.quantidade.toLocaleString("es-UY")} un.
+                        {comPreco && (
+                          <>
+                            {" "}
+                            por{" "}
+                            <span className="font-semibold text-zinc-900">
+                              {v ? fmtUYU(v) : "consultar"}
+                            </span>
+                          </>
+                        )}
                       </p>
                     )}
                   </button>
@@ -505,9 +519,11 @@ export function PaginaGrafica({
               <div className="rounded-2xl border border-zinc-200 p-5">
                 <p className="font-semibold text-zinc-900">Cantidad</p>
                 <p className="mb-4 text-sm text-zinc-500">
-                  {comb
-                    ? "Cuanto mayor la cantidad, mayor el descuento."
-                    : "Esta combinación se cotiza a pedido: elegí la cantidad y te pasamos el precio."}
+                  {!comPreco
+                    ? "Elegí la cantidad que necesitás y te pasamos el precio."
+                    : comb
+                      ? "Cuanto mayor la cantidad, mayor el descuento."
+                      : "Esta combinación se cotiza a pedido: elegí la cantidad y te pasamos el precio."}
                 </p>
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
                   {tabela.map((x) => {
@@ -531,15 +547,17 @@ export function PaginaGrafica({
                           <span className="font-semibold text-zinc-900">
                             {x.quantidade.toLocaleString("es-UY")} un.
                           </span>
-                          {comb && desconto > 0 && (
+                          {comPreco && comb && desconto > 0 && (
                             <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700">
                               -{desconto}%
                             </span>
                           )}
                         </span>
-                        <span className="mt-1 block text-sm text-zinc-900">
-                          {v ? fmtUYU(v) : "A cotizar"}
-                        </span>
+                        {comPreco && (
+                          <span className="mt-1 block text-sm text-zinc-900">
+                            {v ? fmtUYU(v) : "A cotizar"}
+                          </span>
+                        )}
                         {v && (
                           <span className="block text-xs text-zinc-500">
                             $U{" "}
@@ -553,7 +571,7 @@ export function PaginaGrafica({
                     );
                   })}
                 </div>
-                {comb && (
+                {comPreco && comb && (
                   <p className="mt-3 text-xs text-zinc-500">
                     El descuento se calcula sobre el valor unitario de la menor cantidad.
                   </p>
@@ -573,20 +591,28 @@ export function PaginaGrafica({
                     {linha ? `${linha.quantidade.toLocaleString("es-UY")} un.` : "—"}
                   </dd>
                 </div>
-                <div className="flex justify-between">
-                  <dt className="text-zinc-500">Precio por unidad</dt>
-                  <dd className="font-medium text-zinc-900">
-                    {unitario
-                      ? `$U ${unitario.toLocaleString("es-UY", { maximumFractionDigits: 2 })}`
-                      : "—"}
-                  </dd>
-                </div>
-                <div className="flex items-baseline justify-between border-t border-zinc-200 pt-3">
-                  <dt className="font-semibold text-zinc-900">Total</dt>
-                  <dd className="text-2xl font-semibold tracking-tight text-zinc-900">
-                    {total ? fmtUYU(total) : "A cotizar"}
-                  </dd>
-                </div>
+                {comPreco ? (
+                  <>
+                    <div className="flex justify-between">
+                      <dt className="text-zinc-500">Precio por unidad</dt>
+                      <dd className="font-medium text-zinc-900">
+                        {unitario
+                          ? `$U ${unitario.toLocaleString("es-UY", { maximumFractionDigits: 2 })}`
+                          : "—"}
+                      </dd>
+                    </div>
+                    <div className="flex items-baseline justify-between border-t border-zinc-200 pt-3">
+                      <dt className="font-semibold text-zinc-900">Total</dt>
+                      <dd className="text-2xl font-semibold tracking-tight text-zinc-900">
+                        {total ? fmtUYU(total) : "A cotizar"}
+                      </dd>
+                    </div>
+                  </>
+                ) : (
+                  <p className="border-t border-zinc-200 pt-3 text-zinc-600">
+                    Te enviamos el precio por WhatsApp, sin compromiso.
+                  </p>
+                )}
               </dl>
               <a
                 href={zap}
@@ -595,7 +621,7 @@ export function PaginaGrafica({
                 className="mt-4 flex h-12 w-full items-center justify-center gap-2 rounded-full bg-zinc-900 font-semibold text-white transition hover:bg-zinc-800 active:scale-[0.99]"
               >
                 <MessageCircle className="h-5 w-5 text-emerald-400" />
-                {total ? "Pedir por WhatsApp" : "Cotizar por WhatsApp"}
+                {total ? "Pedir por WhatsApp" : "Pedir cotización por WhatsApp"}
               </a>
               <button
                 onClick={adicionar}
@@ -799,7 +825,7 @@ export function PaginaGrafica({
               {linha ? `${linha.quantidade.toLocaleString("es-UY")} un.` : "Total"}
             </p>
             <p className="truncate text-lg font-semibold leading-tight text-zinc-900">
-              {total ? fmtUYU(total) : "A cotizar"}
+              {total ? fmtUYU(total) : "Cotización sin compromiso"}
             </p>
           </div>
           <a
@@ -808,7 +834,7 @@ export function PaginaGrafica({
             rel="noreferrer noopener"
             className="flex h-11 items-center gap-2 rounded-full bg-zinc-900 px-5 text-sm font-semibold text-white active:scale-95"
           >
-            <MessageCircle className="h-4 w-4 text-emerald-400" /> Pedir
+            <MessageCircle className="h-4 w-4 text-emerald-400" /> {total ? "Pedir" : "Cotizar"}
           </a>
         </div>
       </div>

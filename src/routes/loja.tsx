@@ -92,7 +92,7 @@ export const Route = createFileRoute("/loja")({
       .filter(Boolean)
       .join(" ");
     const titulo = q ? `${t("Resultados para", "Resultados para")} "${q}"` : alvo;
-    const desc = `${alvo} ${t("personalizados con tu marca. Precio al instante y envíos a todo Uruguay.", "personalizados com a sua marca, com envio para todo o Uruguai.")}`;
+    const desc = `${alvo} ${t("personalizados con tu marca. Cotización sin compromiso y envíos a todo Uruguay.", "personalizados com a sua marca, com envio para todo o Uruguai.")}`;
     // Canonical só com os filtros que viram página própria (categoria e marca), na mesma ordem
     const params = new URLSearchParams();
     if (categoria) params.set("categoria", categoria);
@@ -306,7 +306,7 @@ function LojaPage() {
                 {busca
                   ? `${contagem} para tu búsqueda.`
                   : (infoCat?.descricao ??
-                    "Tarjetas, adhesivos, packaging, volantes y regalos personalizados con tu marca, con precio al instante.")}
+                    "Tarjetas, adhesivos, packaging, volantes y regalos personalizados con tu marca, con cotización sin compromiso.")}
               </p>
             </div>
             {fotoCat && !busca && (

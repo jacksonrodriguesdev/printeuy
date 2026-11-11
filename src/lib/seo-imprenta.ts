@@ -28,7 +28,7 @@ const BASE: Base[] = [
       "Imprimí tarjetas de presentación, hojas membretadas, sobres, blocks y carpetas con tu logo. Papeles premium, envío a todo Uruguay. Cotizá online.",
     intro: [
       "La papelería es lo primero que tus clientes tocan de tu marca. En PRINTE UY imprimís tarjetas de presentación, hojas membretadas, sobres, blocks de notas, carpetas y recetarios con tu diseño, en papeles comunes o premium.",
-      "Elegí el tamaño, el papel, la terminación y la cantidad, mirá el precio al instante y recibí tu pedido en cualquier punto de Uruguay.",
+      "Elegí el tamaño, el papel, la terminación y la cantidad, pedí tu cotización sin compromiso y recibí tu pedido en cualquier punto de Uruguay.",
     ],
     usos: [
       "Tarjetas para profesionales, comercios y emprendedores",
@@ -92,7 +92,7 @@ const BASE: Base[] = [
       "Imprimí volantes, flyers y folletos plegados para promociones, eventos y delivery. Precios por cantidad y envío a todo Uruguay.",
     intro: [
       "Un buen volante sigue siendo una de las formas más baratas de llegar a clientes cerca de tu negocio. Imprimimos flyers, volantes, folletos con uno o dos pliegues y menús para delivery.",
-      "Cuanto más cantidad, menor el precio por unidad: mirá la tabla de cantidades en cada producto.",
+      "Cuanto más cantidad, menor el precio por unidad: pedí la cotización con la cantidad que necesitás.",
     ],
     usos: [
       "Promociones y lanzamientos de tu comercio",
@@ -143,7 +143,7 @@ const BASE: Base[] = [
       },
       {
         p: "¿Cuál es la cantidad mínima de cajas?",
-        r: "Depende del modelo; la cantidad mínima aparece en la tabla de precios de cada producto.",
+        r: "Depende del modelo; la cantidad mínima aparece en la página de cada producto.",
       },
     ],
   },

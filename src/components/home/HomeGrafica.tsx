@@ -166,8 +166,8 @@ function Vantagens() {
   const itens = [
     {
       icon: Zap,
-      titulo: "Precio al instante",
-      texto: "Configurá y mirá el total",
+      titulo: "Cotización sin compromiso",
+      texto: "Configurá y te pasamos el precio",
       link: "/loja",
       acao: "Ver productos",
     },
@@ -405,7 +405,7 @@ function ComoFunciona() {
     {
       icon: Palette,
       titulo: "Configuralo",
-      texto: "Formato, papel, terminación y cantidad, con el precio al instante.",
+      texto: "Formato, papel, terminación y cantidad, y te enviamos la cotización sin compromiso.",
     },
     {
       icon: Upload,
@@ -476,8 +476,8 @@ function Sobre() {
           <p className="mt-3 text-sm leading-relaxed text-zinc-600">
             En PRINTE UY imprimís tarjetas de presentación, adhesivos, etiquetas, volantes,
             folletos, packaging, agendas, calendarios y regalos empresariales con tu marca. Elegís
-            el producto, lo configurás con el formato, el papel y la terminación que necesitás, y
-            ves el precio al instante.
+            el producto, lo configurás con el formato, el papel y la terminación que necesitás, y te
+            enviamos la cotización sin compromiso.
           </p>
         </div>
         <div>

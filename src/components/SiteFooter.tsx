@@ -104,7 +104,7 @@ export function SiteFooter() {
           </Link>
           <p className="mt-4 max-w-sm leading-relaxed text-slate-400">
             {t(
-              "Tarjetas, adhesivos, packaging, volantes y regalos empresariales con tu marca. Precio al instante y envíos a todo Uruguay.",
+              "Tarjetas, adhesivos, packaging, volantes y regalos empresariales con tu marca. Cotización sin compromiso y envíos a todo Uruguay.",
               "Cartões, adesivos, embalagens, panfletos e brindes com a sua marca, com envio para todo o Uruguai.",
             )}
           </p>

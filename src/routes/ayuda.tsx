@@ -20,7 +20,7 @@ import { FAQ_GERAL } from "@/lib/seo-imprenta";
 const PREGUNTAS = [
   {
     p: "¿Cómo hago un pedido?",
-    r: "Elegí el producto, configurá tamaño, papel, terminación y cantidad, y mirá el precio al instante. Después subís tu diseño o nos lo mandás por WhatsApp, y coordinamos el pago y el envío.",
+    r: "Elegí el producto, configurá tamaño, papel, terminación y cantidad. Te enviamos la cotización por WhatsApp, subís tu diseño o nos lo mandás por WhatsApp, y coordinamos el pago y el envío.",
   },
   {
     p: "¿En qué formato envío mi diseño?",
@@ -45,7 +45,7 @@ const PASOS = [
   {
     icon: ShoppingCart,
     titulo: "Elegí tu producto",
-    texto: "Tamaño, papel, terminación y cantidad, con el precio al instante.",
+    texto: "Tamaño, papel, terminación y cantidad, y te enviamos la cotización sin compromiso.",
   },
   {
     icon: Upload,

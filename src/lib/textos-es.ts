@@ -147,7 +147,7 @@ export function detalhesEmEspanhol(
           .join("")}</ul>`
       : "",
     min
-      ? `<h3>Cantidades y precios</h3><p>Podés pedir desde ${fmt(min)} unidades. Cuanto mayor la cantidad, menor el precio por unidad: mirá la tabla de cantidades para ver el descuento.</p>`
+      ? `<h3>Cantidades</h3><p>Podés pedir desde ${fmt(min)} unidades. Cuanto mayor la cantidad, menor el precio por unidad. Elegí la cantidad y te enviamos la cotización.</p>`
       : "",
     `<h3>Tu archivo</h3><p>Subí tu diseño en PDF, AI, PSD, CDR o JPG en alta resolución. Antes de imprimir revisamos medidas, márgenes y colores, y te avisamos si hay que ajustar algo. ¿No tenés diseño? Escribinos por WhatsApp y te ayudamos.</p>`,
     `<h3>Envío a todo Uruguay</h3><p>Enviamos a Montevideo, Canelones, Maldonado y a los 19 departamentos. El costo y el plazo de entrega se confirman junto con tu pedido.</p>`,
@@ -168,7 +168,7 @@ export function detalhesEmEspanhol(
       ? [
           {
             pergunta: `¿Cuál es la cantidad mínima de ${nome.toLowerCase()}?`,
-            resposta: `Podés pedir desde ${fmt(min)} unidades. En la tabla de cantidades ves el precio total y el precio por unidad de cada opción.`,
+            resposta: `Podés pedir desde ${fmt(min)} unidades. Elegí la cantidad en la página del producto y te enviamos la cotización sin compromiso.`,
           },
         ]
       : []),

@@ -168,7 +168,8 @@ export async function produtosEmail(
     .map((sku) => porSku.get(sku.trim()))
     .filter((r): r is NonNullable<typeof r> => !!r)
     .map((r) => {
-      const pr = precoVenda(r, c);
+      // Preços desligados no site (só cotação): o e-mail também não mostra valor
+      const pr = c.mostrar ? precoVenda(r, c) : null;
       const ant = antes.get(r.sku.trim());
       if (pr?.uyu && pr.brl && !pr.deUyu && ant && ant > pr.brl * 1.005) {
         pr.deUyu = Math.round((pr.uyu * ant) / pr.brl / (c.arredondar || 1)) * (c.arredondar || 1);

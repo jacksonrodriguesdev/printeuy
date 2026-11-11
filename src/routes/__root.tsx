@@ -158,8 +158,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         {
           name: "description",
           content: t(
-            "Imprenta online en Uruguay: tarjetas de presentación, adhesivos, volantes, packaging, banners, tazas y regalos empresariales personalizados. Precio al instante y envío a todo el país.",
-            "Imprenta online en Uruguay: tarjetas de presentación, adhesivos, volantes, packaging, banners, tazas y regalos empresariales personalizados. Precio al instante y envío a todo el país.",
+            "Imprenta online en Uruguay: tarjetas de presentación, adhesivos, volantes, packaging, banners, tazas y regalos empresariales personalizados. Cotización sin compromiso y envío a todo el país.",
+            "Imprenta online en Uruguay: tarjetas de presentación, adhesivos, volantes, packaging, banners, tazas y regalos empresariales personalizados. Cotización sin compromiso y envío a todo el país.",
           ),
         },
         { property: "og:locale", content: OG_LOCALE[idioma] },

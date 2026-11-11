@@ -4,6 +4,10 @@ import { descontoPara, type Regra } from "./campanha-comum";
 // valor_compra = custo em R$ · preco_brl = venda em R$ · $U = venda em R$ × cotação do dia
 // (ou preço fixo em $U quando preco_modo = "FIXO").
 
+// Site só de cotação: com false, nenhum preço aparece (cartões, página do produto, dados do Google,
+// feeds). Vale por cima da chave «Mostrar preços no site» do admin. Para voltar, troque para true.
+export const PRECOS_NO_SITE = false;
+
 export type ConfigPrecos = {
   cotacao: number | null; // 1 R$ = X $U
   cotacaoEm: string | null;

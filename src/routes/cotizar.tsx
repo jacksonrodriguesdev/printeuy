@@ -138,7 +138,7 @@ function CotizarPage() {
             <div>
               <p className="font-bold">¿Ya sabés qué querés?</p>
               <p className="text-sm text-zinc-600">
-                Configurá tu producto y mirá el precio al instante.
+                Configurá tu producto y pedí tu cotización sin compromiso.
               </p>
             </div>
           </Link>

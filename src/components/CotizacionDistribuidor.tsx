@@ -358,7 +358,7 @@ export function CotizacionForm({ compacto = false }: { compacto?: boolean }) {
       <p className="text-center text-xs text-zinc-500">
         ¿Ya sabés qué producto querés?{" "}
         <Link to="/loja" className="font-semibold text-primary underline">
-          Mirá el precio al instante
+          Pedí tu cotización
         </Link>
         .
       </p>

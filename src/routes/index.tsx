@@ -44,7 +44,7 @@ const lojaLd = {
   telephone: `+${PHONE}`,
   email: "printeuy@gmail.com",
   description:
-    "Imprenta online en Uruguay: tarjetas de presentación, adhesivos, packaging, volantes y regalos empresariales personalizados, con precio al instante y envío a todo el país.",
+    "Imprenta online en Uruguay: tarjetas de presentación, adhesivos, packaging, volantes y regalos empresariales personalizados, con cotización sin compromiso y envío a todo el país.",
   areaServed: { "@type": "Country", name: "Uruguay" },
   address: { "@type": "PostalAddress", addressCountry: "UY" },
   priceRange: "$",
@@ -99,7 +99,7 @@ export const Route = createFileRoute("/")({
       : [];
     const titulo = "PRINTE UY — Imprenta online en Uruguay";
     const desc =
-      "Tarjetas de presentación, adhesivos, packaging, volantes, tazas y regalos empresariales personalizados. Precio al instante y envíos a todo Uruguay.";
+      "Tarjetas de presentación, adhesivos, packaging, volantes, tazas y regalos empresariales personalizados. Cotización sin compromiso y envíos a todo Uruguay.";
     return {
       meta: [
         { title: titulo },

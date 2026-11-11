@@ -469,7 +469,7 @@ export const TIPOS_EMAIL: TipoBlocoEmail[] = [
     padrao: {
       imagem: "",
       titulo: "Catálogos en PDF",
-      texto: "Mirá todos nuestros productos personalizables con precio al instante.",
+      texto: "Mirá todos nuestros productos personalizables y pedí tu cotización sin compromiso.",
       botao: "Ver catálogos",
       link: "/catalogos",
       lado: "esq",

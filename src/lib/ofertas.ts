@@ -45,7 +45,7 @@ async function carregar(sku: string): Promise<ProdutoOferta | null> {
     marca: p.marca,
     imagem: img,
     fotoPropria: !!img && FOTO_PROPRIA.test(img),
-    preco: precoVenda(p, c),
+    preco: c.mostrar ? precoVenda(p, c) : null,
     cheioBrl: cheio?.brl ?? null,
     cheioUyu: cheio?.uyu ?? null,
   };

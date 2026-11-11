@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { precosAdminFn, atualizarCotacaoFn, salvarConfigPrecosFn } from "@/lib/produtos-admin";
-import { fmtBRL, fmtUYU, uyuDeBrl } from "@/lib/precos";
+import { fmtBRL, fmtUYU, uyuDeBrl, PRECOS_NO_SITE } from "@/lib/precos";
 import { cn } from "@/lib/utils";
 
 // Cotação do dia (R$ → $U) e configurações de preço, no topo da página de produtos.
@@ -122,9 +122,10 @@ export function PainelCotacao({
             </div>
           ))}
           <label className="flex items-center justify-between gap-2 rounded-md border px-3 text-sm">
-            Mostrar preços no site
+            {PRECOS_NO_SITE ? "Mostrar preços no site" : "Preços desligados no código (só cotação)"}
             <Switch
-              checked={v.mostrar_precos === "1"}
+              disabled={!PRECOS_NO_SITE}
+              checked={PRECOS_NO_SITE && v.mostrar_precos === "1"}
               onCheckedChange={(x) => setV({ ...v, mostrar_precos: x ? "1" : "0" })}
             />
           </label>

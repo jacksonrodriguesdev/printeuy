@@ -286,7 +286,7 @@ const ABERTURAS = [
   (n: string) =>
     `¿Buscás una imprenta en ${n}? En PRINTE UY imprimís tarjetas, adhesivos, volantes, packaging y regalos con tu marca sin salir de tu casa o tu negocio.`,
   (n: string) =>
-    `PRINTE UY es la imprenta online para comercios, emprendedores y empresas de ${n}: configurás tu producto, ves el precio al momento y lo recibís donde estés.`,
+    `PRINTE UY es la imprenta online para comercios, emprendedores y empresas de ${n}: configurás tu producto, pedís tu cotización sin compromiso y lo recibís donde estés.`,
   (n: string) =>
     `Desde ${n} podés encargar todo lo impreso que necesita tu marca: papelería, etiquetas, cartelería, packaging y merchandising, con calidad profesional.`,
   (n: string) =>
@@ -309,7 +309,7 @@ export function textosLugar(l: Lugar) {
   const passos = [
     {
       t: "Elegí el producto",
-      d: "Tamaño, papel, terminación y cantidad, con el precio al instante.",
+      d: "Tamaño, papel, terminación y cantidad, y te enviamos la cotización sin compromiso.",
     },
     { t: "Subí tu diseño", d: "PDF, AI, PSD, CDR o JPG. Si no tenés, te ayudamos por WhatsApp." },
     { t: "Revisamos el archivo", d: "Chequeamos medidas, resolución y colores antes de imprimir." },
@@ -329,7 +329,7 @@ export function textosLugar(l: Lugar) {
     },
     {
       p: `¿Qué productos se piden más en ${curto}?`,
-      r: `Tarjetas de presentación, adhesivos para productos, volantes y ${categoriasEmDestaque(l, 2)[1].toLowerCase()}. Podés ver todos los productos y precios en esta página.`,
+      r: `Tarjetas de presentación, adhesivos para productos, volantes y ${categoriasEmDestaque(l, 2)[1].toLowerCase()}. Podés ver todos los productos en esta página y pedir tu cotización.`,
     },
     {
       p: "¿Puedo pedir sin tener el diseño listo?",
