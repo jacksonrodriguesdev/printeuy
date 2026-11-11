@@ -284,15 +284,16 @@ function CategoriasPopulares() {
             className="group flex w-28 shrink-0 flex-col items-center gap-3 text-center md:w-auto"
           >
             <span className="relative flex aspect-square w-full items-center justify-center overflow-hidden rounded-full bg-zinc-100 ring-4 ring-transparent transition duration-300 group-hover:ring-accent/30">
-              {c.imagem ? (
+              {/* Ícone por baixo: aparece se a foto faltar ou não carregar (a foto se esconde) */}
+              <c.icon className="absolute h-10 w-10 text-zinc-400" />
+              {c.imagem && (
                 <img
                   src={c.imagem}
                   alt=""
                   loading="lazy"
-                  className="h-full w-full object-cover transition duration-700 group-hover:scale-110"
+                  onError={(e) => (e.currentTarget.style.display = "none")}
+                  className="relative h-full w-full object-cover transition duration-700 group-hover:scale-110"
                 />
-              ) : (
-                <c.icon className="h-10 w-10 text-zinc-400" />
               )}
             </span>
             <span className="text-sm font-medium leading-tight text-zinc-800 group-hover:text-accent md:text-[15px]">
