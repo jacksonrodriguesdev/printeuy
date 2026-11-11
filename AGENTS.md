@@ -23,7 +23,8 @@ Variáveis em `.env` (modelo em `.env.example`). Banco: `printeuy`. Fotos/vídeo
   `scripts/catalogo/glossario_grafica.cjs`), fotos em `pecas_img`, configurador em `pecas_detalhes` (JSON:
   combinações com preço por quantidade, opções, descrição HTML, FAQ, vídeos).
 - Categorias da loja: `CATEGORIAS` em `src/lib/navegacao.ts` (o importador usa os mesmos nomes).
-- Preço: `preco_brl` = preço Printi (+ margem); o site mostra $U pela cotação do dia.
+- Preço: `preco_brl` = preço Printi (+ margem). Hoje o site é só de cotação: `PRECOS_NO_SITE = false`
+  em `src/lib/precos.ts` esconde todos os preços (vale por cima da chave do admin).
 
 ## Site
 
