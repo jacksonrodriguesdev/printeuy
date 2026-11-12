@@ -1,25 +1,23 @@
-// Boas-vindas depois do primeiro login (/cuenta?completar=1): 2 passos curtos e uma tela final.
-// 1) nome, celular (WhatsApp) e departamento; 2) o vehículo (opcional); 3) pronto.
-// O endereço de envio fica para depois, em "Mi cuenta".
+// Boas-vindas depois do primeiro login (/cuenta?completar=1): um passo só (nome, celular/WhatsApp e
+// departamento). Ao salvar, volta direto para onde a pessoa estava (ex.: a cotização ou o produto);
+// sem destino, mostra a tela "¡Listo!". O endereço de envio fica para depois, em "Mi cuenta".
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, Car, Check, Loader2, MapPin, MessageCircle, User } from "lucide-react";
+import { ArrowRight, Check, Loader2, MapPin, MessageCircle, User } from "lucide-react";
 import { Campo, CampoCelular, inputCls } from "@/components/auth/AuthShell";
-import { BuscaVeiculo, rotuloVeiculo, type MeuVeiculo } from "@/components/BuscaVeiculo";
 import { salvarPerfilFn, type Perfil } from "@/lib/conta";
 import { DEPARTAMENTOS_UY, mascararCelularUY } from "@/lib/validacao-conta";
 import { cn } from "@/lib/utils";
 
 export function CompletarCadastro({ perfil, destino }: { perfil: Perfil; destino?: string }) {
-  const [passo, setPasso] = useState<1 | 2 | 3>(1);
+  const [pronto, setPronto] = useState(false);
   const [nome, setNome] = useState(perfil.nome_completo);
   const [tel, setTel] = useState(mascararCelularUY(perfil.telefone || ""));
   const [depto, setDepto] = useState(perfil.departamento || "");
   const [busy, setBusy] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
-  const [auto, setAuto] = useState<MeuVeiculo | null>(null);
   const primeiroNome = nome.trim().split(" ")[0];
-  // Volta para onde a pessoa estava (ex.: a página da peça), menos a própria conta
+  // Volta para onde a pessoa estava (ex.: a cotização), menos a própria conta
   const voltar = destino && !destino.startsWith("/cuenta") ? destino : null;
 
   const salvarDados = async (e: React.FormEvent) => {
@@ -40,7 +38,11 @@ export function CompletarCadastro({ perfil, destino }: { perfil: Perfil; destino
           recebe_emails: perfil.recebe_emails,
         },
       });
-      setPasso(2);
+      if (voltar) {
+        window.location.assign(voltar);
+        return;
+      }
+      setPronto(true);
     } catch (err: any) {
       setErro(err?.message || "No pudimos guardar. Probá de nuevo.");
     } finally {
@@ -49,11 +51,10 @@ export function CompletarCadastro({ perfil, destino }: { perfil: Perfil; destino
   };
 
   return (
-    <div className="relative min-h-[100dvh] overflow-hidden bg-slate-100">
-      <div aria-hidden className="absolute inset-x-0 top-0 h-[260px] bg-[#0b1d3a]">
+    <div className="relative min-h-[100dvh] overflow-hidden bg-zinc-100">
+      <div aria-hidden className="absolute inset-x-0 top-0 h-[260px] bg-zinc-900">
         <div className="absolute inset-0 opacity-[0.07] [background-image:radial-gradient(#fff_1px,transparent_1px)] [background-size:18px_18px]" />
-        <div className="absolute inset-x-0 bottom-14 h-[6px] [background-image:repeating-linear-gradient(90deg,#f59e0b_0_48px,transparent_48px_96px)] opacity-80" />
-        <div className="absolute -right-20 -top-24 h-72 w-72 rounded-full bg-orange-500/25 blur-3xl" />
+        <div className="absolute -right-20 -top-24 h-72 w-72 rounded-full bg-[#fcd12d]/25 blur-3xl" />
       </div>
 
       <div className="relative mx-auto max-w-lg px-4 pb-24 pt-safe">
@@ -67,7 +68,7 @@ export function CompletarCadastro({ perfil, destino }: { perfil: Perfil; destino
               className="h-12 w-12 rounded-2xl object-cover ring-2 ring-white/25"
             />
           ) : (
-            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-400 text-lg font-black text-[#0b1d3a]">
+            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#fcd12d] text-lg font-black text-zinc-900">
               {(primeiroNome[0] || "U").toUpperCase()}
             </span>
           )}
@@ -76,58 +77,20 @@ export function CompletarCadastro({ perfil, destino }: { perfil: Perfil; destino
               ¡Bienvenido{primeiroNome ? `, ${primeiroNome}` : ""}!
             </p>
             <p className="text-sm text-white/70">
-              {passo < 3 ? "Dos pasos rápidos y listo." : "Tu cuenta está lista."}
+              {pronto ? "Tu cuenta está lista." : "Un paso rápido y listo."}
             </p>
           </div>
         </div>
 
-        <div className="rounded-[28px] bg-white p-6 shadow-[0_30px_80px_-30px_rgba(11,29,58,0.45)] ring-1 ring-black/5 sm:p-8">
-          {/* Progresso */}
-          {passo < 3 && (
-            <div className="mb-6 flex items-center gap-2">
-              {[1, 2].map((n) => (
-                <div key={n} className="flex flex-1 items-center gap-2">
-                  <span
-                    className={cn(
-                      "flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-black transition",
-                      passo > n
-                        ? "bg-emerald-500 text-white"
-                        : passo === n
-                          ? "bg-orange-500 text-white"
-                          : "bg-slate-100 text-slate-400",
-                    )}
-                  >
-                    {passo > n ? <Check className="h-4 w-4" /> : n}
-                  </span>
-                  <span
-                    className={cn(
-                      "text-xs font-bold",
-                      passo >= n ? "text-[#0b1d3a]" : "text-slate-400",
-                    )}
-                  >
-                    {n === 1 ? "Tus datos" : "Tu auto"}
-                  </span>
-                  {n === 1 && (
-                    <span
-                      className={cn(
-                        "h-1 flex-1 rounded-full",
-                        passo > 1 ? "bg-emerald-500" : "bg-slate-100",
-                      )}
-                    />
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-
-          {passo === 1 && (
+        <div className="rounded-[28px] bg-white p-6 shadow-[0_30px_80px_-30px_rgba(0,0,0,0.45)] ring-1 ring-black/5 sm:p-8">
+          {!pronto && (
             <form onSubmit={salvarDados} className="space-y-4" noValidate>
               <div>
-                <h1 className="text-2xl font-black tracking-tight text-[#0b1d3a]">
+                <h1 className="text-2xl font-black tracking-tight text-zinc-900">
                   ¿Cómo te contactamos?
                 </h1>
-                <p className="mt-1 text-sm text-slate-500">
-                  Te respondemos por WhatsApp con el precio de tus impresos.
+                <p className="mt-1 text-sm text-zinc-500">
+                  Te respondemos por WhatsApp con la cotización de tus impresos.
                 </p>
               </div>
               <Campo id="c-nome" label="Tu nombre" icone={User}>
@@ -166,81 +129,42 @@ export function CompletarCadastro({ perfil, destino }: { perfil: Perfil; destino
               <button
                 type="submit"
                 disabled={busy || nome.trim().length < 3 || tel.replace(/\D/g, "").length < 8}
-                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-orange-500 py-3.5 text-base font-black text-white shadow-lg shadow-orange-500/30 transition hover:bg-orange-600 active:scale-[0.99] disabled:opacity-50 disabled:shadow-none"
+                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-zinc-900 py-3.5 text-base font-black text-white shadow-lg transition hover:bg-zinc-800 active:scale-[0.99] disabled:opacity-50 disabled:shadow-none"
               >
                 {busy ? (
                   <Loader2 className="h-5 w-5 animate-spin" />
                 ) : (
                   <ArrowRight className="h-5 w-5" />
                 )}
-                Continuar
+                {voltar ? "Guardar y seguir con mi cotización" : "Guardar"}
               </button>
             </form>
           )}
 
-          {passo === 2 && (
-            <div>
-              <h1 className="text-2xl font-black tracking-tight text-[#0b1d3a]">
-                ¿Qué auto tenés?
-              </h1>
-              <p className="mb-5 mt-1 text-sm text-slate-500">
-                Lo guardamos para mostrarte solo los repuestos que le sirven.
-              </p>
-              <BuscaVeiculo
-                variante="compacta"
-                rotuloBotao="Guardar mi auto"
-                aoBuscar={(v) => {
-                  setAuto(v);
-                  setPasso(3);
-                }}
-              />
-              <button
-                type="button"
-                onClick={() => setPasso(3)}
-                className="mt-3 w-full py-2 text-center text-sm font-semibold text-slate-500 hover:text-[#0b1d3a]"
-              >
-                Saltar por ahora
-              </button>
-            </div>
-          )}
-
-          {passo === 3 && (
+          {pronto && (
             <div className="text-center">
               <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500 text-white shadow-lg shadow-emerald-500/30">
                 <Check className="h-8 w-8" strokeWidth={3} />
               </span>
-              <h1 className="mt-4 text-2xl font-black tracking-tight text-[#0b1d3a]">¡Listo!</h1>
-              <p className="mt-1 text-sm text-slate-500">
-                {auto
-                  ? `Guardamos tu ${rotuloVeiculo(auto)}.`
-                  : "Ya podés cotizar repuestos en un clic."}
+              <h1 className="mt-4 text-2xl font-black tracking-tight text-zinc-900">¡Listo!</h1>
+              <p className="mt-1 text-sm text-zinc-500">
+                Ya podés pedir la cotización de tus impresos en un clic.
               </p>
               <div className="mt-6 grid gap-2.5">
-                {voltar ? (
-                  <a
-                    href={voltar}
-                    className="flex items-center justify-center gap-2 rounded-2xl bg-orange-500 py-3.5 font-black text-white shadow-lg shadow-orange-500/30 hover:bg-orange-600"
-                  >
-                    Seguir donde estaba <ArrowRight className="h-5 w-5" />
-                  </a>
-                ) : (
-                  <Link
-                    to="/loja"
-                    search={(auto ?? {}) as never}
-                    className="flex items-center justify-center gap-2 rounded-2xl bg-orange-500 py-3.5 font-black text-white shadow-lg shadow-orange-500/30 hover:bg-orange-600"
-                  >
-                    <Car className="h-5 w-5" />
-                    {auto ? "Ver repuestos para mi auto" : "Ver repuestos"}
-                  </Link>
-                )}
+                <Link
+                  to="/loja"
+                  className="flex items-center justify-center gap-2 rounded-2xl bg-zinc-900 py-3.5 font-black text-white shadow-lg hover:bg-zinc-800"
+                >
+                  Ver productos <ArrowRight className="h-5 w-5" />
+                </Link>
                 <Link
                   to="/cuenta"
-                  className="rounded-2xl bg-slate-100 py-3.5 font-bold text-[#0b1d3a] hover:bg-slate-200"
+                  className="rounded-2xl bg-zinc-100 py-3.5 font-bold text-zinc-900 hover:bg-zinc-200"
                 >
                   Ir a mi cuenta
                 </Link>
               </div>
-              <p className="mt-5 flex items-center justify-center gap-1.5 text-xs text-slate-400">
+              <p className="mt-5 flex items-center justify-center gap-1.5 text-xs text-zinc-400">
                 <MessageCircle className="h-3.5 w-3.5" /> La dirección de envío la cargás cuando
                 hagas tu primer pedido.
               </p>

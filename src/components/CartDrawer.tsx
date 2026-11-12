@@ -3,30 +3,27 @@ import { useCart } from "@/components/CartContext";
 import { Button } from "@/components/ui/button";
 import { ProductImage } from "@/components/ProductImage";
 import { PHONE } from "@/lib/whatsapp";
+import { SITE_URL } from "@/lib/site";
 import { nomeEs } from "@/lib/pecas-es";
 import { pedirPrecoWhatsapp } from "@/lib/pedir-cadastro";
 import { useT } from "@/lib/idioma";
 import { linhaAmigo } from "@/components/IndicacaoAmigo";
 
 export function CartDrawer() {
-  const { items, isCartOpen, setIsCartOpen, updateQuantity, removeItem, clearCart, marcarEnviado } =
-    useCart();
+  const { items, isCartOpen, setIsCartOpen, removeItem, clearCart, marcarEnviado } = useCart();
   const { t, idioma } = useT();
 
   if (!isCartOpen) return null;
   const nome = (i: { name: string; nameEs?: string | null }) =>
     idioma === "pt" ? i.name : i.nameEs || nomeEs(i.name);
 
-  const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
-
   // A cotação vai para o WhatsApp depois do cadastro (sem conta, o pop-up pede o e-mail antes).
-  // O nome em português vai entre parênteses para a equipe identificar a peça.
+  // Cada produto vai com o link da página, para a equipe ver qual é e perguntar tamanho e cantidad.
   const handleSendQuote = () => {
-    const lines = items.map((i) => {
-      const exibido = nome(i);
-      return `• ${i.quantity}x ${exibido}${exibido !== i.name ? ` (${i.name})` : ""} — Cód: ${i.codigo || i.sku}`;
-    });
-    const message = `${t("¡Hola! Quiero cotizar estos repuestos:", "Olá! Quero orçamento destas peças (cliente do Brasil):")}\n\n${lines.join("\n")}${linhaAmigo(idioma === "pt")}`;
+    const lines = items.map(
+      (i) => `• ${nome(i)}\n  ${SITE_URL}/produto/${encodeURIComponent(i.sku.trim())}`,
+    );
+    const message = `${t("¡Hola! Quiero una cotización de estos productos:", "Olá! Quero orçamento destes produtos:")}\n\n${lines.join("\n")}${linhaAmigo(idioma === "pt")}`;
     const url = `https://api.whatsapp.com/send?phone=${PHONE}&text=${encodeURIComponent(message)}`;
     // O carrinho só é esvaziado quando o WhatsApp abre de fato
     setIsCartOpen(false);
@@ -63,11 +60,11 @@ export function CartDrawer() {
             <div className="flex flex-col items-center justify-center h-full text-zinc-500 space-y-4">
               <ShoppingCart className="h-16 w-16 opacity-20" />
               <p className="text-lg font-medium">
-                {t("Todavía no agregaste repuestos", "Você ainda não adicionou peças")}
+                {t("Todavía no agregaste productos", "Você ainda não adicionou produtos")}
               </p>
               <p className="max-w-xs text-center text-sm">
                 {t(
-                  "Sumá las piezas que necesitás y mandanos todo junto por WhatsApp para recibir el precio.",
+                  "Sumá los productos que necesitás y mandanos todo junto por WhatsApp para recibir la cotización.",
                   "Adicione as peças que você precisa e mande tudo junto pelo WhatsApp para receber o preço.",
                 )}
               </p>
@@ -95,26 +92,11 @@ export function CartDrawer() {
                     <h3 className="text-sm font-semibold text-zinc-800 line-clamp-2 leading-tight">
                       {nome(item)}
                     </h3>
-                    <p className="text-xs text-zinc-500 mt-1">Cód: {item.codigo || item.sku}</p>
 
                     <div className="flex items-center justify-between mt-auto pt-2">
-                      <div className="flex items-center border rounded-md border-zinc-300 overflow-hidden">
-                        <button
-                          className="px-2.5 py-1 bg-zinc-50 hover:bg-zinc-100 text-zinc-600 font-medium"
-                          onClick={() => updateQuantity(item.sku, item.quantity - 1)}
-                        >
-                          -
-                        </button>
-                        <span className="px-3 py-1 text-sm font-semibold border-x border-zinc-300 min-w-[2.5rem] text-center">
-                          {item.quantity}
-                        </span>
-                        <button
-                          className="px-2.5 py-1 bg-zinc-50 hover:bg-zinc-100 text-zinc-600 font-medium"
-                          onClick={() => updateQuantity(item.sku, item.quantity + 1)}
-                        >
-                          +
-                        </button>
-                      </div>
+                      <span className="text-xs text-zinc-500">
+                        Tamaño y cantidad: los combinamos por WhatsApp
+                      </span>
                       <button
                         onClick={() => removeItem(item.sku)}
                         className="p-1.5 text-zinc-400 hover:text-red-500 transition-colors"
@@ -134,12 +116,8 @@ export function CartDrawer() {
         {items.length > 0 && (
           <div className="border-t p-6 bg-zinc-50 space-y-4">
             <div className="flex justify-between items-center text-sm">
-              <span className="text-zinc-600 font-medium">
-                {t("Total de repuestos", "Total de peças")}
-              </span>
-              <span className="font-bold text-zinc-900">
-                {totalItems} {totalItems === 1 ? t("unidad", "unidade") : t("unidades", "unidades")}
-              </span>
+              <span className="text-zinc-600 font-medium">{t("Productos", "Produtos")}</span>
+              <span className="font-bold text-zinc-900">{items.length}</span>
             </div>
 
             <div className="pt-2">
@@ -148,13 +126,13 @@ export function CartDrawer() {
                 className="w-full h-14 text-lg font-bold flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#1EBE57] text-white"
               >
                 <Send className="h-5 w-5" />
-                {t("Pedir precio por WhatsApp", "Pedir preço pelo WhatsApp")}
+                {t("Pedir cotización por WhatsApp", "Pedir orçamento pelo WhatsApp")}
               </Button>
             </div>
             <p className="text-center text-xs text-zinc-500">
               {t(
-                "Te respondemos con precio y disponibilidad.",
-                "Respondemos com preço, disponibilidade e frete. Enviamos para todo o Sul do Brasil.",
+                "Te respondemos con la cotización y el plazo de entrega.",
+                "Respondemos com o orçamento e o prazo de entrega.",
               )}
             </p>
 

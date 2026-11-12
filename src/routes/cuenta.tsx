@@ -147,7 +147,7 @@ function CuentaPage() {
               {
                 href: whatsappContactUrl(
                   t(
-                    "¡Hola! Soy cliente de PRINTE UY y quiero cotizar repuestos.",
+                    "¡Hola! Soy cliente de PRINTE UY y quiero pedir una cotización.",
                     "Olá! Sou cliente da PRINTE UY e quero orçamento de peças.",
                   ),
                 ),
@@ -316,7 +316,7 @@ function Dados({ perfil, destino }: { perfil: Perfil; destino?: string }) {
         <h2 className="text-xl font-extrabold text-zinc-900">{t("Mis datos", "Meus dados")}</h2>
         <p className="text-sm text-zinc-500">
           {t(
-            "Los usamos para cotizar y enviarte los repuestos.",
+            "Los usamos para enviarte tu cotización y tus pedidos.",
             "Usamos para fazer o orçamento e enviar suas peças.",
           )}
         </p>
@@ -463,7 +463,7 @@ function Dados({ perfil, destino }: { perfil: Perfil; destino?: string }) {
           </b>
           <br />
           {t(
-            "Promociones del mes y novedades de repuestos. Podés darte de baja cuando quieras.",
+            "Promociones del mes y novedades de impresos. Podés darte de baja cuando quieras.",
             "Promoções do mês e novidades de peças. Você pode cancelar quando quiser.",
           )}
         </span>
