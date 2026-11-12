@@ -12,7 +12,7 @@ import {
   Scripts,
   useRouterState,
 } from "@tanstack/react-router";
-import { type ReactNode } from "react";
+import { type ReactNode, useEffect } from "react";
 import {
   idiomaDoCaminho,
   useT,
@@ -47,8 +47,8 @@ function NotFoundComponent() {
         </h2>
         <p className="mt-2 text-sm text-muted-foreground">
           {t(
-            "La página que buscás no existe o cambió de lugar. Probá buscar el repuesto en el catálogo.",
-            "A página que você procura não existe ou mudou de lugar. Tente buscar a peça no catálogo.",
+            "La página que buscás no existe o cambió de lugar. Probá buscar el producto en el catálogo.",
+            "A página que você procura não existe ou mudou de lugar. Tente buscar o produto no catálogo.",
           )}
         </p>
         <div className="mt-6">
@@ -64,10 +64,39 @@ function NotFoundComponent() {
   );
 }
 
+// Proteção contra robôs da Hostinger (LiteSpeed reCAPTCHA em /.lsrecap/): com muitos cliques
+// seguidos ela responde às chamadas internas (/_serverFn) com a página "Bot Verification" em vez
+// dos dados. Recarregando a página inteira a verificação roda no navegador (passa sozinha) e o
+// cliente segue. Uma vez por minuto no máximo, para não entrar em laço.
+const ehVerificacaoRobo = (error: unknown) =>
+  /lsrecap|Bot Verification|not a robot/i.test(
+    String((error as { message?: unknown })?.message ?? error),
+  );
+
 function ErrorComponent({ error, reset }: { error: unknown; reset: () => void }) {
   console.error(error);
   const router = useRouter();
   const { t, href } = useT();
+  const robo = ehVerificacaoRobo(error);
+
+  useEffect(() => {
+    if (!robo) return;
+    try {
+      const ultima = Number(sessionStorage.getItem("recarga-robo") || 0);
+      if (Date.now() - ultima < 60_000) return;
+      sessionStorage.setItem("recarga-robo", String(Date.now()));
+    } catch {
+      /* sem sessionStorage: recarrega assim mesmo */
+    }
+    window.location.reload();
+  }, [robo]);
+
+  if (robo)
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background px-4">
+        <p className="text-sm text-muted-foreground">{t("Cargando…", "Carregando…")}</p>
+      </div>
+    );
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
