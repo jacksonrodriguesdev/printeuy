@@ -14,6 +14,7 @@
 
 const fs = require("fs");
 const path = require("path");
+const { crc32 } = require("zlib");
 
 const RAIZ = path.join(__dirname, "../../..");
 const CATALOGO = path.join(RAIZ, "dados", "360imprimir", "catalogo.json");
@@ -94,7 +95,8 @@ function montar() {
       imagem_principal: foto,
       marca: null,
       marca_confirmada: false,
-      popularidade: 0,
+      // Mistura com a Printi na ordem "Más vendidos" (com 0 ficavam todos nas últimas páginas)
+      popularidade: 1 + (crc32(sku) % 40),
     });
     if (foto) imagens.push({ sku, image_path: foto, image_type: "main", sort_order: 0 });
     detalhes.push({
@@ -155,7 +157,7 @@ function gerarSql({ pecas, imagens, detalhes }) {
         p.categoria,
       ]
         .map(q)
-        .join(", ")}, (SELECT id FROM categories WHERE nome = ${q(p.categoria)} ORDER BY id LIMIT 1), ${q(p.descricao)}, ${p.estoque}, ${q(p.imagem_principal)}, NULL, 0, 0, 'AUTO', NOW(3), NOW(3));`,
+        .join(", ")}, (SELECT id FROM categories WHERE nome = ${q(p.categoria)} ORDER BY id LIMIT 1), ${q(p.descricao)}, ${p.estoque}, ${q(p.imagem_principal)}, NULL, 0, ${p.popularidade}, 'AUTO', NOW(3), NOW(3));`,
     );
   for (const i of imagens)
     L.push(
