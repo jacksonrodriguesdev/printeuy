@@ -1,0 +1,335 @@
+# Produtos da 360imprimir -> loja PRINTE UY: slug<TAB>nome em espanhol (Uruguai)<TAB>categoria da loja
+# Categorias (src/lib/navegacao.ts): T=Tarjetas y Papelería, E=Etiquetas y Adhesivos, V=Volantes y Folletos,
+# P=Packaging y Envases, R=Regalos Empresariales, Z=Tazas, Vasos y Botellas, C=Cartelería y Banners,
+# M=Material de Marketing, A=Agendas y Calendarios, O=Ropa y Mochilas, G=Gastronomía y Delivery,
+# D=Casa y Decoración, K=Mascotas. Os ~300 "Adesivos de <tema>" entram só como o produto "adesivos".
+adesivos-eu-votei	Adhesivos "Yo voté"	E
+adesivos-love-you	Adhesivos "Love You"	E
+etiquetas-depara	Etiquetas "De/Para"	E
+etiquetas-limpas-e-higienizadas	Etiquetas "Limpio y desinfectado"	E
+etiquetas-ola-o-meu-nome-e	Etiquetas "Hola, mi nombre es"	E
+fita-para-chapeu	Cinta para sombrero	O
+portaoculos	Portalentes	R
+hub-usb	Hub USB	R
+mouse-para-notebook	Mouse para notebook	R
+mousepads	Mousepad	R
+mousepad	Mousepad clásico	R
+protetor-para-webcam	Tapa para webcam	R
+bolsa-para-carro	Organizador para auto	R
+protetor-solar-para-carros	Parasol para auto	R
+porta-celular-para-carro	Soporte de celular para auto	R
+bastao-de-selfie	Palo de selfie	R
+cabo-usb	Cable USB	R
+adesivos-para-carros	Adhesivo para autos	E
+adesivo-resinado	Adhesivo resinado	E
+adesivos	Adhesivos personalizados (todos los temas)	E
+adesivos-em-bobina	Adhesivos en rollo	E
+adesivos-em-papel	Adhesivos en papel	E
+adesivo-tamanho-europeu	Adhesivos tamaño europeo	E
+adesivos-individuais	Adhesivos individuales	E
+adesivos-quadrados-e-retangulares	Adhesivos cuadrados y rectangulares	E
+adesivos-redondos	Adhesivos redondos	E
+etiquetas-adesivas-2	Etiquetas adhesivas	E
+praguinha-adesiva	Adhesivos para cierre de bolsas	E
+rotulos	Rótulos y etiquetas para productos	E
+stickers	Stickers	E
+adesivo-eletrostatico	Adhesivo electrostático	E
+adesivo-para-vidro	Adhesivo para vidriera	E
+vinil-para-piso	Vinilo adhesivo para piso	E
+vinil	Vinilo adhesivo	E
+anti-estresse	Pelota antiestrés	R
+estojo-para-pen-drive	Estuche para pendrive	R
+pen-drive-usb	Pendrive USB	R
+porta-comprimidos	Pastillero	R
+kit-limpeza-de-sapatos	Kit de limpieza de calzado	R
+pulseira-para-eventos	Pulsera para eventos	M
+canvas	Canvas	D
+lonas	Lonas impresas	C
+lonas-100-x-100-cm	Lona 100 x 100 cm	C
+lonas-100-x-135-cm	Lona 100 x 135 cm	C
+lonas-100-x-200-cm	Lona 100 x 200 cm	C
+lonas-100-x-300-cm	Lona 100 x 300 cm	C
+lonas-200-x-300-cm	Lona 200 x 300 cm	C
+lonas-50-x-100-cm	Lona 50 x 100 cm	C
+lonas-50-x-150-cm	Lona 50 x 150 cm	C
+lonas-50-x-200-cm	Lona 50 x 200 cm	C
+lonas-80-x-200-cm	Lona 80 x 200 cm	C
+jogo-americano	Individual de mesa	G
+bolsa-de-cosmeticos	Neceser de cosméticos	R
+escova-com-espelho	Cepillo con espejo	R
+espelho-de-maquiagem	Espejo de maquillaje	R
+kit-de-lixas	Kit de limas de uñas	R
+kit-de-manicure	Kit de manicura	R
+necessaire-couro-sintetico	Neceser de cuero sintético	R
+necessaire-em-nylon	Neceser de nylon	R
+necessaire-de-pvc	Neceser de PVC	R
+necessaire-de-viagem	Neceser de viaje	R
+kit-de-fitness	Kit de fitness	R
+termometro	Termómetro	R
+convites	Invitaciones	T
+save-the-date-xxx-1	Save the Date	T
+bloco-de-anotacoes-com-calculadora	Bloc de notas con calculadora	R
+caderno-com-bolsa	Cuaderno con bolsa	T
+caderno-com-caneta	Cuaderno con bolígrafo	T
+caderno-com-caneta-de-bambu	Cuaderno con bolígrafo de bambú	T
+caderno-com-capa-em-plastico	Cuaderno con tapa de plástico	T
+carne	Talonario	T
+pasta-rigida	Carpeta rígida	T
+recibos	Recibos	T
+bolsa-de-cosmeticos-com-alca	Neceser con asa	R
+bolsa-de-cosmeticos-hermetica	Neceser hermético	R
+bolsa-de-cosmeticos-sem-alca	Neceser sin asa	R
+bolsa-de-viagem	Bolso de viaje	O
+pochete	Riñonera	O
+bolsa-multiuso	Bolso multiuso	O
+caixa-de-papelao	Caja de cartón	P
+caixa-de-som-com-microfone	Parlante con micrófono	R
+caixa-organizadora	Caja organizadora	P
+calendario-de-bolso-2	Calendario de bolsillo	A
+ima-com-calendario-anual	Imán con calendario anual	A
+ima-com-calendario-mensal	Imán con calendario mensual	A
+caneca-acrilica	Taza acrílica	Z
+caneca-ceramica	Taza de cerámica	Z
+caneca-em-inox	Taza de acero inoxidable	Z
+caneca-para-viagem	Taza de viaje	Z
+caneca-porta-foto	Taza portafoto	Z
+caneta-de-plastico-com-acabamento-frost	Bolígrafo de plástico acabado frost	R
+caneta-de-plastico-com-acabamento-translucido	Bolígrafo de plástico translúcido	R
+caneta-semi-metal	Bolígrafo semimetálico	R
+caneta-com-embalagem	Bolígrafo con estuche	R
+caneta-com-pen-drive	Bolígrafo con pendrive	R
+caneta-de-metal-rotativa	Bolígrafo de metal giratorio	R
+caneta-de-plastico-com-acabamento-matt	Bolígrafo de plástico acabado mate	R
+caneta-de-plastico	Bolígrafo de plástico	R
+caneta-plastica-rotativa	Bolígrafo de plástico giratorio	R
+caneta-ecologica	Bolígrafo ecológico	R
+caneta-de-aluminio-com-mola	Bolígrafo de aluminio retráctil	R
+caneta-em-bambu	Bolígrafo de bambú	R
+caneta-em-plastico-de-mola-com-detalhe-em-borracha	Bolígrafo retráctil con grip de goma	R
+caneta-plastica-com-mola	Bolígrafo de plástico retráctil	R
+caneta-metalizada	Bolígrafo metalizado	R
+caneta-multifuncional	Bolígrafo multifunción	R
+caneta-natura	Bolígrafo Natura	R
+caneta-plastica-touch	Bolígrafo de plástico con puntero táctil	R
+caneta-suporte	Bolígrafo con soporte para celular	R
+caneta-touch-metalizada	Bolígrafo metalizado con puntero táctil	R
+conjunto-de-roller-e-caneta	Set de roller y bolígrafo	R
+embalagem-para-caneta	Estuche para bolígrafo	P
+caneta-roller-metalizada	Roller de metal	R
+carimbo-assinatura	Sello de firma	T
+carimbos-automaticos	Sello automático	T
+carimbos-quadrados	Sello automático cuadrado	T
+carimbos-redondos	Sello automático redondo	T
+carimbo-cnpj	Sello con RUT de empresa	T
+carimbo-datador	Sello fechador	T
+carimbo-de-fidelizacao	Sello para tarjeta de fidelidad	T
+carimbo-mouse	Sello mouse	T
+carimbo-scrapbook	Sello para scrapbook	T
+carimbos-de-bolso	Sello de bolsillo	T
+carimbos-de-madeira	Sello de madera	T
+carregador-wireless	Cargador inalámbrico	R
+carregador-portatil	Batería portátil (power bank)	R
+cartao-de-visita-gratis	Tarjetas de presentación económicas	T
+cartao-de-consulta	Tarjeta de turnos	T
+cartao-de-fidelidade	Tarjeta de fidelidad	T
+cartao-de-visita	Tarjeta de presentación	T
+cartao-de-visita-1	Tarjeta de presentación online	T
+cartoes-de-visita	Tarjetas de presentación clásicas	T
+cartoes-de-visita-com-dobras-quadriptico	Tarjetas de presentación plegadas (cuatro cuerpos)	T
+cartoes-de-visita-com-dobras-triptico	Tarjetas de presentación plegadas (tríptico)	T
+cartoes-de-visita-com-dobras	Tarjetas de presentación plegadas	T
+cartoes-de-visita-online	Tarjetas de presentación con diseño online	T
+kit-caneta-e-chaveiro	Set de tarjetero y llavero	R
+cartao-de-visita-design	Tarjetas de presentación con diseño	T
+porta-cartoes	Tarjetero	R
+cartao-duplo	Tarjeta doble	T
+cartao-fidelidade	Tarjeta de cliente frecuente	T
+certificados	Certificados	T
+postal	Postal	T
+vale-presente	Tarjeta de regalo	T
+caixa-de-lapis	Caja de lápices	R
+kit-de-caneta-e-chaveiro	Set de bolígrafo y llavero	R
+kit-caneta-e-lapiseira	Set de bolígrafo y portaminas	R
+estojo-de-caneta	Estuche para bolígrafos	R
+kit-caneta-e-caderno	Set de cuaderno y bolígrafo	R
+kit-para-pintar	Kit para pintar	R
+copo-retratil	Vaso plegable	Z
+copo-acrilico	Vaso acrílico	Z
+copo-plastico	Vaso de plástico	Z
+copo-para-viagem	Vaso de viaje	Z
+abridor-de-garrafas	Destapador	R
+canudo	Pajita reutilizable	G
+cenario-para-colorir-magnetico	Escenario magnético para colorear	R
+conjunto-para-vinho	Set para vino	R
+ima-com-bloco-de-notas	Imán con bloc de notas	M
+kit-de-coquetel	Kit de coctelería	R
+kit-de-queijo	Set para quesos	R
+manga-refrigeradora	Funda enfriadora para botellas	R
+memo-board-magnetico	Pizarra magnética de notas	R
+porta-copo	Posavasos	G
+rolha-de-vacuo-para-garrafa	Tapón al vacío para botellas	R
+saca-rolhas	Sacacorchos	R
+sacola-com-alca-vazada	Bolsa con asa troquelada	P
+vaporizador	Vaporizador	R
+manta	Manta	D
+mobile	Móvil decorativo	D
+relogio-de-mesa	Reloj de escritorio	D
+jogos-americanos	Individuales de mesa	G
+porta-copos-2	Posavasos de cartón	G
+bolsa-para-bicicleta	Bolso para bicicleta	R
+guarda-chuva-de-golfe	Paraguas de golf	R
+mosquetao	Mosquetón	R
+toalha-para-esporte	Toalla deportiva	R
+envelope	Sobre	T
+bolsa-para-oculos	Funda para lentes	R
+mascara-dormir	Antifaz para dormir	R
+tag-2	Tag colgante	E
+wobbler	Wobbler (exhibidor de góndola)	M
+display-de-balcao-na-vertical	Exhibidor de mostrador vertical	C
+avental	Delantal	O
+canivete-multifuncional	Navaja multiuso	R
+kit-de-ferramentas	Kit de herramientas	R
+mini-canivete-multifuncional	Mini navaja multiuso	R
+trena	Cinta métrica	R
+encarte-de-supermercado	Folleto de ofertas para supermercado	V
+filipeta	Volante chico	V
+flyer	Volantes	V
+folder-1-dobra	Díptico	V
+folder-2-dobras	Tríptico	V
+folders	Folletos plegados	V
+folders-2	Folletos	V
+panfleto	Panfletos	V
+panfleto-online	Panfletos online	V
+pasta-de-convencao-em-cartao-kraft	Carpeta de congreso en cartón kraft	T
+pastas-com-aba	Carpetas con solapa	T
+pastas-sem-aba	Carpetas sin solapa	T
+pastas-com-orelhas	Carpetas con bolsillos	T
+garrafa-termica	Botella térmica	Z
+portawhisky	Petaca para whisky	Z
+squeeze-de-aluminio	Botella de aluminio	Z
+squeeze-plastico	Botella de plástico	Z
+squeeze-de-tritan	Botella de Tritan	Z
+squeeze-de-vidro	Botella de vidrio	Z
+squeeze-dobravel	Botella plegable	Z
+guarda-chuva-para-crianca	Paraguas infantil	R
+kit-de-higiene-masculina	Kit de higiene masculino	R
+painel-em-acrilico-para-balcoes	Mampara de acrílico para mostrador	C
+protetor-facial	Protector facial	R
+suporte-em-acrilico-para-alcool-gel	Soporte de acrílico para alcohol en gel	C
+luminaria	Lámpara de escritorio	D
+ima-de-geladeira	Imán para heladera	M
+ima-para-carros-publiciario	Imán publicitario para autos	E
+jogo-da-velha-magnetico	Ta-te-ti magnético	R
+jogo-quebra-cabecas-magnetico	Rompecabezas magnético	R
+lousa-magnetica	Pizarra magnética	R
+marcador-de-pagina-magnetico	Señalador magnético	T
+porta-retratos-magnetico	Portarretrato magnético	M
+capa-de-chuva	Capa de lluvia	O
+guarda-chuva-automatico	Paraguas automático	R
+guarda-chuva-dobravel	Paraguas plegable	R
+guarda-chuva	Paraguas	R
+guarda-chuva-reversivel	Paraguas invertido	R
+kit-de-churrasco	Kit para asado	R
+kit-de-higiene-para-cachorro	Kit de higiene para perros	K
+kit-de-notas-adesivas	Kit de notas adhesivas	T
+credencial	Credencial	M
+identificador-de-bagagem	Identificador de equipaje	R
+porta-cracha	Porta credencial	M
+lapis-carvao	Lápiz	R
+lapiseira	Portaminas	R
+luminaria-de-mesa-com-caixa-de-som	Lámpara de escritorio con parlante	D
+mala-de-cosmeticos	Valija de cosméticos	R
+marcador-de-pagina-2	Señalador de libro	T
+marmita-retratil	Vianda plegable	G
+borracha	Goma de borrar	R
+estojo-escolar	Cartuchera	R
+encarte-para-cd-dvd	Carátula para CD/DVD	P
+cardapio-de-plastico	Menú de plástico	G
+cardapio	Menú de restaurante	G
+cardapio-2	Menú	G
+comandas	Comandas	G
+mochila-anti-furto	Mochila antirrobo	O
+mochila-para-notebook-e-tablet	Mochila para notebook y tablet	O
+mochila	Mochila	O
+bolsa-termica	Bolso térmico	O
+sacola-termica	Bolsa térmica	O
+mouse-wireless	Mouse inalámbrico	R
+fones-de-ouvido-in-ear	Auriculares in-ear	R
+caixa-de-som	Parlante	R
+fone-de-ouvido-headset-bluetooth	Auriculares inalámbricos	R
+papel-timbrado-2	Hoja membretada	T
+bloco-de-anotacoes-ecologico	Bloc de notas ecológico	T
+bloco-de-notas-adesivas-ecologico	Notas adhesivas ecológicas	T
+bloco-de-notas-adesivas	Notas adhesivas	T
+blocos-de-notas	Bloc de notas	T
+caderno-capa-dura	Cuaderno de tapa dura	T
+caderno-em-couro-sintetico	Cuaderno de cuero sintético	T
+caderno-espiral-de-capa-dura	Cuaderno espiralado de tapa dura	T
+caderno-natura	Cuaderno Natura	T
+cartao-de-agradecimento	Tarjeta de agradecimiento	T
+cartoes-postais	Tarjeta postal	T
+comanda	Comandas para mozos	G
+envelopes	Sobres	T
+marcadores-de-pagina	Señaladores	T
+papel-timbrado	Hojas membretadas	T
+reguas	Reglas	T
+pasta-congresso	Carpeta de congreso	T
+bloco-de-anotacoes-para-mesa	Bloc de notas de escritorio	T
+pasta-de-convencao-em-couro-sintetico	Carpeta de congreso de cuero sintético	T
+pasta-de-convencao-em-linho-sintetico	Carpeta de congreso de lino sintético	T
+pasta-de-convencao-em-microfibra	Carpeta de congreso de microfibra	T
+placa-premio	Placa de reconocimiento	R
+placa-de-propaganda	Cartel publicitario	C
+placas-de-sinalizacao	Carteles de señalización	C
+placas-de-vende-se	Carteles de "Se vende"	C
+porta-cartoes-para-celular	Tarjetero para celular	R
+chaveiro-abridor	Llavero destapador	R
+chaveiro-de-metal	Llavero de metal	R
+chaveiro-de-aluminio	Llavero de aluminio	R
+chaveiro-em-caixa	Llavero en caja	R
+chaveiro-em-metal-e-abs	Llavero de metal y ABS	R
+chaveiro-de-plastico	Llavero de plástico	R
+chaveiro-multifuncional	Llavero multifunción	R
+kit-de-executivo	Kit ejecutivo	R
+chaveiro	Llaveros	R
+cartazes	Afiches	C
+poster	Póster	C
+guarda-sol	Sombrilla	R
+sacola-para-garrafa	Bolsa para botella	P
+bolsa-para-notebook	Bolso para notebook	O
+capa-para-memoria-cob	Funda para memoria COB	R
+estojo-de-informatica	Estuche organizador de accesorios	R
+mochila-de-nylon-para-notebook	Mochila de nylon para notebook	O
+mochila-de-poliester-para-notebook	Mochila de poliéster para notebook	O
+mochila-para-notebook	Mochila para computadora	O
+mochila-trolley-para-notebook	Mochila con ruedas para notebook	O
+pasta-para-notebook	Portafolio para computadora	O
+pasta-para-notebook-em-poliester	Portafolio de poliéster para notebook	O
+papel-de-embrulho	Papel de regalo	P
+ventarolas	Abanicos publicitarios	M
+roller-em-estojo	Roller en estuche	R
+avental-de-crianca	Delantal infantil	O
+bolsa-esportiva	Bolso deportivo	O
+sacolas-termicas	Bolsa térmica plegable	O
+bolsa-para-sapatos	Bolsa para calzado	O
+marmita	Vianda	G
+porta-bolsa	Colgador de carteras	R
+ecobag	Bolsa ecológica con asas	P
+saco-mochila-em-nylon	Mochila saco de nylon	O
+saco-mochila-em-tnt	Mochila saco de friselina	O
+sacola-de-algodao-com-alcas	Bolsa de algodón con asas	P
+sacola-de-tnt-com-alcas	Bolsa de friselina con asas	P
+sacola-de-praia	Bolso de playa	O
+sacola-dobravel	Bolsa plegable	P
+saco-tipo-mochila	Mochila tipo saco	O
+banner	Banner	C
+roll-up	Roll-up	C
+display-de-balcao-em-l	Exhibidor de mostrador en L	C
+mobiliario-urbano	Cartelería para vía pública	C
+totem-triedro	Tótem tríptico	C
+bandeiras-publicitarias	Banderas publicitarias (wind banner)	C
+x-banner	X-Banner	C
+camiseta-feminina	Remera de mujer	O
+camisetas	Remera de hombre	O
+tags	Etiquetas colgantes	E
+mala-de-viagem-executivo	Valija de viaje ejecutiva	O

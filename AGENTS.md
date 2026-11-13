@@ -26,6 +26,15 @@ Variáveis em `.env` (modelo em `.env.example`). Banco: `printeuy`. Fotos/vídeo
 - Preço: `preco_brl` = preço Printi (+ margem). Hoje o site é só de cotação: `PRECOS_NO_SITE = false`
   em `src/lib/precos.ts` esconde todos os preços (vale por cima da chave do admin).
 
+## Catálogo (360imprimir)
+
+- 330 produtos extras (brindes, papelaria, banners…) com SKU `360-<slug>`, sem preço nem opções (só
+  cotação). Extração: `node ../scripts/extrair_360.cjs` (páginas públicas; a API de preços deles bloqueia
+  robôs). Fotos no bucket R2 `360` (`pub-507a…/360imprimir/...`, URL completa em `imagem_principal`).
+- Nome em espanhol e categoria: `scripts/catalogo/mapa_360.tsv`. Importação (não mexe na Printi):
+  `node --env-file=.env scripts/catalogo/importar_360.cjs --aplicar`; para produção, `--sql` gera
+  `dados/deploy/importar_360.sql` (rodar no phpMyAdmin).
+
 ## Site
 
 Layout na estrutura da printi.com.br (mais fluido):

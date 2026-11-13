@@ -338,12 +338,23 @@ export function PaginaGrafica({
               </div>
             )}
 
-            <a
-              href="#configuracion"
-              className="mt-7 hidden w-full items-center justify-center gap-2 rounded-full bg-zinc-900 py-3.5 font-semibold text-white transition hover:bg-zinc-800 lg:flex"
-            >
-              Configurar mi pedido <ChevronDown className="h-4 w-4" />
-            </a>
+            {atributos.length > 0 ? (
+              <a
+                href="#configuracion"
+                className="mt-7 hidden w-full items-center justify-center gap-2 rounded-full bg-zinc-900 py-3.5 font-semibold text-white transition hover:bg-zinc-800 lg:flex"
+              >
+                Configurar mi pedido <ChevronDown className="h-4 w-4" />
+              </a>
+            ) : (
+              <a
+                href={zap}
+                target="_blank"
+                rel="noreferrer noopener"
+                className="mt-7 hidden w-full items-center justify-center gap-2 rounded-full bg-zinc-900 py-3.5 font-semibold text-white transition hover:bg-zinc-800 lg:flex"
+              >
+                <MessageCircle className="h-5 w-5 text-emerald-400" /> Pedir cotización por WhatsApp
+              </a>
+            )}
           </div>
         </section>
 
@@ -419,8 +430,19 @@ export function PaginaGrafica({
         >
           <div className="min-w-0 space-y-5">
             <h2 className="text-[clamp(1.35rem,2.2vw,1.85rem)] font-semibold tracking-tight text-zinc-900">
-              Configuración
+              {atributos.length > 0 ? "Configuración" : "Tu pedido a medida"}
             </h2>
+            {/* Produto sem opções no catálogo (ex.: brindes): tudo se combina na cotação */}
+            {atributos.length === 0 && (
+              <div className="rounded-2xl border border-zinc-200 p-5 text-[15px] leading-relaxed text-zinc-600">
+                <p>
+                  Contanos por WhatsApp la <b className="text-zinc-900">cantidad</b>, el{" "}
+                  <b className="text-zinc-900">modelo o color</b> y dónde va tu{" "}
+                  <b className="text-zinc-900">logo o diseño</b>. Te enviamos la cotización y una
+                  vista previa antes de producir.
+                </p>
+              </div>
+            )}
 
             {atributos.map((a) => {
               const aberto = abertos[a.chave];
@@ -652,7 +674,7 @@ export function PaginaGrafica({
                   </span>
                 </li>
               </ul>
-              <div className="mt-5 border-t border-zinc-200 pt-4">
+              <div className={cn("mt-5 border-t border-zinc-200 pt-4", !chips.length && "hidden")}>
                 <p className="mb-2 text-xs font-medium text-zinc-500">Configuración elegida</p>
                 <div className="flex flex-wrap gap-1.5">
                   {chips.map((c, i) => (

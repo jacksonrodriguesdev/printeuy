@@ -25,13 +25,20 @@ export const Route = createFileRoute("/categoria/$slug")({
   loader: async ({ params }) => {
     const cat = categoriaImprentaPorSlug(params.slug);
     if (!cat) throw notFound();
-    const r = await listProducts({
-      categoria: cat.categoria,
-      vitrine: true,
-      sort: "popular",
-      pageSize: 96,
-    });
-    return { cat, produtos: (r?.rows ?? []) as Product[] };
+    // Todos os produtos da categoria (a busca devolve no máximo 100 por página)
+    const produtos: Product[] = [];
+    for (let page = 1; page <= 6; page++) {
+      const r = await listProducts({
+        categoria: cat.categoria,
+        vitrine: true,
+        sort: "popular",
+        pageSize: 100,
+        page,
+      });
+      produtos.push(...((r?.rows ?? []) as Product[]));
+      if (!r?.hasNextPage) break;
+    }
+    return { cat, produtos };
   },
   head: ({ loaderData }) => {
     if (!loaderData) return { meta: [{ title: "Categoría no encontrada | PRINTE UY" }] };
@@ -42,8 +49,11 @@ export const Route = createFileRoute("/categoria/$slug")({
       { nome: "Inicio", url: "/" },
       { nome: cat.categoria, url: caminho },
     ];
-    const imagem = produtos[0]?.imagem_principal
-      ? `${SITE_URL}${produtos[0].imagem_principal}`
+    const foto = produtos[0]?.imagem_principal;
+    const imagem = foto
+      ? foto.startsWith("http")
+        ? foto
+        : `${SITE_URL}${foto}`
       : `${SITE_URL}/icon-512.png`;
     return {
       meta: [
