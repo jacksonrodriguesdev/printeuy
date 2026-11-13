@@ -23,8 +23,13 @@ Variáveis em `.env` (modelo em `.env.example`). Banco: `printeuy`. Fotos/vídeo
   `scripts/catalogo/glossario_grafica.cjs`), fotos em `pecas_img`, configurador em `pecas_detalhes` (JSON:
   combinações com preço por quantidade, opções, descrição HTML, FAQ, vídeos).
 - Categorias da loja: `CATEGORIAS` em `src/lib/navegacao.ts` (o importador usa os mesmos nomes).
-- Preço: `preco_brl` = preço Printi (+ margem). Hoje o site é só de cotação: `PRECOS_NO_SITE = false`
-  em `src/lib/precos.ts` esconde todos os preços (vale por cima da chave do admin).
+- Preço: venda = custo Printi × 4,5 (+350%) + R$ 35 de frete, em cada preço de cada quantidade
+  (`vendaGrafica`, `MARGEM_GRAFICA`, `FRETE_PEDIDO_BRL` em `src/lib/precos.ts`; `PRECOS_NO_SITE`
+  liga/desliga todos os preços). Os kits prontos (`pecas_detalhes.combinacoes`, `precosSaoCusto`) e
+  cada variação (tabela `pecas_variacoes`, custos baixados por `../scripts/precos_printi.cjs`) guardam o
+  CUSTO; a venda é calculada no servidor (`getDetalhesGraficaFn`, `precoVariacaoFn`).
+  `preco_brl` = venda do preço mínimo (o "Desde"). Gravar/atualizar:
+  `node --env-file=.env scripts/catalogo/aplicar_precos_printi.cjs --aplicar` (ou `--sql` para produção).
 
 ## Catálogo (360imprimir)
 

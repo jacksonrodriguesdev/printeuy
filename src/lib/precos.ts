@@ -4,9 +4,19 @@ import { descontoPara, type Regra } from "./campanha-comum";
 // valor_compra = custo em R$ · preco_brl = venda em R$ · $U = venda em R$ × cotação do dia
 // (ou preço fixo em $U quando preco_modo = "FIXO").
 
-// Site só de cotação: com false, nenhum preço aparece (cartões, página do produto, dados do Google,
-// feeds). Vale por cima da chave «Mostrar preços no site» do admin. Para voltar, troque para true.
-export const PRECOS_NO_SITE = false;
+// Com false, nenhum preço aparece (cartões, página do produto, dados do Google, feeds): site só de
+// cotação. Vale por cima da chave «Mostrar preços no site» do admin.
+export const PRECOS_NO_SITE = true;
+
+// Regra de preço da gráfica (catálogo Printi): venda = custo × (1 + 350%) + frete.
+// O frete da Printi (R$ 35 por pedido) entra em CADA preço (cada quantidade de cada variação),
+// assim nem o pedido mais barato dá prejuízo. Mudou a regra? Só aqui: kits prontos, variações e o
+// "Desde" dos cartões usam esta conta (o "Desde" é gravado em preco_brl por
+// scripts/catalogo/aplicar_precos_printi.cjs; rode de novo depois de mudar).
+export const MARGEM_GRAFICA = 350; // %
+export const FRETE_PEDIDO_BRL = 35;
+export const vendaGrafica = (custo: number) =>
+  Math.round((custo * (1 + MARGEM_GRAFICA / 100) + FRETE_PEDIDO_BRL) * 100) / 100;
 
 export type ConfigPrecos = {
   cotacao: number | null; // 1 R$ = X $U

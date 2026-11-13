@@ -1,4 +1,5 @@
 import { useMemo, useRef, useState } from "react";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import {
   BadgeCheck,
@@ -22,7 +23,12 @@ import { fmtUYU, uyuDeBrl, type ConfigPrecos } from "@/lib/precos";
 import { whatsappContactUrl } from "@/lib/whatsapp";
 import { nomeProduto } from "@/lib/pecas-es";
 import { SITE_URL } from "@/lib/site";
-import { idYoutube, type CombinacaoGrafica, type DetalhesGrafica } from "@/lib/grafica";
+import {
+  idYoutube,
+  precoVariacaoFn,
+  type CombinacaoGrafica,
+  type DetalhesGrafica,
+} from "@/lib/grafica";
 import type { Product } from "@/lib/products";
 import { urlCategoria } from "@/lib/seo-imprenta";
 import { cn } from "@/lib/utils";
@@ -31,8 +37,9 @@ import { cn } from "@/lib/utils";
 // galeria + resumo → "Tu proyecto empieza acá" (combinações prontas) → configuração por atributo
 // (cartões de opção) + quantidades com desconto → resumo fixo ao lado → abas (descrição,
 // especificações, FAQ) → vídeos → relacionados.
-// Preço: só as combinações prontas têm tabela (dados da Printi, já com a margem). Uma escolha que
-// não bate com nenhuma combinação vira "a cotizar" e segue pelo WhatsApp com tudo o que foi escolhido.
+// Preço: com detalhes.temVariacoes, o servidor devolve a tabela da variação escolhida (todas as
+// combinações de opções; precoVariacaoFn). Sem isso, só as combinações prontas têm tabela; uma escolha
+// fora delas vira "a cotizar" e segue pelo WhatsApp com tudo o que foi escolhido.
 
 type Produto = Pick<Product, "sku" | "nome" | "categoria" | "imagem_principal"> & {
   nome_es?: string | null;
@@ -127,10 +134,46 @@ export function PaginaGrafica({
     }),
   );
   const comb = ativa >= 0 ? combinacoes[ativa] : null;
-  const tabela = comb?.precos ?? combinacoes[0]?.precos ?? [];
+
+  // Preço da variação exata (qualquer combinação de opções), calculado no servidor
+  const opcoesOriginais = useMemo(() => {
+    const m = new Map<string, { id: string; nome: string }[]>();
+    for (const pt of detalhes.partes)
+      for (const a of pt.atributos) m.set(`${pt.id}|${a.id}`, a.opcoes);
+    return m;
+  }, [detalhes]);
+  const pedidoVariacao = useMemo(() => {
+    if (!detalhes.temVariacoes) return null;
+    const escolhas: Record<string, string[]> = {};
+    for (const a of atributos)
+      escolhas[a.chave] = (opcoesOriginais.get(a.chave) || [])
+        .filter((o) => o.nome === sel[a.chave])
+        .map((o) => o.id);
+    // Atributos que o cliente não vê: os do kit pronto (desempate no servidor)
+    const base = comb ?? combinacoes[0];
+    const preferidas: Record<string, string> = {};
+    for (const op of base?.opcoes ?? [])
+      for (const [attr, nomeOp] of Object.entries(op.escolhas)) {
+        const chave = `${op.parte}|${attr}`;
+        if (escolhas[chave]) continue;
+        const id = (opcoesOriginais.get(chave) || []).find((o) => o.nome === nomeOp)?.id;
+        if (id) preferidas[chave] = id;
+      }
+    return { sku: produto.sku, escolhas, preferidas };
+  }, [detalhes.temVariacoes, atributos, opcoesOriginais, sel, comb, combinacoes, produto.sku]);
+  const { data: tabelaVariacao, isFetching: buscandoPreco } = useQuery({
+    queryKey: ["preco-variacao", pedidoVariacao],
+    queryFn: () => precoVariacaoFn({ data: pedidoVariacao! }),
+    enabled: !!pedidoVariacao && comPreco,
+    placeholderData: keepPreviousData,
+    staleTime: 10 * 60_000,
+  });
+  const comTabela = detalhes.temVariacoes ? !!tabelaVariacao?.length : !!comb;
+  const tabela =
+    (detalhes.temVariacoes ? tabelaVariacao : null) ?? comb?.precos ?? combinacoes[0]?.precos ?? [];
   const linha = tabela.find((x) => x.quantidade === qtd) ?? tabela[0];
   const unitBase = tabela[0] ? tabela[0].preco / tabela[0].quantidade : 0;
-  const total = comb && linha ? uyu(linha.preco) : null;
+  const total = comTabela && linha ? uyu(linha.preco) : null;
   const unitario = total && linha ? total / linha.quantidade : null;
 
   const escolherCombinacao = (i: number) => {
@@ -301,7 +344,12 @@ export function PaginaGrafica({
                   por
                 </p>
                 <p className="flex items-baseline gap-3">
-                  <span className="text-3xl font-semibold tracking-tight text-zinc-900 transition-all">
+                  <span
+                    className={cn(
+                      "text-3xl font-semibold tracking-tight text-zinc-900 transition-all",
+                      buscandoPreco && "opacity-40",
+                    )}
+                  >
                     {total ? fmtUYU(total) : "A cotizar"}
                   </span>
                   {unitario && (
@@ -543,13 +591,13 @@ export function PaginaGrafica({
                 <p className="mb-4 text-sm text-zinc-500">
                   {!comPreco
                     ? "Elegí la cantidad que necesitás y te pasamos el precio."
-                    : comb
+                    : comTabela
                       ? "Cuanto mayor la cantidad, mayor el descuento."
                       : "Esta combinación se cotiza a pedido: elegí la cantidad y te pasamos el precio."}
                 </p>
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
                   {tabela.map((x) => {
-                    const v = comb ? uyu(x.preco) : null;
+                    const v = comTabela ? uyu(x.preco) : null;
                     const desconto = unitBase
                       ? Math.round((1 - x.preco / x.quantidade / unitBase) * 100)
                       : 0;
@@ -569,7 +617,7 @@ export function PaginaGrafica({
                           <span className="font-semibold text-zinc-900">
                             {x.quantidade.toLocaleString("es-UY")} un.
                           </span>
-                          {comPreco && comb && desconto > 0 && (
+                          {comPreco && comTabela && desconto > 0 && (
                             <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700">
                               -{desconto}%
                             </span>
@@ -593,7 +641,7 @@ export function PaginaGrafica({
                     );
                   })}
                 </div>
-                {comPreco && comb && (
+                {comPreco && comTabela && (
                   <p className="mt-3 text-xs text-zinc-500">
                     El descuento se calcula sobre el valor unitario de la menor cantidad.
                   </p>
@@ -625,7 +673,12 @@ export function PaginaGrafica({
                     </div>
                     <div className="flex items-baseline justify-between border-t border-zinc-200 pt-3">
                       <dt className="font-semibold text-zinc-900">Total</dt>
-                      <dd className="text-2xl font-semibold tracking-tight text-zinc-900">
+                      <dd
+                        className={cn(
+                          "text-2xl font-semibold tracking-tight text-zinc-900 transition",
+                          buscandoPreco && "opacity-40",
+                        )}
+                      >
                         {total ? fmtUYU(total) : "A cotizar"}
                       </dd>
                     </div>

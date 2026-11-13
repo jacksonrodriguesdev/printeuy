@@ -1144,3 +1144,16 @@ model pecas_detalhes {
   dados      Json
   updated_at DateTime @updatedAt
 }
+
+// Custo de CADA variação do configurador (todas as combinações de opções), baixado da Printi
+// (../scripts/precos_printi.cjs) e gravado por scripts/catalogo/aplicar_precos_printi.cjs.
+// opcoes: { "<parte>|<atributo>": "<id da opção>" }; custos: [[quantidade, custo R$], ...].
+// O preço de venda sai de vendaGrafica() em src/lib/precos.ts (custo × 4,5 + frete).
+model pecas_variacoes {
+  id     Int    @id @default(autoincrement())
+  sku    String @db.VarChar(191)
+  opcoes Json
+  custos Json
+
+  @@index([sku])
+}
