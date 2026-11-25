@@ -33,8 +33,9 @@ Variáveis em `.env` (modelo em `.env.example`). Banco: `printeuy`. Fotos/vídeo
 
 ## Catálogo (360imprimir)
 
-- 330 produtos extras (brindes, papelaria, banners…) com SKU `360-<slug>`, sem preço nem opções (só
-  cotação). Extração: `node ../scripts/extrair_360.cjs` (páginas públicas; a API de preços deles bloqueia
+- 330 produtos extras (brindes, papelaria, banners…) com SKU `360-<slug>`, sem opções. Preço: o público
+  da quantidade inicial (título da página) × 5 (+400%, `MARGEM_360`) + R$ 35, em 291 deles; os outros só
+  cotação. Extração: `node ../scripts/extrair_360.cjs` (páginas públicas; a API de preços deles bloqueia
   robôs). Fotos no bucket R2 `360` (`pub-507a…/360imprimir/...`, URL completa em `imagem_principal`).
 - Nome em espanhol e categoria: `scripts/catalogo/mapa_360.tsv`. Importação (não mexe na Printi):
   `node --env-file=.env scripts/catalogo/importar_360.cjs --aplicar`; para produção, `--sql` gera
