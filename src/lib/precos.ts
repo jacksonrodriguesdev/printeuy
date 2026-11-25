@@ -13,10 +13,12 @@ export const PRECOS_NO_SITE = true;
 // assim nem o pedido mais barato dá prejuízo. Mudou a regra? Só aqui: kits prontos, variações e o
 // "Desde" dos cartões usam esta conta (o "Desde" é gravado em preco_brl por
 // scripts/catalogo/aplicar_precos_printi.cjs; rode de novo depois de mudar).
-export const MARGEM_GRAFICA = 350; // %
+export const MARGEM_GRAFICA = 350; // % (catálogo Printi)
+export const MARGEM_360 = 400; // % (catálogo 360imprimir: preço público da quantidade inicial)
 export const FRETE_PEDIDO_BRL = 35;
-export const vendaGrafica = (custo: number) =>
-  Math.round((custo * (1 + MARGEM_GRAFICA / 100) + FRETE_PEDIDO_BRL) * 100) / 100;
+// margem: a do produto (pecas_detalhes.dados.margem, gravada pelo importador); sem ela, a da Printi
+export const vendaGrafica = (custo: number, margem: number = MARGEM_GRAFICA) =>
+  Math.round((custo * (1 + margem / 100) + FRETE_PEDIDO_BRL) * 100) / 100;
 
 export type ConfigPrecos = {
   cotacao: number | null; // 1 R$ = X $U

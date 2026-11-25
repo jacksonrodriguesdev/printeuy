@@ -69,6 +69,24 @@ const nomePt = (n) =>
     .replace(/\s+(Personalizad[oa]s?|Personalizável|Publicitári[oa]s?)$/i, "")
     .trim();
 
+// Preço público da 360 (título da página: "25 Porta óculos : R$ 257,75" ou "... 1000 por R$ 63,99"):
+// quantidade inicial e o valor em R$ = nosso CUSTO. A venda é vendaGrafica(custo, MARGEM) no site.
+const MARGEM = 400; // % (= MARGEM_360 em src/lib/precos.ts)
+const FRETE = 35; // = FRETE_PEDIDO_BRL
+const venda = (c) => Math.round((c * (1 + MARGEM / 100) + FRETE) * 100) / 100;
+function precoPublico(p) {
+  for (const t of [p.titulo, p.metaDescricao]) {
+    const m = (t || "").match(
+      /(\d[\d.]*)\s+[^|]*?(?::|por(?: apenas)?)\s*R\$\s*([\d.]+(?:,\d{1,3})?)/i,
+    );
+    if (!m) continue;
+    const quantidade = Number(m[1].replace(/\./g, ""));
+    const custo = Number(m[2].replace(/\./g, "").replace(",", "."));
+    if (quantidade > 0 && custo > 0) return { quantidade, custo };
+  }
+  return null;
+}
+
 function montar() {
   const catalogo = JSON.parse(fs.readFileSync(CATALOGO, "utf8"));
   const mapa = lerMapa();
@@ -77,6 +95,12 @@ function montar() {
     imagens = [],
     detalhes = [],
     semMapa = [];
+  // "Adesivos" (todos os temas) usa o preço dos temas (todos iguais: 250 por R$ 30,49)
+  const precoTemas = catalogo
+    .filter((x) => /Personalizados a preços imbatíveis/.test(x.nome))
+    .map(precoPublico)
+    .filter(Boolean)
+    .sort((a, b) => a.custo - b.custo)[0];
   for (const p of catalogo) {
     const m = mapa.get(p.slug);
     if (!m) {
@@ -85,6 +109,7 @@ function montar() {
     }
     const sku = `360-${p.slug}`.slice(0, 191);
     const foto = fotos.get(p.slug) || null;
+    const pp = precoPublico(p) || (p.slug === "adesivos" ? precoTemas : null);
     pecas.push({
       sku,
       nome: nomePt(p.nome),
@@ -97,6 +122,10 @@ function montar() {
       marca_confirmada: false,
       // Mistura com a Printi na ordem "Más vendidos" (com 0 ficavam todos nas últimas páginas)
       popularidade: 1 + (crc32(sku) % 40),
+      valor_compra: pp?.custo ?? null,
+      preco_brl: pp ? venda(pp.custo) : null,
+      margem: pp ? MARGEM : null,
+      qtd_minima: pp?.quantidade ?? null,
     });
     if (foto) imagens.push({ sku, image_path: foto, image_type: "main", sort_order: 0 });
     detalhes.push({
@@ -110,9 +139,29 @@ function montar() {
         faq: [],
         avaliacao: null,
         partes: [],
-        combinacoes: [],
+        // Um preço só: a quantidade inicial do site deles (CUSTO; a venda sai no servidor)
+        combinacoes: pp
+          ? [
+              {
+                id: "base",
+                nome: "Modelo estándar",
+                descricao: "",
+                imagem: null,
+                opcoes: [],
+                precos: [
+                  {
+                    quantidade: pp.quantidade,
+                    preco: pp.custo,
+                    unitario: Math.round((pp.custo / pp.quantidade) * 10000) / 10000,
+                  },
+                ],
+              },
+            ]
+          : [],
+        precosSaoCusto: true,
+        margem: MARGEM,
         totalVariacoes: 1,
-        quantidadeMinima: null,
+        quantidadeMinima: pp?.quantidade ?? null,
         quantidadePersonalizada: null,
         formatosArquivo: null,
         vendaCruzada: [],
@@ -150,14 +199,14 @@ function gerarSql({ pecas, imagens, detalhes }) {
     );
   for (const p of pecas)
     L.push(
-      `INSERT INTO pecas (sku, nome, nome_es, categoria, category_id, descricao, estoque, imagem_principal, marca, marca_confirmada, popularidade, preco_modo, created_at, updated_at) VALUES (${[
+      `INSERT INTO pecas (sku, nome, nome_es, categoria, category_id, descricao, estoque, imagem_principal, marca, marca_confirmada, popularidade, valor_compra, preco_brl, margem, qtd_minima, precificado_em, preco_modo, created_at, updated_at) VALUES (${[
         p.sku,
         p.nome,
         p.nome_es,
         p.categoria,
       ]
         .map(q)
-        .join(", ")}, (SELECT id FROM categories WHERE nome = ${q(p.categoria)} ORDER BY id LIMIT 1), ${q(p.descricao)}, ${p.estoque}, ${q(p.imagem_principal)}, NULL, 0, ${p.popularidade}, 'AUTO', NOW(3), NOW(3));`,
+        .join(", ")}, (SELECT id FROM categories WHERE nome = ${q(p.categoria)} ORDER BY id LIMIT 1), ${q(p.descricao)}, ${p.estoque}, ${q(p.imagem_principal)}, NULL, 0, ${p.popularidade}, ${q(p.valor_compra)}, ${q(p.preco_brl)}, ${q(p.margem)}, ${q(p.qtd_minima)}, ${p.preco_brl ? "NOW(3)" : "NULL"}, 'AUTO', NOW(3), NOW(3));`,
     );
   for (const i of imagens)
     L.push(
@@ -176,7 +225,7 @@ function gerarSql({ pecas, imagens, detalhes }) {
   const { pecas, imagens, semMapa } = dados;
   const porCat = {};
   for (const p of pecas) porCat[p.categoria] = (porCat[p.categoria] || 0) + 1;
-  console.log(`Produtos: ${pecas.length} (${imagens.length} con foto)`);
+  console.log(`Produtos: ${pecas.length} (${imagens.length} con foto, ${pecas.filter((p) => p.preco_brl).length} con precio)`);
   console.log(porCat);
   if (semMapa.length) console.log(`Sin mapa (quedan fuera): ${semMapa.join(", ")}`);
   if (SQL) return gerarSql(dados);

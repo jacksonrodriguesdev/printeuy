@@ -407,7 +407,7 @@ export function PaginaGrafica({
         </section>
 
         {/* 2. Combinações prontas */}
-        {combinacoes.length > 0 && (
+        {combinacoes.length > 0 && atributos.length > 0 && (
           <section className="mt-14">
             <h2 className="text-[clamp(1.35rem,2.2vw,1.85rem)] font-semibold tracking-tight text-zinc-900">
               Tu proyecto empieza acá
@@ -483,12 +483,24 @@ export function PaginaGrafica({
             {/* Produto sem opções no catálogo (ex.: brindes): tudo se combina na cotação */}
             {atributos.length === 0 && (
               <div className="rounded-2xl border border-zinc-200 p-5 text-[15px] leading-relaxed text-zinc-600">
-                <p>
-                  Contanos por WhatsApp la <b className="text-zinc-900">cantidad</b>, el{" "}
-                  <b className="text-zinc-900">modelo o color</b> y dónde va tu{" "}
-                  <b className="text-zinc-900">logo o diseño</b>. Te enviamos la cotización y una
-                  vista previa antes de producir.
-                </p>
+                {comTabela && linha ? (
+                  <p>
+                    El precio es por{" "}
+                    <b className="text-zinc-900">
+                      {linha.quantidade.toLocaleString("es-UY")} unidades
+                    </b>{" "}
+                    del modelo estándar con tu logo. ¿Necesitás otra cantidad, color o modelo?
+                    Escribinos por WhatsApp y te pasamos el precio, con una vista previa antes de
+                    producir.
+                  </p>
+                ) : (
+                  <p>
+                    Contanos por WhatsApp la <b className="text-zinc-900">cantidad</b>, el{" "}
+                    <b className="text-zinc-900">modelo o color</b> y dónde va tu{" "}
+                    <b className="text-zinc-900">logo o diseño</b>. Te enviamos la cotización y una
+                    vista previa antes de producir.
+                  </p>
+                )}
               </div>
             )}
 
@@ -592,7 +604,9 @@ export function PaginaGrafica({
                   {!comPreco
                     ? "Elegí la cantidad que necesitás y te pasamos el precio."
                     : comTabela
-                      ? "Cuanto mayor la cantidad, mayor el descuento."
+                      ? tabela.length > 1
+                        ? "Cuanto mayor la cantidad, mayor el descuento."
+                        : "Precio para la cantidad mínima. ¿Otra cantidad? Te la cotizamos por WhatsApp."
                       : "Esta combinación se cotiza a pedido: elegí la cantidad y te pasamos el precio."}
                 </p>
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
@@ -641,7 +655,7 @@ export function PaginaGrafica({
                     );
                   })}
                 </div>
-                {comPreco && comTabela && (
+                {comPreco && comTabela && tabela.length > 1 && (
                   <p className="mt-3 text-xs text-zinc-500">
                     El descuento se calcula sobre el valor unitario de la menor cantidad.
                   </p>

@@ -44,6 +44,8 @@ export type DetalhesGrafica = {
   totalVariacoes: number;
   // Tem o custo de todas as variações em pecas_variacoes: a página pede o preço de cada escolha
   temVariacoes?: boolean;
+  // Margem (%) deste produto sobre o custo; sem ela vale MARGEM_GRAFICA (Printi)
+  margem?: number | null;
   precosSaoCusto?: boolean;
   quantidadeMinima: number | null;
   quantidadePersonalizada: { min: number; max: number; multiple: number } | null;
@@ -77,7 +79,9 @@ export const getDetalhesGraficaFn = createServerFn({ method: "GET" })
     const comVenda = d.precosSaoCusto
       ? d.combinacoes.map((c) => ({
           ...c,
-          precos: c.precos.map((x) => paraVenda(x.quantidade, x.preco, vendaGrafica)),
+          precos: c.precos.map((x) =>
+            paraVenda(x.quantidade, x.preco, (custo) => vendaGrafica(custo, d.margem ?? undefined)),
+          ),
         }))
       : d.combinacoes;
     return { ...d, combinacoes: comVenda, temVariacoes: nVar > 0, precosSaoCusto: false };
